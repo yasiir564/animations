@@ -3,990 +3,525 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SpongeBob's Pineapple House Drawing Animation</title>
+    <title>SpongeBob Drawing Animation - YouTube Short</title>
     <style>
-        * {
-            box-sizing: border-box;
-        }
-        
         body {
             margin: 0;
             padding: 0;
-            background: 
-                radial-gradient(circle at 30% 70%, #1a1a1a 0%, #2c2c2c 50%, #1f1f1f 100%),
-                linear-gradient(45deg, #2a2a2a 25%, transparent 25%, transparent 75%, #2a2a2a 75%);
-            background-size: 100% 100%, 20px 20px;
+            background: #2a2a2a;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            font-family: 'Georgia', 'Times New Roman', serif;
-            perspective: 1000px;
+            font-family: Arial, sans-serif;
         }
         
         .container {
-            width: 360px;
-            height: 640px;
-            background: 
-                linear-gradient(135deg, #faf8f2 0%, #f6f3ec 20%, #f2efe6 40%, #eee9dd 60%, #ebe6d8 80%, #e8e3d5 100%),
-                radial-gradient(circle at 25% 15%, rgba(139, 69, 19, 0.04) 0%, transparent 60%),
-                radial-gradient(circle at 75% 85%, rgba(160, 82, 45, 0.03) 0%, transparent 60%),
-                radial-gradient(circle at 50% 50%, rgba(101, 67, 33, 0.02) 0%, transparent 80%);
-            border-radius: 12px;
-            box-shadow: 
-                0 20px 40px rgba(0,0,0,0.4),
-                0 8px 16px rgba(0,0,0,0.2),
-                inset 0 2px 4px rgba(255,255,255,0.7),
-                inset 0 -2px 4px rgba(0,0,0,0.1),
-                inset 1px 1px 2px rgba(255,255,255,0.5),
-                inset -1px -1px 2px rgba(0,0,0,0.05);
+            width: 405px;
+            height: 720px;
+            background: #fafafa;
             position: relative;
             overflow: hidden;
-            border: 2px solid #d8c9ab;
-            transform: rotateX(2deg) rotateY(-1deg);
-            transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
-        }
-        
-        .container:hover {
-            transform: rotateX(0deg) rotateY(0deg) translateY(-5px);
             box-shadow: 
-                0 25px 50px rgba(0,0,0,0.5),
-                0 12px 20px rgba(0,0,0,0.3),
-                inset 0 2px 4px rgba(255,255,255,0.8),
-                inset 0 -2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .paper-texture {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0.6;
+                0 0 20px rgba(0,0,0,0.3),
+                inset 0 0 50px rgba(0,0,0,0.05);
+            /* Paper texture */
             background-image: 
-                radial-gradient(circle at 12% 18%, rgba(139, 69, 19, 0.12) 0.8px, transparent 1px),
-                radial-gradient(circle at 78% 62%, rgba(160, 82, 45, 0.09) 1.2px, transparent 1.5px),
-                radial-gradient(circle at 43% 87%, rgba(101, 67, 33, 0.08) 0.6px, transparent 1px),
-                radial-gradient(circle at 67% 23%, rgba(139, 69, 19, 0.06) 1px, transparent 1.5px),
-                radial-gradient(circle at 23% 56%, rgba(160, 82, 45, 0.07) 0.9px, transparent 1.2px),
-                linear-gradient(92deg, transparent 0%, rgba(139, 69, 19, 0.03) 30%, rgba(160, 82, 45, 0.04) 70%, transparent 100%),
-                linear-gradient(2deg, transparent 0%, rgba(101, 67, 33, 0.02) 40%, rgba(139, 69, 19, 0.03) 60%, transparent 100%),
-                repeating-linear-gradient(45deg, rgba(139, 69, 19, 0.01) 0px, transparent 1px, rgba(160, 82, 45, 0.01) 2px);
-            background-size: 
-                140px 95px,
-                110px 130px,
-                170px 85px,
-                95px 115px,
-                125px 90px,
-                12px 8px,
-                8px 6px,
-                3px 3px;
-            mix-blend-mode: multiply;
-            animation: paperShimmer 4s ease-in-out infinite;
-        }
-        
-        .book-lines {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0.15;
-            background-image: 
-                repeating-linear-gradient(
-                    0deg,
-                    transparent,
-                    transparent 26px,
-                    rgba(70, 130, 180, 0.4) 26px,
-                    rgba(70, 130, 180, 0.35) 27px,
-                    rgba(70, 130, 180, 0.2) 28px,
-                    transparent 28px
-                );
-        }
-        
-        .margin-line {
-            position: absolute;
-            left: 42px;
-            top: 0;
-            width: 1.5px;
-            height: 100%;
-            background: 
-                linear-gradient(
-                    to bottom,
-                    rgba(255, 182, 193, 0.6) 0%,
-                    rgba(255, 182, 193, 0.5) 20%,
-                    rgba(255, 182, 193, 0.4) 50%,
-                    rgba(255, 182, 193, 0.5) 80%,
-                    rgba(255, 182, 193, 0.6) 100%
-                );
-            border-radius: 1px;
-        }
-        
-        .stains {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(ellipse 35px 25px at 18% 28%, rgba(139, 69, 19, 0.12) 40%, rgba(101, 67, 33, 0.08) 60%, transparent 80%),
-                radial-gradient(ellipse 25px 18px at 83% 72%, rgba(160, 82, 45, 0.09) 35%, rgba(139, 69, 19, 0.06) 55%, transparent 75%),
-                radial-gradient(ellipse 40px 30px at 62% 12%, rgba(101, 67, 33, 0.06) 30%, rgba(160, 82, 45, 0.04) 50%, transparent 70%),
-                radial-gradient(ellipse 8px 12px at 35% 45%, rgba(25, 25, 112, 0.08) 50%, transparent 70%),
-                radial-gradient(ellipse 6px 8px at 75% 85%, rgba(72, 61, 139, 0.06) 40%, transparent 60%),
-                radial-gradient(ellipse 60px 20px at 50% 95%, rgba(139, 69, 19, 0.05) 20%, transparent 50%),
-                radial-gradient(ellipse 40px 15px at 20% 5%, rgba(160, 82, 45, 0.04) 30%, transparent 60%);
-            mix-blend-mode: multiply;
-        }
-        
-        .binding {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 20px;
-            height: 100%;
-            background: 
-                linear-gradient(to right, 
-                    rgba(139, 69, 19, 0.1) 0%, 
-                    rgba(160, 82, 45, 0.08) 50%, 
-                    transparent 100%
-                );
-            border-right: 1px solid rgba(139, 69, 19, 0.2);
-        }
-        
-        .binding::before {
-            content: '';
-            position: absolute;
-            left: 8px;
-            top: 10%;
-            width: 4px;
-            height: 80%;
-            background: 
-                repeating-linear-gradient(
-                    to bottom,
-                    rgba(139, 69, 19, 0.3) 0px,
-                    rgba(139, 69, 19, 0.3) 15px,
-                    transparent 15px,
-                    transparent 25px
-                );
-            border-radius: 2px;
+                radial-gradient(circle at 1px 1px, rgba(0,0,0,0.03) 1px, transparent 0);
+            background-size: 20px 20px;
         }
         
         canvas {
-            display: block;
-            margin: 30px auto;
+            width: 100%;
+            height: 100%;
             background: transparent;
-            border-radius: 4px;
         }
         
         .pencil {
             position: absolute;
-            width: 140px;
-            height: 10px;
-            background: 
-                linear-gradient(90deg, 
-                    #8b4513 0%, 
-                    #d4af37 15%, 
-                    #ffd700 50%, 
-                    #d4af37 85%, 
-                    #8b4513 100%
-                );
-            border-radius: 5px;
-            transform-origin: 100% 50%;
+            width: 120px;
+            height: 12px;
+            z-index: 10;
             opacity: 0;
-            transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
-            box-shadow: 
-                0 3px 6px rgba(0,0,0,0.3),
-                inset 0 1px 2px rgba(255,255,255,0.4),
-                inset 0 -1px 2px rgba(0,0,0,0.2);
+            transition: opacity 0.5s ease;
+            pointer-events: none;
+            transform-origin: 95% 50%;
         }
         
-        .pencil::before {
-            content: '';
+        .pencil-body {
+            width: 85px;
+            height: 12px;
+            background: linear-gradient(90deg, 
+                #FFD700 0%, #FFF200 30%, #FFE55C 70%, #F4C430 100%);
+            border-radius: 6px;
+            position: relative;
+            box-shadow: 
+                0 2px 4px rgba(0,0,0,0.2),
+                inset 0 1px 0 rgba(255,255,255,0.3),
+                inset 0 -1px 0 rgba(0,0,0,0.1);
+        }
+        
+        .pencil-body::before {
+            content: 'No. 2';
             position: absolute;
-            right: -12px;
+            left: 10px;
             top: 50%;
             transform: translateY(-50%);
-            width: 0;
-            height: 0;
-            border-left: 12px solid #2c2c2c;
-            border-top: 5px solid transparent;
-            border-bottom: 5px solid transparent;
-            filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.3));
+            font-size: 6px;
+            font-weight: bold;
+            color: #8B4513;
         }
         
-        .pencil::after {
-            content: '';
+        .pencil-wood {
+            width: 20px;
+            height: 12px;
+            background: linear-gradient(90deg, #D2B48C 0%, #8B4513 100%);
+            border-radius: 0 6px 6px 0;
             position: absolute;
-            left: 8px;
-            top: 2px;
-            width: 80px;
-            height: 2px;
-            background: 
-                linear-gradient(90deg, 
-                    rgba(255, 255, 255, 0.6) 0%, 
-                    rgba(255, 255, 255, 0.4) 50%, 
-                    rgba(255, 255, 255, 0.2) 100%
-                );
-            border-radius: 1px;
-        }
-        
-        .pencil .eraser {
-            position: absolute;
-            left: -15px;
-            top: 1px;
-            width: 12px;
-            height: 8px;
-            background: 
-                linear-gradient(90deg, 
-                    #ff69b4 0%, 
-                    #ff1493 50%, 
-                    #dc143c 100%
-                );
-            border-radius: 2px;
-            border: 1px solid #b8860b;
-        }
-        
-        .page-fold {
-            position: absolute;
+            right: -20px;
             top: 0;
-            right: 0;
-            width: 30px;
-            height: 30px;
-            background: 
-                linear-gradient(225deg, 
-                    rgba(139, 69, 19, 0.1) 0%, 
-                    rgba(160, 82, 45, 0.08) 50%, 
-                    transparent 100%
-                );
-            clip-path: polygon(100% 0%, 0% 100%, 100% 100%);
-            box-shadow: inset -2px 2px 4px rgba(0,0,0,0.1);
+            box-shadow: inset 2px 0 0 rgba(139,69,19,0.5);
         }
         
-        @keyframes paperShimmer {
-            0%, 100% { opacity: 0.6; }
-            50% { opacity: 0.7; }
+        .pencil-tip {
+            width: 15px;
+            height: 4px;
+            background: linear-gradient(90deg, #2C2C2C 0%, #000000 100%);
+            position: absolute;
+            right: -35px;
+            top: 4px;
+            clip-path: polygon(0 0, 100% 50%, 0 100%);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.5);
         }
         
-        @media (max-width: 480px) {
-            .container {
-                width: 320px;
-                height: 560px;
-                margin: 20px;
-            }
+        .pencil-eraser {
+            width: 8px;
+            height: 10px;
+            background: linear-gradient(90deg, #FF69B4 0%, #FF1493 100%);
+            border-radius: 4px;
+            position: absolute;
+            left: -8px;
+            top: 1px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.3);
         }
         
-        @media (max-height: 700px) {
-            .container {
-                height: 500px;
-            }
+        .pencil-metal {
+            width: 12px;
+            height: 12px;
+            background: linear-gradient(90deg, #C0C0C0 0%, #808080 50%, #C0C0C0 100%);
+            border-radius: 6px;
+            position: absolute;
+            left: -12px;
+            top: 0;
+            box-shadow: 
+                inset 0 1px 0 rgba(255,255,255,0.5),
+                inset 0 -1px 0 rgba(0,0,0,0.2);
+        }
+        
+        .drawing-dust {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: #ddd;
+            border-radius: 50%;
+            opacity: 0;
+            animation: dustFall 0.8s ease-out;
+        }
+        
+        @keyframes dustFall {
+            0% { opacity: 0.7; transform: translateY(0) scale(1); }
+            100% { opacity: 0; transform: translateY(20px) scale(0.3); }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="paper-texture"></div>
-        <div class="book-lines"></div>
-        <div class="margin-line"></div>
-        <div class="stains"></div>
-        <canvas id="drawingCanvas" width="320" height="580"></canvas>
+        <canvas id="canvas" width="405" height="720"></canvas>
         <div class="pencil" id="pencil">
-            <div class="eraser"></div>
+            <div class="pencil-eraser"></div>
+            <div class="pencil-metal"></div>
+            <div class="pencil-body"></div>
+            <div class="pencil-wood"></div>
+            <div class="pencil-tip"></div>
         </div>
-        <div class="page-fold"></div>
     </div>
 
     <script>
-        class PineappleHouseAnimator {
-            constructor(canvasId, pencilId) {
-                this.canvas = document.getElementById(canvasId);
-                this.ctx = this.canvas.getContext('2d');
-                this.pencil = document.getElementById(pencilId);
-                
-                this.animationId = null;
-                this.currentPhase = 0;
-                this.progress = 0;
-                this.isAnimating = false;
-                this.startTime = null;
-                
-                this.config = {
-                    phases: [
-                        { name: 'sketch', duration: 6000, color: '#888', lineWidth: 1.5, opacity: 0.6, style: 'rough' },
-                        { name: 'refine', duration: 4000, color: '#555', lineWidth: 2, opacity: 0.8, style: 'smooth' },
-                        { name: 'ink', duration: 3000, color: '#222', lineWidth: 2.5, opacity: 1, style: 'precise' },
-                        { name: 'color', duration: 7000, color: 'multicolor', lineWidth: 0, opacity: 1, style: 'fill' },
-                        { name: 'highlight', duration: 2000, color: 'effects', lineWidth: 0, opacity: 1, style: 'effects' },
-                        { name: 'pause', duration: 2000, color: 'transparent', lineWidth: 0, opacity: 1, style: 'none' }
-                    ],
-                    easing: {
-                        easeInOutCubic: t => t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1,
-                        easeOutBounce: t => {
-                            if (t < 1 / 2.75) return 7.5625 * t * t;
-                            if (t < 2 / 2.75) return 7.5625 * (t -= 1.5 / 2.75) * t + 0.75;
-                            if (t < 2.5 / 2.75) return 7.5625 * (t -= 2.25 / 2.75) * t + 0.9375;
-                            return 7.5625 * (t -= 2.625 / 2.75) * t + 0.984375;
-                        }
-                    }
-                };
-                
-                this.structure = this.initializeStructure();
-                this.colors = this.initializeColors();
-                
-                this.setupCanvas();
-                this.bindEvents();
-            }
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const pencil = document.getElementById('pencil');
+        
+        let startTime = Date.now();
+        let currentPath = [];
+        let pathIndex = 0;
+        
+        // More accurate SpongeBob proportions and features
+        const spongebobData = {
+            // Main body - more square and porous looking
+            body: [
+                {x: 140, y: 180}, {x: 200, y: 175}, {x: 260, y: 180}, {x: 270, y: 200},
+                {x: 275, y: 240}, {x: 280, y: 280}, {x: 275, y: 320}, {x: 280, y: 360},
+                {x: 275, y: 400}, {x: 280, y: 440}, {x: 275, y: 480}, {x: 270, y: 520},
+                {x: 260, y: 550}, {x: 200, y: 555}, {x: 140, y: 550}, {x: 130, y: 520},
+                {x: 125, y: 480}, {x: 130, y: 440}, {x: 125, y: 400}, {x: 130, y: 360},
+                {x: 125, y: 320}, {x: 130, y: 280}, {x: 125, y: 240}, {x: 130, y: 200},
+                {x: 140, y: 180}
+            ],
             
-            initializeStructure() {
-                return {
-                    // Pineapple body (main oval shape)
-                    pineappleBody: {
-                        points: [
-                            [160, 200], [140, 220], [120, 250], [110, 280], [105, 320], 
-                            [110, 360], [120, 400], [140, 430], [160, 440], [180, 430], 
-                            [200, 400], [210, 360], [215, 320], [210, 280], [200, 250], 
-                            [180, 220], [160, 200]
-                        ],
-                        closed: true,
-                        priority: 1,
-                        smooth: true
-                    },
-                    
-                    // Pineapple cross-hatch pattern (horizontal lines)
-                    crossHatch1: {
-                        points: [[125, 240], [195, 240]],
-                        closed: false,
-                        priority: 2
-                    },
-                    crossHatch2: {
-                        points: [[120, 270], [200, 270]],
-                        closed: false,
-                        priority: 3
-                    },
-                    crossHatch3: {
-                        points: [[115, 300], [205, 300]],
-                        closed: false,
-                        priority: 4
-                    },
-                    crossHatch4: {
-                        points: [[118, 330], [202, 330]],
-                        closed: false,
-                        priority: 5
-                    },
-                    crossHatch5: {
-                        points: [[122, 360], [198, 360]],
-                        closed: false,
-                        priority: 6
-                    },
-                    crossHatch6: {
-                        points: [[130, 390], [190, 390]],
-                        closed: false,
-                        priority: 7
-                    },
-                    crossHatch7: {
-                        points: [[140, 420], [180, 420]],
-                        closed: false,
-                        priority: 8
-                    },
-                    
-                    // Diagonal lines (left to right)
-                    diagonal1: {
-                        points: [[135, 220], [160, 260], [180, 300], [190, 340], [185, 380]],
-                        closed: false,
-                        priority: 9
-                    },
-                    diagonal2: {
-                        points: [[155, 210], [175, 250], [195, 290], [205, 330], [200, 370], [190, 410]],
-                        closed: false,
-                        priority: 10
-                    },
-                    diagonal3: {
-                        points: [[175, 220], [195, 260], [210, 300], [210, 340], [205, 380]],
-                        closed: false,
-                        priority: 11
-                    },
-                    
-                    // Diagonal lines (right to left)
-                    diagonal4: {
-                        points: [[185, 220], [160, 260], [140, 300], [130, 340], [135, 380]],
-                        closed: false,
-                        priority: 12
-                    },
-                    diagonal5: {
-                        points: [[165, 210], [145, 250], [125, 290], [115, 330], [120, 370], [130, 410]],
-                        closed: false,
-                        priority: 13
-                    },
-                    diagonal6: {
-                        points: [[145, 220], [125, 260], [110, 300], [110, 340], [115, 380]],
-                        closed: false,
-                        priority: 14
-                    },
-                    
-                    // Pineapple leaves (crown)
-                    leaf1: {
-                        points: [[160, 200], [158, 180], [155, 160], [150, 140], [145, 120], [140, 100]],
-                        closed: false,
-                        priority: 15,
-                        smooth: true
-                    },
-                    leaf2: {
-                        points: [[160, 200], [165, 175], [170, 150], [175, 125], [180, 100], [185, 75]],
-                        closed: false,
-                        priority: 16,
-                        smooth: true
-                    },
-                    leaf3: {
-                        points: [[160, 200], [155, 175], [150, 150], [145, 125], [140, 100], [135, 75]],
-                        closed: false,
-                        priority: 17,
-                        smooth: true
-                    },
-                    leaf4: {
-                        points: [[160, 200], [170, 175], [180, 150], [190, 125], [200, 100], [210, 75]],
-                        closed: false,
-                        priority: 18,
-                        smooth: true
-                    },
-                    leaf5: {
-                        points: [[160, 200], [150, 175], [140, 150], [130, 125], [120, 100], [110, 75]],
-                        closed: false,
-                        priority: 19,
-                        smooth: true
-                    },
-                    leaf6: {
-                        points: [[160, 200], [175, 175], [190, 150], [205, 125], [220, 100], [235, 75]],
-                        closed: false,
-                        priority: 20,
-                        smooth: true
-                    },
-                    leaf7: {
-                        points: [[160, 200], [145, 175], [130, 150], [115, 125], [100, 100], [85, 75]],
-                        closed: false,
-                        priority: 21,
-                        smooth: true
-                    },
-                    
-                    // Door
-                    door: {
-                        points: [[140, 440], [140, 380], [180, 380], [180, 440]],
-                        closed: false,
-                        priority: 22
-                    },
-                    
-                    // Door arch
-                    doorArch: {
-                        points: [[140, 380], [150, 370], [160, 365], [170, 370], [180, 380]],
-                        closed: false,
-                        priority: 23,
-                        smooth: true
-                    },
-                    
-                    // Windows
-                    leftWindow: {
-                        points: [[130, 320], [130, 290], [145, 290], [145, 320]],
-                        closed: true,
-                        priority: 24
-                    },
-                    rightWindow: {
-                        points: [[175, 320], [175, 290], [190, 290], [190, 320]],
-                        closed: true,
-                        priority: 25
-                    },
-                    
-                    // Window frames
-                    leftWindowFrame: {
-                        points: [[137.5, 290], [137.5, 320]],
-                        closed: false,
-                        priority: 26
-                    },
-                    rightWindowFrame: {
-                        points: [[182.5, 290], [182.5, 320]],
-                        closed: false,
-                        priority: 27
-                    },
-                    
-                    // Ground line
-                    ground: {
-                        points: [[0, 450], [320, 450]],
-                        closed: false,
-                        priority: 28
-                    }
-                };
-            }
+            // Large round eyes
+            leftEye: [
+                {x: 140, y: 250}, {x: 165, y: 235}, {x: 185, y: 250}, {x: 180, y: 275},
+                {x: 165, y: 285}, {x: 145, y: 275}, {x: 140, y: 250}
+            ],
+            rightEye: [
+                {x: 220, y: 245}, {x: 245, y: 230}, {x: 265, y: 245}, {x: 260, y: 270},
+                {x: 245, y: 280}, {x: 225, y: 270}, {x: 220, y: 245}
+            ],
             
-            initializeColors() {
-                return {
-                    background: {
-                        sky: '#87CEEB',
-                        ground: '#F5DEB3'
-                    },
-                    pineapple: {
-                        body: '#FFA500',
-                        bodyGradient: {
-                            start: '#FFD700',
-                            middle: '#FFA500',
-                            end: '#FF6347'
-                        },
-                        crossHatch: '#D2691E',
-                        leaves: '#228B22',
-                        leafGradient: {
-                            start: '#7CFC00',
-                            middle: '#32CD32',
-                            end: '#228B22'
-                        }
-                    },
-                    door: {
-                        primary: '#8B4513',
-                        secondary: '#A0522D',
-                        arch: '#654321'
-                    },
-                    windows: {
-                        glass: '#87CEEB',
-                        frame: '#8B4513'
-                    },
-                    effects: {
-                        bubbles: 'rgba(255, 255, 255, 0.6)',
-                        highlights: 'rgba(255, 255, 255, 0.8)',
-                        shadows: 'rgba(0, 0, 0, 0.2)'
-                    }
-                };
-            }
+            // Prominent nose
+            nose: [
+                {x: 195, y: 295}, {x: 205, y: 290}, {x: 210, y: 300}, {x: 205, y: 315},
+                {x: 200, y: 325}, {x: 195, y: 315}, {x: 190, y: 300}, {x: 195, y: 295}
+            ],
             
-            setupCanvas() {
-                const dpr = window.devicePixelRatio || 1;
-                const rect = this.canvas.getBoundingClientRect();
-                
-                this.canvas.width = rect.width * dpr;
-                this.canvas.height = rect.height * dpr;
-                this.ctx.scale(dpr, dpr);
-                
-                this.canvas.style.width = rect.width + 'px';
-                this.canvas.style.height = rect.height + 'px';
-                
-                this.ctx.imageSmoothingEnabled = true;
-                this.ctx.imageSmoothingQuality = 'high';
-            }
+            // Big smile
+            mouth: [
+                {x: 165, y: 365}, {x: 180, y: 375}, {x: 200, y: 380}, {x: 220, y: 375}, {x: 235, y: 365}
+            ],
             
-            bindEvents() {
-                window.addEventListener('resize', this.debounce(() => this.setupCanvas(), 250));
-                document.addEventListener('visibilitychange', () => {
-                    if (document.hidden) {
-                        this.pause();
-                    } else {
-                        this.resume();
-                    }
-                });
-            }
+            // Stick arms
+            leftArm: [
+                {x: 140, y: 320}, {x: 110, y: 330}, {x: 85, y: 345}, {x: 65, y: 365}, {x: 55, y: 385}
+            ],
+            rightArm: [
+                {x: 260, y: 315}, {x: 290, y: 325}, {x: 315, y: 340}, {x: 335, y: 360}, {x: 345, y: 380}
+            ],
             
-            debounce(func, wait) {
-                let timeout;
-                return function executedFunction(...args) {
-                    const later = () => {
-                        clearTimeout(timeout);
-                        func(...args);
-                    };
-                    clearTimeout(timeout);
-                    timeout = setTimeout(later, wait);
-                };
-            }
+            // Stick legs
+            leftLeg: [
+                {x: 165, y: 555}, {x: 165, y: 600}, {x: 160, y: 640}, {x: 150, y: 670}, {x: 135, y: 690}
+            ],
+            rightLeg: [
+                {x: 235, y: 555}, {x: 235, y: 600}, {x: 240, y: 640}, {x: 250, y: 670}, {x: 265, y: 690}
+            ],
             
-            clearCanvas() {
-                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-            }
+            // SpongeBob's pants
+            pants: [
+                {x: 140, y: 480}, {x: 260, y: 480}, {x: 260, y: 555}, {x: 140, y: 555}, {x: 140, y: 480}
+            ]
+        };
+        
+        const colors = {
+            yellow: '#FFFF00',
+            brown: '#8B4513',
+            white: '#FFFFFF',
+            black: '#000000',
+            red: '#DC143C',
+            blue: '#4169E1',
+            darkBlue: '#000080',
+            pink: '#FFB6C1'
+        };
+        
+        function createDrawingDust(x, y) {
+            const dust = document.createElement('div');
+            dust.className = 'drawing-dust';
+            dust.style.left = (x - 1) + 'px';
+            dust.style.top = (y - 1) + 'px';
+            document.querySelector('.container').appendChild(dust);
             
-            drawBackground() {
-                // Sky gradient
-                const skyGradient = this.ctx.createLinearGradient(0, 0, 0, this.canvas.height * 0.8);
-                skyGradient.addColorStop(0, '#87CEEB');
-                skyGradient.addColorStop(0.5, '#4169E1');
-                skyGradient.addColorStop(1, '#1E90FF');
-                
-                this.ctx.fillStyle = skyGradient;
-                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height * 0.8);
-                
-                // Ground
-                const groundGradient = this.ctx.createLinearGradient(0, this.canvas.height * 0.8, 0, this.canvas.height);
-                groundGradient.addColorStop(0, '#F5DEB3');
-                groundGradient.addColorStop(1, '#DEB887');
-                
-                this.ctx.fillStyle = groundGradient;
-                this.ctx.fillRect(0, this.canvas.height * 0.8, this.canvas.width, this.canvas.height * 0.2);
-                
-                // Animated bubbles
-                this.drawBubbles();
-            }
-            
-            drawBubbles() {
-                const bubbleCount = 8;
-                const time = Date.now() * 0.001;
-                
-                this.ctx.fillStyle = this.colors.effects.bubbles;
-                
-                for (let i = 0; i < bubbleCount; i++) {
-                    const x = (i * 40 + Math.sin(time + i) * 15) % this.canvas.width;
-                    const y = Math.sin(time * 0.6 + i * 0.7) * this.canvas.height * 0.3 + this.canvas.height * 0.2;
-                    const radius = Math.sin(time + i) * 1.5 + 2;
-                    const opacity = (Math.sin(time * 0.4 + i) + 1) * 0.15 + 0.1;
-                    
-                    this.ctx.globalAlpha = opacity;
-                    this.ctx.beginPath();
-                    this.ctx.arc(x, y, radius, 0, Math.PI * 2);
-                    this.ctx.fill();
-                }
-                
-                this.ctx.globalAlpha = 1;
-            }
-            
-            drawSmoothPath(points, closed = false) {
-                if (points.length < 2) return;
-                
-                this.ctx.beginPath();
-                this.ctx.moveTo(points[0][0], points[0][1]);
-                
-                if (points.length === 2) {
-                    this.ctx.lineTo(points[1][0], points[1][1]);
-                } else {
-                    for (let i = 1; i < points.length - 1; i++) {
-                        const xc = (points[i][0] + points[i + 1][0]) / 2;
-                        const yc = (points[i][1] + points[i + 1][1]) / 2;
-                        this.ctx.quadraticCurveTo(points[i][0], points[i][1], xc, yc);
-                    }
-                    
-                    if (closed) {
-                        const xc = (points[points.length - 1][0] + points[0][0]) / 2;
-                        const yc = (points[points.length - 1][1] + points[0][1]) / 2;
-                        this.ctx.quadraticCurveTo(points[points.length - 1][0], points[points.length - 1][1], xc, yc);
-                        this.ctx.quadraticCurveTo(points[0][0], points[0][1], points[0][0], points[0][1]);
-                    } else {
-                        this.ctx.lineTo(points[points.length - 1][0], points[points.length - 1][1]);
-                    }
-                }
-                
-                if (closed) {
-                    this.ctx.closePath();
-                }
-            }
-            
-            drawRoughPath(points, closed = false) {
-                if (points.length < 2) return;
-                
-                this.ctx.beginPath();
-                this.ctx.moveTo(points[0][0] + Math.random() * 2 - 1, points[0][1] + Math.random() * 2 - 1);
-                
-                for (let i = 1; i < points.length; i++) {
-                    const jitterX = Math.random() * 1.5 - 0.75;
-                    const jitterY = Math.random() * 1.5 - 0.75;
-                    this.ctx.lineTo(points[i][0] + jitterX, points[i][1] + jitterY);
-                }
-                
-                if (closed) {
-                    this.ctx.closePath();
-                }
-            }
-            
-            drawPrecisePath(points, closed = false) {
-                if (points.length < 2) return;
-                
-                this.ctx.beginPath();
-                this.ctx.moveTo(points[0][0], points[0][1]);
-                
-                for (let i = 1; i < points.length; i++) {
-                    this.ctx.lineTo(points[i][0], points[i][1]);
-                }
-                
-                if (closed) {
-                    this.ctx.closePath();
-                }
-            }
-            
-            fillShape(elementKey, progress) {
-                const element = this.structure[elementKey];
-                if (!element || !element.points) return;
-                
-                this.ctx.save();
-                
-                if (elementKey === 'pineappleBody') {
-                    const gradient = this.ctx.createRadialGradient(160, 320, 20, 160, 320, 120);
-                    gradient.addColorStop(0, this.colors.pineapple.bodyGradient.start);
-                    gradient.addColorStop(0.5, this.colors.pineapple.bodyGradient.middle);
-                    gradient.addColorStop(1, this.colors.pineapple.bodyGradient.end);
-                    this.ctx.fillStyle = gradient;
-                } else if (elementKey.includes('leaf')) {
-                    const gradient = this.ctx.createLinearGradient(0, 75, 0, 200);
-                    gradient.addColorStop(0, this.colors.pineapple.leafGradient.start);
-                    gradient.addColorStop(0.5, this.colors.pineapple.leafGradient.middle);
-                    gradient.addColorStop(1, this.colors.pineapple.leafGradient.end);
-                    this.ctx.fillStyle = gradient;
-                } else if (elementKey === 'door' || elementKey === 'doorArch') {
-                    this.ctx.fillStyle = this.colors.door.primary;
-                } else if (elementKey.includes('Window')) {
-                    if (elementKey.includes('Frame')) {
-                        this.ctx.fillStyle = this.colors.windows.frame;
-                    } else {
-                        this.ctx.fillStyle = this.colors.windows.glass;
-                    }
-                } else {
-                    this.ctx.fillStyle = this.colors.pineapple.crossHatch;
-                }
-                
-                this.drawSmoothPath(element.points, element.closed);
-                this.ctx.fill();
-                
-                this.ctx.restore();
-            }
-            
-            addEffects() {
-                // Add sparkles around the pineapple
-                const sparkleCount = 12;
-                const time = Date.now() * 0.002;
-                
-                this.ctx.fillStyle = this.colors.effects.highlights;
-                
-                for (let i = 0; i < sparkleCount; i++) {
-                    const angle = (i / sparkleCount) * Math.PI * 2 + time;
-                    const radius = 140 + Math.sin(time * 2 + i) * 20;
-                    const x = 160 + Math.cos(angle) * radius;
-                    const y = 320 + Math.sin(angle) * radius * 0.8;
-                    const size = Math.sin(time * 3 + i) * 1.5 + 1;
-                    const opacity = (Math.sin(time * 1.5 + i) + 1) * 0.3 + 0.2;
-                    
-                    this.ctx.globalAlpha = opacity;
-                    this.ctx.beginPath();
-                    this.ctx.arc(x, y, size, 0, Math.PI * 2);
-                    this.ctx.fill();
-                    
-                    // Draw sparkle rays
-                    this.ctx.strokeStyle = this.colors.effects.highlights;
-                    this.ctx.lineWidth = 0.5;
-                    this.ctx.beginPath();
-                    this.ctx.moveTo(x - size * 2, y);
-                    this.ctx.lineTo(x + size * 2, y);
-                    this.ctx.moveTo(x, y - size * 2);
-                    this.ctx.lineTo(x, y + size * 2);
-                    this.ctx.stroke();
-                }
-                
-                this.ctx.globalAlpha = 1;
-                
-                // Add glow effect to the pineapple
-                this.ctx.save();
-                this.ctx.shadowColor = '#FFD700';
-                this.ctx.shadowBlur = 15;
-                this.ctx.strokeStyle = 'rgba(255, 215, 0, 0.3)';
-                this.ctx.lineWidth = 3;
-                this.drawSmoothPath(this.structure.pineappleBody.points, true);
-                this.ctx.stroke();
-                this.ctx.restore();
-            }
-            
-            updatePencilPosition(elementKey, pointIndex, totalPoints) {
-                if (!this.structure[elementKey] || !this.structure[elementKey].points[pointIndex]) return;
-                
-                const point = this.structure[elementKey].points[pointIndex];
-                const progress = pointIndex / Math.max(totalPoints - 1, 1);
-                
-                this.pencil.style.left = (point[0] - 70) + 'px';
-                this.pencil.style.top = (point[1] - 5) + 'px';
-                this.pencil.style.opacity = '0.8';
-                
-                // Rotate pencil based on drawing direction
-                if (pointIndex > 0) {
-                    const prevPoint = this.structure[elementKey].points[pointIndex - 1];
-                    const angle = Math.atan2(point[1] - prevPoint[1], point[0] - prevPoint[0]);
-                    this.pencil.style.transform = `rotate(${angle}rad)`;
-                }
-            }
-            
-            drawElement(elementKey, progress, phase) {
-                const element = this.structure[elementKey];
-                if (!element) return;
-                
-                const config = this.config.phases[phase];
-                const totalPoints = element.points.length;
-                const pointsToShow = Math.floor(progress * totalPoints);
-                
-                if (pointsToShow < 1) return;
-                
-                const partialPoints = element.points.slice(0, pointsToShow);
-                
-                if (partialPoints.length > 0) {
-                    this.ctx.save();
-                    this.ctx.globalAlpha = config.opacity;
-                    this.ctx.strokeStyle = config.color === 'multicolor' ? this.getElementColor(elementKey) : config.color;
-                    this.ctx.lineWidth = config.lineWidth;
-                    this.ctx.lineCap = 'round';
-                    this.ctx.lineJoin = 'round';
-                    
-                    if (config.style === 'fill' && progress > 0.8) {
-                        this.fillShape(elementKey, progress);
-                    } else if (config.lineWidth > 0) {
-                        switch(config.style) {
-                            case 'rough':
-                                this.drawRoughPath(partialPoints, element.closed && progress > 0.95);
-                                break;
-                            case 'smooth':
-                                if (element.smooth) {
-                                    this.drawSmoothPath(partialPoints, element.closed && progress > 0.95);
-                                } else {
-                                    this.drawPrecisePath(partialPoints, element.closed && progress > 0.95);
-                                }
-                                break;
-                            case 'precise':
-                                this.drawPrecisePath(partialPoints, element.closed && progress > 0.95);
-                                break;
-                        }
-                        this.ctx.stroke();
-                    }
-                    
-                    this.ctx.restore();
-                    
-                    // Update pencil position
-                    if (phase < 3 && pointsToShow > 0) {
-                        this.updatePencilPosition(elementKey, Math.min(pointsToShow - 1, totalPoints - 1), totalPoints);
-                    }
-                }
-            }
-            
-            getElementColor(elementKey) {
-                if (elementKey === 'pineappleBody') return this.colors.pineapple.body;
-                if (elementKey.includes('leaf')) return this.colors.pineapple.leaves;
-                if (elementKey.includes('crossHatch') || elementKey.includes('diagonal')) return this.colors.pineapple.crossHatch;
-                if (elementKey === 'door' || elementKey === 'doorArch') return this.colors.door.primary;
-                if (elementKey.includes('Window')) {
-                    return elementKey.includes('Frame') ? this.colors.windows.frame : this.colors.windows.glass;
-                }
-                return '#333';
-            }
-            
-            animate(timestamp) {
-                if (!this.startTime) this.startTime = timestamp;
-                const elapsed = timestamp - this.startTime;
-                
-                // Clear canvas and draw background
-                this.clearCanvas();
-                this.drawBackground();
-                
-                // Calculate current phase and progress
-                let totalElapsed = 0;
-                let currentPhase = 0;
-                
-                for (let i = 0; i < this.config.phases.length; i++) {
-                    if (elapsed >= totalElapsed && elapsed < totalElapsed + this.config.phases[i].duration) {
-                        currentPhase = i;
-                        this.progress = (elapsed - totalElapsed) / this.config.phases[i].duration;
-                        break;
-                    }
-                    totalElapsed += this.config.phases[i].duration;
-                }
-                
-                // If animation is complete, restart
-                if (elapsed >= totalElapsed) {
-                    this.startTime = timestamp;
-                    return;
-                }
-                
-                this.currentPhase = currentPhase;
-                
-                // Apply easing
-                const easedProgress = this.config.easing.easeInOutCubic(this.progress);
-                
-                // Get elements sorted by priority
-                const sortedElements = Object.keys(this.structure).sort((a, b) => {
-                    return this.structure[a].priority - this.structure[b].priority;
-                });
-                
-                // Draw elements for current and previous phases
-                for (let phase = 0; phase <= currentPhase; phase++) {
-                    const phaseProgress = phase === currentPhase ? easedProgress : 1;
-                    
-                    sortedElements.forEach(elementKey => {
-                        if (phase < 3) { // Drawing phases
-                            this.drawElement(elementKey, phaseProgress, phase);
-                        } else if (phase === 3) { // Coloring phase
-                            this.drawElement(elementKey, 1, 2); // Draw outline first
-                            if (phaseProgress > 0.1) {
-                                this.drawElement(elementKey, phaseProgress, phase);
-                            }
-                        } else if (phase === 4 && phaseProgress > 0.5) { // Effects phase
-                            this.drawElement(elementKey, 1, 3); // Show colored version
-                            this.addEffects();
-                        } else {
-                            this.drawElement(elementKey, 1, Math.min(phase, 3));
-                        }
-                    });
-                }
-                
-                // Hide pencil during color and effects phases
-                if (currentPhase >= 3) {
-                    this.pencil.style.opacity = '0';
-                }
-                
-                // Continue animation
-                if (this.isAnimating) {
-                    this.animationId = requestAnimationFrame(this.animate.bind(this));
-                }
-            }
-            
-            start() {
-                if (this.isAnimating) return;
-                
-                this.isAnimating = true;
-                this.startTime = null;
-                this.animationId = requestAnimationFrame(this.animate.bind(this));
-            }
-            
-            stop() {
-                this.isAnimating = false;
-                if (this.animationId) {
-                    cancelAnimationFrame(this.animationId);
-                    this.animationId = null;
-                }
-                this.pencil.style.opacity = '0';
-            }
-            
-            pause() {
-                if (this.isAnimating) {
-                    this.isAnimating = false;
-                    if (this.animationId) {
-                        cancelAnimationFrame(this.animationId);
-                    }
-                }
-            }
-            
-            resume() {
-                if (!this.isAnimating && this.animationId !== null) {
-                    this.isAnimating = true;
-                    this.animationId = requestAnimationFrame(this.animate.bind(this));
-                }
-            }
+            setTimeout(() => dust.remove(), 800);
         }
         
-        // Initialize the animation when the page loads
-        document.addEventListener('DOMContentLoaded', () => {
-            const animator = new PineappleHouseAnimator('drawingCanvas', 'pencil');
+        function drawPath(points, progress, strokeStyle = '#333', lineWidth = 2) {
+            if (points.length < 2 || progress <= 0) return;
             
-            // Auto-start the animation
-            setTimeout(() => {
-                animator.start();
-            }, 1000);
+            ctx.strokeStyle = strokeStyle;
+            ctx.lineWidth = lineWidth;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
             
-            // Add click to restart functionality
-            document.addEventListener('click', () => {
-                animator.stop();
-                setTimeout(() => {
-                    animator.start();
-                }, 100);
+            const totalLength = points.length - 1;
+            const currentProgress = Math.min(progress * totalLength, totalLength);
+            const wholeSegments = Math.floor(currentProgress);
+            const partialSegment = currentProgress - wholeSegments;
+            
+            ctx.beginPath();
+            ctx.moveTo(points[0].x, points[0].y);
+            
+            // Draw complete segments
+            for (let i = 1; i <= wholeSegments; i++) {
+                ctx.lineTo(points[i].x, points[i].y);
+            }
+            
+            // Draw partial segment
+            if (wholeSegments < totalLength && partialSegment > 0) {
+                const start = points[wholeSegments];
+                const end = points[wholeSegments + 1];
+                const currentX = start.x + (end.x - start.x) * partialSegment;
+                const currentY = start.y + (end.y - start.y) * partialSegment;
+                
+                ctx.lineTo(currentX, currentY);
+                
+                // Update pencil position and rotation
+                const angle = Math.atan2(end.y - start.y, end.x - start.x);
+                pencil.style.left = (currentX - 60) + 'px';
+                pencil.style.top = (currentY - 6) + 'px';
+                pencil.style.transform = `rotate(${angle}rad)`;
+                
+                // Add drawing dust effect
+                if (Math.random() < 0.3) {
+                    createDrawingDust(currentX, currentY);
+                }
+            }
+            
+            ctx.stroke();
+        }
+        
+        function fillArea(points, color) {
+            if (points.length < 3) return;
+            
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.moveTo(points[0].x, points[0].y);
+            
+            for (let i = 1; i < points.length; i++) {
+                ctx.lineTo(points[i].x, points[i].y);
+            }
+            
+            ctx.closePath();
+            ctx.fill();
+        }
+        
+        function drawSpongeBobDetails() {
+            // Eyes - white background with black outline
+            ctx.fillStyle = colors.white;
+            ctx.beginPath();
+            ctx.arc(162, 260, 22, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(242, 257, 22, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Eye outlines
+            ctx.strokeStyle = colors.black;
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(162, 260, 22, 0, 2 * Math.PI);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.arc(242, 257, 22, 0, 2 * Math.PI);
+            ctx.stroke();
+            
+            // Pupils
+            ctx.fillStyle = colors.black;
+            ctx.beginPath();
+            ctx.arc(170, 268, 6, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(235, 265, 6, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Eye shine
+            ctx.fillStyle = colors.white;
+            ctx.beginPath();
+            ctx.arc(173, 265, 2, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(237, 262, 2, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Nose
+            ctx.fillStyle = colors.yellow;
+            ctx.beginPath();
+            ctx.ellipse(200, 308, 10, 18, 0, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.strokeStyle = colors.black;
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // Nostrils
+            ctx.fillStyle = colors.black;
+            ctx.beginPath();
+            ctx.arc(198, 305, 1.5, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(202, 305, 1.5, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Mouth
+            ctx.strokeStyle = colors.black;
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.arc(200, 365, 30, 0.1, Math.PI - 0.1);
+            ctx.stroke();
+            
+            // Teeth
+            ctx.fillStyle = colors.white;
+            ctx.strokeStyle = colors.black;
+            ctx.lineWidth = 1;
+            for (let i = 0; i < 2; i++) {
+                const x = 190 + i * 20;
+                ctx.fillRect(x, 380, 10, 15);
+                ctx.strokeRect(x, 380, 10, 15);
+            }
+            
+            // Pants
+            ctx.fillStyle = colors.brown;
+            fillArea(spongebobData.pants, colors.brown);
+            
+            // Belt
+            ctx.fillStyle = colors.black;
+            ctx.fillRect(140, 480, 120, 8);
+            
+            // Belt buckle
+            ctx.fillStyle = colors.yellow;
+            ctx.fillRect(190, 475, 20, 18);
+            ctx.strokeStyle = colors.black;
+            ctx.lineWidth = 2;
+            ctx.strokeRect(190, 475, 20, 18);
+            
+            // SpongeBob holes (pores)
+            ctx.fillStyle = colors.brown;
+            const holes = [
+                {x: 155, y: 220, r: 4}, {x: 185, y: 210, r: 3}, {x: 225, y: 215, r: 4},
+                {x: 245, y: 235, r: 3}, {x: 170, y: 340, r: 5}, {x: 230, y: 335, r: 4},
+                {x: 160, y: 390, r: 3}, {x: 200, y: 420, r: 4}, {x: 240, y: 415, r: 3},
+                {x: 175, y: 450, r: 4}, {x: 220, y: 445, r: 3}, {x: 155, y: 510, r: 3},
+                {x: 245, y: 505, r: 4}
+            ];
+            
+            holes.forEach(hole => {
+                ctx.beginPath();
+                ctx.arc(hole.x, hole.y, hole.r, 0, 2 * Math.PI);
+                ctx.fill();
             });
             
-            // Handle window focus/blur for performance
-            window.addEventListener('focus', () => {
-                animator.resume();
-            });
+            // Shoes
+            ctx.fillStyle = colors.black;
+            ctx.beginPath();
+            ctx.ellipse(135, 695, 25, 12, 0, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.ellipse(265, 695, 25, 12, 0, 0, 2 * Math.PI);
+            ctx.fill();
             
-            window.addEventListener('blur', () => {
-                animator.pause();
-            });
-        });
+            // Shoe laces
+            ctx.strokeStyle = colors.white;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(125, 690);
+            ctx.lineTo(145, 690);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(255, 690);
+            ctx.lineTo(275, 690);
+            ctx.stroke();
+        }
+        
+        function animate() {
+            const elapsed = Date.now() - startTime;
+            const totalDuration = 20000; // 20 seconds
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Phase 1: Rough Sketch (0-7 seconds)
+            if (elapsed < 7000) {
+                pencil.style.opacity = '1';
+                const progress = elapsed / 7000;
+                
+                if (progress < 0.4) {
+                    const bodyProgress = Math.min(progress * 2.5, 1);
+                    drawPath(spongebobData.body, bodyProgress, '#666', 1.5);
+                }
+                if (progress >= 0.2 && progress < 0.6) {
+                    const eyeProgress = Math.min((progress - 0.2) * 2.5, 1);
+                    drawPath(spongebobData.leftEye, eyeProgress, '#666', 1.5);
+                    if (eyeProgress > 0.5) {
+                        drawPath(spongebobData.rightEye, (eyeProgress - 0.5) * 2, '#666', 1.5);
+                    }
+                }
+                if (progress >= 0.4 && progress < 0.7) {
+                    const faceProgress = Math.min((progress - 0.4) * 3, 1);
+                    drawPath(spongebobData.nose, faceProgress, '#666', 1.5);
+                    if (faceProgress > 0.3) {
+                        drawPath(spongebobData.mouth, (faceProgress - 0.3) * 1.4, '#666', 1.5);
+                    }
+                }
+                if (progress >= 0.6) {
+                    const limbProgress = Math.min((progress - 0.6) * 2.5, 1);
+                    drawPath(spongebobData.leftArm, limbProgress, '#666', 1.5);
+                    drawPath(spongebobData.rightArm, limbProgress, '#666', 1.5);
+                    if (limbProgress > 0.4) {
+                        drawPath(spongebobData.leftLeg, (limbProgress - 0.4) * 1.7, '#666', 1.5);
+                        drawPath(spongebobData.rightLeg, (limbProgress - 0.4) * 1.7, '#666', 1.5);
+                    }
+                }
+            }
+            // Phase 2: Clean Inking (7-13 seconds)
+            else if (elapsed < 13000) {
+                pencil.style.opacity = '1';
+                const progress = (elapsed - 7000) / 6000;
+                
+                // Redraw everything with clean black lines
+                drawPath(spongebobData.body, 1, colors.black, 3);
+                drawPath(spongebobData.leftEye, 1, colors.black, 2.5);
+                drawPath(spongebobData.rightEye, 1, colors.black, 2.5);
+                drawPath(spongebobData.nose, 1, colors.black, 2);
+                drawPath(spongebobData.mouth, 1, colors.black, 3);
+                drawPath(spongebobData.leftArm, 1, colors.black, 2.5);
+                drawPath(spongebobData.rightArm, 1, colors.black, 2.5);
+                drawPath(spongebobData.leftLeg, 1, colors.black, 2.5);
+                drawPath(spongebobData.rightLeg, 1, colors.black, 2.5);
+                drawPath(spongebobData.pants, 1, colors.black, 2.5);
+                
+                // Animate pencil cleaning up lines
+                const animProgress = progress * 8;
+                const currentSection = Math.floor(animProgress);
+                const sections = [
+                    spongebobData.body, spongebobData.leftEye, spongebobData.rightEye,
+                    spongebobData.nose, spongebobData.mouth, spongebobData.leftArm,
+                    spongebobData.rightArm, spongebobData.pants
+                ];
+                
+                if (currentSection < sections.length) {
+                    const sectionProgress = animProgress - currentSection;
+                    const section = sections[currentSection];
+                    if (section && section.length > 0) {
+                        const point = section[Math.floor(sectionProgress * (section.length - 1))];
+                        if (point) {
+                            pencil.style.left = (point.x - 60) + 'px';
+                            pencil.style.top = (point.y - 6) + 'px';
+                        }
+                    }
+                }
+            }
+            // Phase 3: Coloring (13-20 seconds)
+            else if (elapsed < 20000) {
+                pencil.style.opacity = '0';
+                
+                // Fill body with yellow
+                fillArea(spongebobData.body, colors.yellow);
+                
+                // Add all details with smooth transition
+                drawSpongeBobDetails();
+                
+                // Final clean outlines
+                drawPath(spongebobData.body, 1, colors.black, 3);
+                drawPath(spongebobData.leftArm, 1, colors.black, 2.5);
+                drawPath(spongebobData.rightArm, 1, colors.black, 2.5);
+                drawPath(spongebobData.leftLeg, 1, colors.black, 2.5);
+                drawPath(spongebobData.rightLeg, 1, colors.black, 2.5);
+            }
+            // Loop
+            else {
+                startTime = Date.now();
+            }
+            
+            requestAnimationFrame(animate);
+        }
+        
+        // Start animation
+        animate();
     </script>
 </body>
 </html>
