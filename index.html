@@ -308,328 +308,658 @@
     </div>
 
     <script>
-        const canvas = document.getElementById('drawingCanvas');
-        const ctx = canvas.getContext('2d');
-        const pencil = document.getElementById('pencil');
+        class KrustyKrabAnimator {
+    constructor(canvasId, pencilId) {
+        this.canvas = document.getElementById(canvasId);
+        this.ctx = this.canvas.getContext('2d');
+        this.pencil = document.getElementById(pencilId);
         
-        let animationId;
-        let currentPhase = 0;
-        let progress = 0;
-        let isAnimating = false;
+        // Animation state
+        this.animationId = null;
+        this.currentPhase = 0;
+        this.progress = 0;
+        this.isAnimating = false;
+        this.startTime = null;
         
-        // Drawing phases
-        const phases = [
-            { name: 'sketch', duration: 6000, color: '#666', lineWidth: 2, opacity: 0.7 },
-            { name: 'detail', duration: 4000, color: '#333', lineWidth: 1.5, opacity: 0.9 },
-            { name: 'ink', duration: 3000, color: '#000', lineWidth: 2, opacity: 1 },
-            { name: 'color', duration: 7000, color: 'color', lineWidth: 0, opacity: 1 },
-            { name: 'pause', duration: 2000, color: 'transparent', lineWidth: 0, opacity: 1 }
-        ];
-        
-        // Krusty Krab structure points
-        const structure = {
-            // Main building base
-            base: [
-                [60, 450], [260, 450], [260, 350], [60, 350], [60, 450]
+        // Enhanced configuration
+        this.config = {
+            phases: [
+                { name: 'sketch', duration: 5000, color: '#888', lineWidth: 1.5, opacity: 0.6, style: 'rough' },
+                { name: 'refine', duration: 4000, color: '#555', lineWidth: 2, opacity: 0.8, style: 'smooth' },
+                { name: 'ink', duration: 3000, color: '#222', lineWidth: 2.5, opacity: 1, style: 'precise' },
+                { name: 'color', duration: 6000, color: 'multicolor', lineWidth: 0, opacity: 1, style: 'fill' },
+                { name: 'highlight', duration: 1500, color: 'effects', lineWidth: 0, opacity: 1, style: 'effects' },
+                { name: 'pause', duration: 2000, color: 'transparent', lineWidth: 0, opacity: 1, style: 'none' }
             ],
-            // Roof/dome
-            roof: [
-                [50, 350], [80, 300], [120, 280], [160, 270], [200, 280], [240, 300], [270, 350]
-            ],
-            // Sign post
-            signPost: [
-                [30, 250], [30, 450]
-            ],
-            // Sign (shell shape)
-            sign: [
-                [10, 220], [50, 200], [70, 220], [60, 250], [40, 260], [20, 250], [10, 220]
-            ],
-            // Door
-            door: [
-                [140, 450], [140, 380], [180, 380], [180, 450]
-            ],
-            // Windows
-            leftWindow: [
-                [80, 420], [120, 420], [120, 390], [80, 390], [80, 420]
-            ],
-            rightWindow: [
-                [200, 420], [240, 420], [240, 390], [200, 390], [200, 420]
-            ],
-            // Chimney
-            chimney: [
-                [200, 270], [200, 240], [220, 240], [220, 270]
-            ],
-            // Flag bunting
-            bunting: [
-                [70, 330], [90, 320], [110, 330], [130, 320], [150, 330], [170, 320], [190, 330], [210, 320], [230, 330], [250, 320]
-            ]
-        };
-        
-        // Colors for final phase
-        const colors = {
-            base: '#8B4513',
-            roof: '#654321',
-            sign: '#FFF',
-            signText: '#8B0000',
-            door: '#4169E1',
-            windows: '#87CEEB',
-            chimney: '#2F4F4F',
-            bunting: ['#FF0000', '#FFFF00', '#0000FF', '#FF6347', '#32CD32'],
-            background: '#4169E1',
-            ground: '#F5DEB3'
-        };
-        
-        function clearCanvas() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-        }
-        
-        function drawBackground() {
-            // Sky background
-            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-            gradient.addColorStop(0, colors.background);
-            gradient.addColorStop(1, '#1E90FF');
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, canvas.width, canvas.height * 0.8);
-            
-            // Ground
-            ctx.fillStyle = colors.ground;
-            ctx.fillRect(0, canvas.height * 0.8, canvas.width, canvas.height * 0.2);
-            
-            // Underwater bubbles
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
-            for (let i = 0; i < 8; i++) {
-                const x = Math.random() * canvas.width;
-                const y = Math.random() * canvas.height * 0.7;
-                const radius = Math.random() * 5 + 2;
-                ctx.beginPath();
-                ctx.arc(x, y, radius, 0, Math.PI * 2);
-                ctx.fill();
+            easing: {
+                easeInOutCubic: t => t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1,
+                easeOutBounce: t => {
+                    if (t < 1 / 2.75) return 7.5625 * t * t;
+                    if (t < 2 / 2.75) return 7.5625 * (t -= 1.5 / 2.75) * t + 0.75;
+                    if (t < 2.5 / 2.75) return 7.5625 * (t -= 2.25 / 2.75) * t + 0.9375;
+                    return 7.5625 * (t -= 2.625 / 2.75) * t + 0.984375;
+                }
             }
+        };
+        
+        // Enhanced structure with smooth curves
+        this.structure = this.initializeStructure();
+        this.colors = this.initializeColors();
+        
+        this.setupCanvas();
+        this.bindEvents();
+    }
+    
+    initializeStructure() {
+        return {
+            base: {
+                points: [[60, 450], [260, 450], [260, 350], [60, 350]],
+                closed: true,
+                priority: 1
+            },
+            roof: {
+                points: [[50, 350], [80, 300], [120, 280], [160, 270], [200, 280], [240, 300], [270, 350]],
+                closed: false,
+                priority: 2,
+                smooth: true
+            },
+            signPost: {
+                points: [[30, 250], [30, 450]],
+                closed: false,
+                priority: 3
+            },
+            sign: {
+                points: [[10, 220], [50, 200], [70, 220], [60, 250], [40, 260], [20, 250]],
+                closed: true,
+                priority: 4,
+                smooth: true
+            },
+            door: {
+                points: [[140, 450], [140, 380], [180, 380], [180, 450]],
+                closed: false,
+                priority: 5
+            },
+            leftWindow: {
+                points: [[80, 420], [120, 420], [120, 390], [80, 390]],
+                closed: true,
+                priority: 6
+            },
+            rightWindow: {
+                points: [[200, 420], [240, 420], [240, 390], [200, 390]],
+                closed: true,
+                priority: 7
+            },
+            chimney: {
+                points: [[200, 270], [200, 240], [220, 240], [220, 270]],
+                closed: true,
+                priority: 8
+            },
+            bunting: {
+                points: [[70, 330], [90, 320], [110, 330], [130, 320], [150, 330], [170, 320], [190, 330], [210, 320], [230, 330], [250, 320]],
+                closed: false,
+                priority: 9
+            }
+        };
+    }
+    
+    initializeColors() {
+        return {
+            base: { primary: '#8B4513', secondary: '#A0522D', highlight: '#CD853F' },
+            roof: { primary: '#654321', secondary: '#8B4513', highlight: '#A0522D' },
+            sign: { primary: '#FFF', secondary: '#F5F5F5', highlight: '#FFF' },
+            signText: '#8B0000',
+            door: { primary: '#4169E1', secondary: '#1E90FF', highlight: '#87CEEB' },
+            windows: { primary: '#87CEEB', secondary: '#B0E0E6', highlight: '#E0F6FF' },
+            chimney: { primary: '#2F4F4F', secondary: '#708090', highlight: '#778899' },
+            bunting: ['#FF4444', '#FFD700', '#4169E1', '#FF6347', '#32CD32', '#FF1493'],
+            background: { top: '#4169E1', bottom: '#1E90FF' },
+            ground: '#F5DEB3',
+            effects: {
+                bubbles: 'rgba(255, 255, 255, 0.4)',
+                smoke: '#999',
+                glow: 'rgba(255, 255, 255, 0.8)'
+            }
+        };
+    }
+    
+    setupCanvas() {
+        const dpr = window.devicePixelRatio || 1;
+        const rect = this.canvas.getBoundingClientRect();
+        
+        this.canvas.width = rect.width * dpr;
+        this.canvas.height = rect.height * dpr;
+        this.ctx.scale(dpr, dpr);
+        
+        this.canvas.style.width = rect.width + 'px';
+        this.canvas.style.height = rect.height + 'px';
+        
+        this.ctx.imageSmoothingEnabled = true;
+        this.ctx.imageSmoothingQuality = 'high';
+    }
+    
+    bindEvents() {
+        window.addEventListener('resize', this.debounce(() => this.setupCanvas(), 250));
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                this.pause();
+            } else {
+                this.resume();
+            }
+        });
+    }
+    
+    debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+    
+    clearCanvas() {
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+    
+    drawBackground(phase = 0) {
+        // Enhanced gradient background
+        const gradient = this.ctx.createLinearGradient(0, 0, 0, this.canvas.height);
+        gradient.addColorStop(0, this.colors.background.top);
+        gradient.addColorStop(0.6, this.colors.background.bottom);
+        gradient.addColorStop(1, '#191970');
+        
+        this.ctx.fillStyle = gradient;
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height * 0.85);
+        
+        // Animated ground with texture
+        const groundGradient = this.ctx.createLinearGradient(0, this.canvas.height * 0.85, 0, this.canvas.height);
+        groundGradient.addColorStop(0, this.colors.ground);
+        groundGradient.addColorStop(1, '#DEB887');
+        
+        this.ctx.fillStyle = groundGradient;
+        this.ctx.fillRect(0, this.canvas.height * 0.85, this.canvas.width, this.canvas.height * 0.15);
+        
+        // Enhanced bubbles with animation
+        this.drawBubbles(phase);
+    }
+    
+    drawBubbles(phase) {
+        const bubbleCount = 12;
+        const time = Date.now() * 0.001;
+        
+        this.ctx.fillStyle = this.colors.effects.bubbles;
+        
+        for (let i = 0; i < bubbleCount; i++) {
+            const x = (i * 47 + Math.sin(time + i) * 20) % this.canvas.width;
+            const y = Math.sin(time * 0.5 + i * 0.8) * this.canvas.height * 0.4 + this.canvas.height * 0.3;
+            const radius = Math.sin(time + i) * 2 + 3;
+            const opacity = (Math.sin(time * 0.3 + i) + 1) * 0.2 + 0.1;
+            
+            this.ctx.globalAlpha = opacity;
+            this.ctx.beginPath();
+            this.ctx.arc(x, y, radius, 0, Math.PI * 2);
+            this.ctx.fill();
         }
         
-        function drawPath(points, closed = false) {
-            if (points.length < 2) return;
-            
-            ctx.beginPath();
-            ctx.moveTo(points[0][0], points[0][1]);
-            
-            for (let i = 1; i < points.length; i++) {
-                ctx.lineTo(points[i][0], points[i][1]);
+        this.ctx.globalAlpha = 1;
+    }
+    
+    drawSmoothPath(points, closed = false) {
+        if (points.length < 2) return;
+        
+        this.ctx.beginPath();
+        this.ctx.moveTo(points[0][0], points[0][1]);
+        
+        if (points.length === 2) {
+            this.ctx.lineTo(points[1][0], points[1][1]);
+        } else {
+            // Use quadratic curves for smoother lines
+            for (let i = 1; i < points.length - 1; i++) {
+                const xc = (points[i][0] + points[i + 1][0]) / 2;
+                const yc = (points[i][1] + points[i + 1][1]) / 2;
+                this.ctx.quadraticCurveTo(points[i][0], points[i][1], xc, yc);
             }
             
             if (closed) {
-                ctx.closePath();
-            }
-            
-            ctx.stroke();
-        }
-        
-        function drawStructure(phase, partialProgress) {
-            if (phase >= 4) return; // Pause phase
-            
-            const currentPhaseData = phases[phase];
-            
-            ctx.lineWidth = currentPhaseData.lineWidth;
-            ctx.globalAlpha = currentPhaseData.opacity;
-            
-            if (phase < 3) {
-                // Sketch, detail, and ink phases
-                ctx.strokeStyle = currentPhaseData.color;
-                ctx.fillStyle = 'transparent';
-                
-                // Draw in order with partial progress
-                const totalParts = Object.keys(structure).length;
-                const partsToShow = Math.floor(totalParts * partialProgress);
-                const partialPart = (totalParts * partialProgress) % 1;
-                
-                let partIndex = 0;
-                for (const [name, points] of Object.entries(structure)) {
-                    if (partIndex < partsToShow) {
-                        drawPath(points, true);
-                    } else if (partIndex === partsToShow && partialPart > 0) {
-                        // Draw partial path
-                        const partialPoints = points.slice(0, Math.floor(points.length * partialPart) + 1);
-                        drawPath(partialPoints, false);
-                    }
-                    partIndex++;
-                }
+                const xc = (points[points.length - 1][0] + points[0][0]) / 2;
+                const yc = (points[points.length - 1][1] + points[0][1]) / 2;
+                this.ctx.quadraticCurveTo(points[points.length - 1][0], points[points.length - 1][1], xc, yc);
+                this.ctx.quadraticCurveTo(points[0][0], points[0][1], points[0][0], points[0][1]);
             } else {
-                // Color phase
-                drawBackground();
-                
-                // Fill with colors
-                ctx.lineWidth = 2;
-                ctx.strokeStyle = '#000';
-                
-                // Base
-                ctx.fillStyle = colors.base;
-                ctx.beginPath();
-                drawPath(structure.base, true);
-                ctx.fill();
-                ctx.stroke();
-                
-                // Roof
-                ctx.fillStyle = colors.roof;
-                ctx.beginPath();
-                drawPath(structure.roof, true);
-                ctx.fill();
-                ctx.stroke();
-                
-                // Sign
-                ctx.fillStyle = colors.sign;
-                ctx.beginPath();
-                drawPath(structure.sign, true);
-                ctx.fill();
-                ctx.stroke();
-                
-                // Sign text
-                ctx.fillStyle = colors.signText;
-                ctx.font = 'bold 12px Arial';
-                ctx.textAlign = 'center';
-                ctx.fillText('THE', 40, 225);
-                ctx.fillText('KRUSTY', 40, 240);
-                ctx.fillText('KRAB', 40, 255);
-                
-                // Door
-                ctx.fillStyle = colors.door;
-                ctx.beginPath();
-                drawPath(structure.door, true);
-                ctx.fill();
-                ctx.stroke();
-                
-                // Door knob
-                ctx.fillStyle = '#FFD700';
-                ctx.beginPath();
-                ctx.arc(170, 415, 3, 0, Math.PI * 2);
-                ctx.fill();
-                
-                // Windows
-                ctx.fillStyle = colors.windows;
-                ctx.beginPath();
-                drawPath(structure.leftWindow, true);
-                ctx.fill();
-                ctx.stroke();
-                
-                ctx.beginPath();
-                drawPath(structure.rightWindow, true);
-                ctx.fill();
-                ctx.stroke();
-                
-                // Chimney
-                ctx.fillStyle = colors.chimney;
-                ctx.beginPath();
-                drawPath(structure.chimney, true);
-                ctx.fill();
-                ctx.stroke();
-                
-                // Smoke
-                ctx.strokeStyle = '#666';
-                ctx.lineWidth = 2;
-                ctx.beginPath();
-                ctx.moveTo(210, 240);
-                ctx.quadraticCurveTo(215, 230, 220, 225);
-                ctx.quadraticCurveTo(225, 220, 230, 215);
-                ctx.stroke();
-                
-                // Bunting flags
-                ctx.lineWidth = 1;
-                ctx.strokeStyle = '#000';
-                for (let i = 0; i < structure.bunting.length - 1; i += 2) {
-                    const [x1, y1] = structure.bunting[i];
-                    const [x2, y2] = structure.bunting[i + 1];
-                    
-                    // Flag triangle
-                    ctx.fillStyle = colors.bunting[Math.floor(i / 2) % colors.bunting.length];
-                    ctx.beginPath();
-                    ctx.moveTo(x1, y1);
-                    ctx.lineTo(x2, y2);
-                    ctx.lineTo(x1 + 15, y1 + 10);
-                    ctx.closePath();
-                    ctx.fill();
-                    ctx.stroke();
-                }
-                
-                // Bunting rope
-                ctx.strokeStyle = '#8B4513';
-                ctx.lineWidth = 2;
-                drawPath(structure.bunting, false);
-            }
-            
-            ctx.globalAlpha = 1;
-        }
-        
-        function updatePencilPosition(phase, progress) {
-            if (phase >= 3) {
-                pencil.style.opacity = '0';
-                return;
-            }
-            
-            pencil.style.opacity = '1';
-            
-            // Calculate position based on current drawing progress
-            const totalParts = Object.keys(structure).length;
-            const currentPart = Math.floor(totalParts * progress);
-            const partProgress = (totalParts * progress) % 1;
-            
-            let partIndex = 0;
-            for (const [name, points] of Object.entries(structure)) {
-                if (partIndex === currentPart && points.length > 0) {
-                    const pointIndex = Math.floor((points.length - 1) * partProgress);
-                    const [x, y] = points[pointIndex] || points[points.length - 1];
-                    
-                    pencil.style.left = `${x - 60}px`;
-                    pencil.style.top = `${y + 20}px`;
-                    pencil.style.transform = `rotate(${Math.random() * 10 - 5}deg)`;
-                    break;
-                }
-                partIndex++;
+                this.ctx.lineTo(points[points.length - 1][0], points[points.length - 1][1]);
             }
         }
         
-        function animate(timestamp) {
-            if (!isAnimating) return;
+        if (closed) {
+            this.ctx.closePath();
+        }
+    }
+    
+    drawRoughPath(points, closed = false) {
+        if (points.length < 2) return;
+        
+        this.ctx.beginPath();
+        this.ctx.moveTo(points[0][0] + Math.random() * 2 - 1, points[0][1] + Math.random() * 2 - 1);
+        
+        for (let i = 1; i < points.length; i++) {
+            const x = points[i][0] + Math.random() * 3 - 1.5;
+            const y = points[i][1] + Math.random() * 3 - 1.5;
+            this.ctx.lineTo(x, y);
+        }
+        
+        if (closed) {
+            this.ctx.closePath();
+        }
+    }
+    
+    drawStructurePhase(phase, progress) {
+        const phaseConfig = this.config.phases[phase];
+        const easedProgress = this.config.easing.easeInOutCubic(progress);
+        
+        // Set drawing style
+        this.ctx.lineWidth = phaseConfig.lineWidth;
+        this.ctx.globalAlpha = phaseConfig.opacity;
+        this.ctx.strokeStyle = phaseConfig.color;
+        this.ctx.lineCap = 'round';
+        this.ctx.lineJoin = 'round';
+        
+        // Calculate which parts to draw
+        const sortedParts = Object.entries(this.structure)
+            .sort(([,a], [,b]) => a.priority - b.priority);
+        
+        const totalParts = sortedParts.length;
+        const partsToShow = Math.floor(totalParts * easedProgress);
+        const partialProgress = (totalParts * easedProgress) % 1;
+        
+        for (let i = 0; i < sortedParts.length; i++) {
+            const [name, part] = sortedParts[i];
             
-            if (!animate.startTime) animate.startTime = timestamp;
-            const elapsed = timestamp - animate.startTime;
+            if (i < partsToShow) {
+                this.drawPart(part, phaseConfig.style, 1);
+            } else if (i === partsToShow && partialProgress > 0) {
+                this.drawPart(part, phaseConfig.style, partialProgress);
+            }
+        }
+        
+        this.ctx.globalAlpha = 1;
+    }
+    
+    drawPart(part, style, progress) {
+        const points = part.points;
+        const drawCount = Math.max(2, Math.floor(points.length * progress));
+        const partialPoints = points.slice(0, drawCount);
+        
+        switch (style) {
+            case 'rough':
+                this.drawRoughPath(partialPoints, part.closed && progress >= 1);
+                break;
+            case 'smooth':
+            case 'precise':
+                this.drawSmoothPath(partialPoints, part.closed && progress >= 1);
+                break;
+        }
+        
+        this.ctx.stroke();
+    }
+    
+    drawColorPhase(progress) {
+        const easedProgress = this.config.easing.easeOutBounce(progress);
+        
+        this.drawBackground(this.currentPhase);
+        
+        // Draw filled shapes with gradients
+        this.ctx.lineWidth = 2;
+        this.ctx.strokeStyle = '#000';
+        this.ctx.globalAlpha = easedProgress;
+        
+        this.drawFilledStructures();
+        this.drawDetails();
+        
+        this.ctx.globalAlpha = 1;
+    }
+    
+    drawFilledStructures() {
+        // Base with gradient
+        const baseGradient = this.ctx.createLinearGradient(60, 350, 260, 450);
+        baseGradient.addColorStop(0, this.colors.base.highlight);
+        baseGradient.addColorStop(0.5, this.colors.base.primary);
+        baseGradient.addColorStop(1, this.colors.base.secondary);
+        
+        this.ctx.fillStyle = baseGradient;
+        this.ctx.fillRect(60, 350, 200, 100);
+        this.ctx.strokeRect(60, 350, 200, 100);
+        
+        // Roof with curved path
+        const roofGradient = this.ctx.createLinearGradient(50, 270, 270, 350);
+        roofGradient.addColorStop(0, this.colors.roof.highlight);
+        roofGradient.addColorStop(1, this.colors.roof.primary);
+        
+        this.ctx.fillStyle = roofGradient;
+        this.ctx.beginPath();
+        this.drawSmoothPath(this.structure.roof.points, false);
+        this.ctx.lineTo(270, 350);
+        this.ctx.lineTo(50, 350);
+        this.ctx.closePath();
+        this.ctx.fill();
+        this.ctx.stroke();
+        
+        // Continue with other structures...
+        this.drawSign();
+        this.drawDoorAndWindows();
+        this.drawChimney();
+        this.drawBunting();
+    }
+    
+    drawSign() {
+        // Sign with shadow effect
+        this.ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+        this.ctx.shadowBlur = 5;
+        this.ctx.shadowOffsetX = 2;
+        this.ctx.shadowOffsetY = 2;
+        
+        this.ctx.fillStyle = this.colors.sign.primary;
+        this.ctx.beginPath();
+        this.drawSmoothPath(this.structure.sign.points, true);
+        this.ctx.fill();
+        this.ctx.stroke();
+        
+        this.ctx.shadowColor = 'transparent';
+        
+        // Enhanced sign text
+        this.ctx.fillStyle = this.colors.signText;
+        this.ctx.font = 'bold 11px "Arial Black", Arial';
+        this.ctx.textAlign = 'center';
+        this.ctx.strokeStyle = '#FFF';
+        this.ctx.lineWidth = 3;
+        
+        const texts = ['THE', 'KRUSTY', 'KRAB'];
+        texts.forEach((text, i) => {
+            const y = 225 + i * 12;
+            this.ctx.strokeText(text, 40, y);
+            this.ctx.fillText(text, 40, y);
+        });
+    }
+    
+    drawDoorAndWindows() {
+        // Door with gradient
+        const doorGradient = this.ctx.createLinearGradient(140, 380, 180, 450);
+        doorGradient.addColorStop(0, this.colors.door.highlight);
+        doorGradient.addColorStop(1, this.colors.door.primary);
+        
+        this.ctx.fillStyle = doorGradient;
+        this.ctx.fillRect(140, 380, 40, 70);
+        this.ctx.strokeRect(140, 380, 40, 70);
+        
+        // Door knob with shine
+        this.ctx.fillStyle = '#FFD700';
+        this.ctx.beginPath();
+        this.ctx.arc(170, 415, 3, 0, Math.PI * 2);
+        this.ctx.fill();
+        this.ctx.fillStyle = '#FFF';
+        this.ctx.beginPath();
+        this.ctx.arc(169, 413, 1, 0, Math.PI * 2);
+        this.ctx.fill();
+        
+        // Windows with reflection effect
+        const windowGradient = this.ctx.createLinearGradient(0, 390, 0, 420);
+        windowGradient.addColorStop(0, this.colors.windows.highlight);
+        windowGradient.addColorStop(0.5, this.colors.windows.primary);
+        windowGradient.addColorStop(1, this.colors.windows.secondary);
+        
+        this.ctx.fillStyle = windowGradient;
+        this.ctx.fillRect(80, 390, 40, 30);
+        this.ctx.strokeRect(80, 390, 40, 30);
+        this.ctx.fillRect(200, 390, 40, 30);
+        this.ctx.strokeRect(200, 390, 40, 30);
+        
+        // Window frames
+        this.ctx.strokeStyle = '#000';
+        this.ctx.lineWidth = 1;
+        this.ctx.beginPath();
+        this.ctx.moveTo(100, 390);
+        this.ctx.lineTo(100, 420);
+        this.ctx.moveTo(80, 405);
+        this.ctx.lineTo(120, 405);
+        this.ctx.moveTo(220, 390);
+        this.ctx.lineTo(220, 420);
+        this.ctx.moveTo(200, 405);
+        this.ctx.lineTo(240, 405);
+        this.ctx.stroke();
+    }
+    
+    drawChimney() {
+        const chimneyGradient = this.ctx.createLinearGradient(200, 240, 220, 270);
+        chimneyGradient.addColorStop(0, this.colors.chimney.highlight);
+        chimneyGradient.addColorStop(1, this.colors.chimney.primary);
+        
+        this.ctx.fillStyle = chimneyGradient;
+        this.ctx.fillRect(200, 240, 20, 30);
+        this.ctx.strokeRect(200, 240, 20, 30);
+        
+        // Animated smoke
+        this.drawSmoke();
+    }
+    
+    drawSmoke() {
+        const time = Date.now() * 0.003;
+        this.ctx.strokeStyle = this.colors.effects.smoke;
+        this.ctx.lineWidth = 2;
+        this.ctx.lineCap = 'round';
+        
+        for (let i = 0; i < 3; i++) {
+            this.ctx.globalAlpha = 0.6 - i * 0.1;
+            this.ctx.beginPath();
+            this.ctx.moveTo(210, 240 - i * 10);
             
-            // Check if current phase is complete
-            if (elapsed >= phases[currentPhase].duration) {
-                currentPhase++;
-                progress = 0;
-                animate.startTime = timestamp;
+            for (let j = 0; j < 5; j++) {
+                const x = 210 + Math.sin(time + i + j * 0.5) * (j + 1) * 3;
+                const y = 240 - i * 10 - j * 8;
+                this.ctx.lineTo(x, y);
+            }
+            
+            this.ctx.stroke();
+        }
+        
+        this.ctx.globalAlpha = 1;
+    }
+    
+    drawBunting() {
+        // Bunting rope
+        this.ctx.strokeStyle = '#8B4513';
+        this.ctx.lineWidth = 3;
+        this.drawSmoothPath(this.structure.bunting.points, false);
+        
+        // Bunting flags with animation
+        const time = Date.now() * 0.002;
+        
+        for (let i = 0; i < this.structure.bunting.points.length - 1; i += 2) {
+            const [x1, y1] = this.structure.bunting.points[i];
+            const [x2, y2] = this.structure.bunting.points[i + 1];
+            
+            const wave = Math.sin(time + i) * 2;
+            
+            this.ctx.fillStyle = this.colors.bunting[Math.floor(i / 2) % this.colors.bunting.length];
+            this.ctx.beginPath();
+            this.ctx.moveTo(x1, y1);
+            this.ctx.lineTo(x2, y2);
+            this.ctx.lineTo(x1 + 15, y1 + 10 + wave);
+            this.ctx.closePath();
+            this.ctx.fill();
+            this.ctx.stroke();
+        }
+    }
+    
+    drawDetails() {
+        // Add final details and highlights
+        this.ctx.strokeStyle = '#000';
+        this.ctx.lineWidth = 1;
+        
+        // Sign post
+        this.ctx.lineWidth = 4;
+        this.ctx.strokeStyle = '#8B4513';
+        this.ctx.beginPath();
+        this.ctx.moveTo(30, 250);
+        this.ctx.lineTo(30, 450);
+        this.ctx.stroke();
+    }
+    
+    drawHighlightEffects(progress) {
+        const easedProgress = this.config.easing.easeInOutCubic(progress);
+        
+        // Glow effect on windows
+        this.ctx.shadowColor = this.colors.effects.glow;
+        this.ctx.shadowBlur = 10 * easedProgress;
+        this.ctx.globalAlpha = 0.5 * easedProgress;
+        
+        this.ctx.fillStyle = this.colors.windows.highlight;
+        this.ctx.fillRect(80, 390, 40, 30);
+        this.ctx.fillRect(200, 390, 40, 30);
+        
+        this.ctx.shadowColor = 'transparent';
+        this.ctx.shadowBlur = 0;
+        this.ctx.globalAlpha = 1;
+    }
+    
+    updatePencilPosition(phase, progress) {
+        if (phase >= 3) {
+            this.pencil.style.opacity = '0';
+            return;
+        }
+        
+        this.pencil.style.opacity = '1';
+        
+        const sortedParts = Object.entries(this.structure)
+            .sort(([,a], [,b]) => a.priority - b.priority);
+        
+        const totalParts = sortedParts.length;
+        const currentPartIndex = Math.floor(totalParts * progress);
+        const partProgress = (totalParts * progress) % 1;
+        
+        if (currentPartIndex < sortedParts.length) {
+            const [, part] = sortedParts[currentPartIndex];
+            const points = part.points;
+            
+            if (points.length > 0) {
+                const pointIndex = Math.min(
+                    Math.floor((points.length - 1) * partProgress),
+                    points.length - 1
+                );
+                const [x, y] = points[pointIndex];
                 
-                if (currentPhase >= phases.length) {
-                    // Animation complete - restart
-                    currentPhase = 0;
-                    clearCanvas();
-                    pencil.style.opacity = '0';
-                    setTimeout(() => {
-                        animate.startTime = null;
-                    }, 1000);
-                }
-            } else {
-                progress = elapsed / phases[currentPhase].duration;
+                // Smooth pencil movement
+                const currentX = parseFloat(this.pencil.style.left) || x;
+                const currentY = parseFloat(this.pencil.style.top) || y;
+                
+                const newX = currentX + (x - 60 - currentX) * 0.3;
+                const newY = currentY + (y + 20 - currentY) * 0.3;
+                
+                this.pencil.style.left = `${newX}px`;
+                this.pencil.style.top = `${newY}px`;
+                
+                // Add subtle rotation based on drawing direction
+                const angle = pointIndex > 0 ? 
+                    Math.atan2(points[pointIndex][1] - points[pointIndex-1][1], 
+                              points[pointIndex][0] - points[pointIndex-1][0]) * 180 / Math.PI : 0;
+                
+                this.pencil.style.transform = `rotate(${angle + 45}deg)`;
             }
+        }
+    }
+    
+    animate(timestamp) {
+        if (!this.isAnimating) return;
+        
+        if (!this.startTime) this.startTime = timestamp;
+        const elapsed = timestamp - this.startTime;
+        const currentPhase = this.config.phases[this.currentPhase];
+        
+        if (elapsed >= currentPhase.duration) {
+            this.currentPhase++;
+            this.progress = 0;
+            this.startTime = timestamp;
             
-            if (currentPhase < 4) {
-                clearCanvas();
-                drawStructure(currentPhase, progress);
-                updatePencilPosition(currentPhase, progress);
+            if (this.currentPhase >= this.config.phases.length) {
+                this.currentPhase = 0;
+                this.clearCanvas();
+                this.pencil.style.opacity = '0';
+                setTimeout(() => {
+                    this.startTime = null;
+                }, 1000);
             }
-            
-            animationId = requestAnimationFrame(animate);
+        } else {
+            this.progress = elapsed / currentPhase.duration;
         }
         
-        function startAnimation() {
-            isAnimating = true;
-            currentPhase = 0;
-            progress = 0;
-            animate.startTime = null;
-            animationId = requestAnimationFrame(animate);
+        // Render current phase
+        this.clearCanvas();
+        
+        switch (this.currentPhase) {
+            case 0:
+            case 1:
+            case 2:
+                this.drawStructurePhase(this.currentPhase, this.progress);
+                this.updatePencilPosition(this.currentPhase, this.progress);
+                break;
+            case 3:
+                this.drawColorPhase(this.progress);
+                break;
+            case 4:
+                this.drawColorPhase(1);
+                this.drawHighlightEffects(this.progress);
+                break;
+            case 5:
+                this.drawColorPhase(1);
+                break;
         }
         
-        // Auto-start after 1 second and loop continuously
-        setTimeout(startAnimation, 1000);
+        this.animationId = requestAnimationFrame(this.animate.bind(this));
+    }
+    
+    start() {
+        this.isAnimating = true;
+        this.currentPhase = 0;
+        this.progress = 0;
+        this.startTime = null;
+        this.animationId = requestAnimationFrame(this.animate.bind(this));
+    }
+    
+    pause() {
+        this.isAnimating = false;
+        if (this.animationId) {
+            cancelAnimationFrame(this.animationId);
+        }
+    }
+    
+    resume() {
+        if (!this.isAnimating) {
+            this.isAnimating = true;
+            this.startTime = null;
+            this.animationId = requestAnimationFrame(this.animate.bind(this));
+        }
+    }
+    
+    reset() {
+        this.pause();
+        this.currentPhase = 0;
+        this.progress = 0;
+        this.clearCanvas();
+        this.pencil.style.opacity = '0';
+    }
+}
+
+// Initialize and start animation
+const animator = new KrustyKrabAnimator('drawingCanvas', 'pencil');
+
+// Auto-start with delay
+setTimeout(() => {
+    animator.start();
+}, 1000);
+
+// Expose methods for external control if needed
+window.krustyKrabAnimator = animator;
     </script>
 </body>
 </html>
