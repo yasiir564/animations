@@ -147,381 +147,530 @@
     </div>
 
     <script>
-        const canvas = document.getElementById('canvas');
-        const ctx = canvas.getContext('2d');
-        const pencil = document.getElementById('pencil');
+       const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const pencil = document.getElementById('pencil');
+
+let startTime = Date.now();
+let currentPath = [];
+let pathIndex = 0;
+let danceStartTime = 0;
+let isDancing = false;
+
+// Enhanced SpongeBob data with better proportions
+const spongebobData = {
+    // Main body with more natural curves
+    body: [
+        {x: 140, y: 180}, {x: 200, y: 175}, {x: 260, y: 180}, {x: 270, y: 200},
+        {x: 275, y: 240}, {x: 280, y: 280}, {x: 275, y: 320}, {x: 280, y: 360},
+        {x: 275, y: 400}, {x: 280, y: 440}, {x: 275, y: 480}, {x: 270, y: 520},
+        {x: 260, y: 550}, {x: 200, y: 555}, {x: 140, y: 550}, {x: 130, y: 520},
+        {x: 125, y: 480}, {x: 130, y: 440}, {x: 125, y: 400}, {x: 130, y: 360},
+        {x: 125, y: 320}, {x: 130, y: 280}, {x: 125, y: 240}, {x: 130, y: 200},
+        {x: 140, y: 180}
+    ],
+    
+    // Enhanced eye shapes
+    leftEye: [
+        {x: 140, y: 250}, {x: 165, y: 235}, {x: 185, y: 250}, {x: 180, y: 275},
+        {x: 165, y: 285}, {x: 145, y: 275}, {x: 140, y: 250}
+    ],
+    rightEye: [
+        {x: 220, y: 245}, {x: 245, y: 230}, {x: 265, y: 245}, {x: 260, y: 270},
+        {x: 245, y: 280}, {x: 225, y: 270}, {x: 220, y: 245}
+    ],
+    
+    // More detailed nose
+    nose: [
+        {x: 195, y: 295}, {x: 205, y: 290}, {x: 210, y: 300}, {x: 205, y: 315},
+        {x: 200, y: 325}, {x: 195, y: 315}, {x: 190, y: 300}, {x: 195, y: 295}
+    ],
+    
+    // Enhanced smile curve
+    mouth: [
+        {x: 165, y: 365}, {x: 180, y: 375}, {x: 200, y: 380}, {x: 220, y: 375}, {x: 235, y: 365}
+    ],
+    
+    // More expressive arms
+    leftArm: [
+        {x: 140, y: 320}, {x: 110, y: 330}, {x: 85, y: 345}, {x: 65, y: 365}, {x: 55, y: 385}
+    ],
+    rightArm: [
+        {x: 260, y: 315}, {x: 290, y: 325}, {x: 315, y: 340}, {x: 335, y: 360}, {x: 345, y: 380}
+    ],
+    
+    // Improved legs
+    leftLeg: [
+        {x: 165, y: 555}, {x: 165, y: 600}, {x: 160, y: 640}, {x: 150, y: 670}, {x: 135, y: 690}
+    ],
+    rightLeg: [
+        {x: 235, y: 555}, {x: 235, y: 600}, {x: 240, y: 640}, {x: 250, y: 670}, {x: 265, y: 690}
+    ],
+    
+    // Better pants outline
+    pants: [
+        {x: 140, y: 480}, {x: 260, y: 480}, {x: 260, y: 555}, {x: 140, y: 555}, {x: 140, y: 480}
+    ]
+};
+
+// Enhanced color palette
+const colors = {
+    yellow: '#FFFF00',
+    brown: '#8B4513',
+    white: '#FFFFFF',
+    black: '#000000',
+    red: '#DC143C',
+    blue: '#4169E1',
+    darkBlue: '#000080',
+    pink: '#FFB6C1',
+    lightBrown: '#CD853F',
+    darkBrown: '#654321'
+};
+
+// Enhanced dust effect with more particles
+function createDrawingDust(x, y) {
+    for (let i = 0; i < 3; i++) {
+        const dust = document.createElement('div');
+        dust.className = 'drawing-dust';
+        dust.style.left = (x - 1 + Math.random() * 6) + 'px';
+        dust.style.top = (y - 1 + Math.random() * 6) + 'px';
+        dust.style.background = `hsl(${Math.random() * 60 + 30}, 70%, 60%)`;
+        dust.style.transform = `scale(${0.5 + Math.random() * 0.5})`;
+        document.querySelector('.container').appendChild(dust);
         
-        let startTime = Date.now();
-        let currentPath = [];
-        let pathIndex = 0;
+        setTimeout(() => dust.remove(), 1000 + Math.random() * 500);
+    }
+}
+
+// Improved path drawing with smoother curves
+function drawPath(points, progress, strokeStyle = '#333', lineWidth = 2, offset = {x: 0, y: 0}) {
+    if (points.length < 2 || progress <= 0) return;
+    
+    ctx.strokeStyle = strokeStyle;
+    ctx.lineWidth = lineWidth;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    
+    const totalLength = points.length - 1;
+    const currentProgress = Math.min(progress * totalLength, totalLength);
+    const wholeSegments = Math.floor(currentProgress);
+    const partialSegment = currentProgress - wholeSegments;
+    
+    ctx.beginPath();
+    ctx.moveTo(points[0].x + offset.x, points[0].y + offset.y);
+    
+    // Draw complete segments with smooth curves
+    for (let i = 1; i <= wholeSegments; i++) {
+        const point = points[i];
+        ctx.lineTo(point.x + offset.x, point.y + offset.y);
+    }
+    
+    // Draw partial segment
+    if (wholeSegments < totalLength && partialSegment > 0) {
+        const start = points[wholeSegments];
+        const end = points[wholeSegments + 1];
+        const currentX = start.x + (end.x - start.x) * partialSegment + offset.x;
+        const currentY = start.y + (end.y - start.y) * partialSegment + offset.y;
         
-        // More accurate SpongeBob proportions and features
-        const spongebobData = {
-            // Main body - more square and porous looking
-            body: [
-                {x: 140, y: 180}, {x: 200, y: 175}, {x: 260, y: 180}, {x: 270, y: 200},
-                {x: 275, y: 240}, {x: 280, y: 280}, {x: 275, y: 320}, {x: 280, y: 360},
-                {x: 275, y: 400}, {x: 280, y: 440}, {x: 275, y: 480}, {x: 270, y: 520},
-                {x: 260, y: 550}, {x: 200, y: 555}, {x: 140, y: 550}, {x: 130, y: 520},
-                {x: 125, y: 480}, {x: 130, y: 440}, {x: 125, y: 400}, {x: 130, y: 360},
-                {x: 125, y: 320}, {x: 130, y: 280}, {x: 125, y: 240}, {x: 130, y: 200},
-                {x: 140, y: 180}
-            ],
-            
-            // Large round eyes
-            leftEye: [
-                {x: 140, y: 250}, {x: 165, y: 235}, {x: 185, y: 250}, {x: 180, y: 275},
-                {x: 165, y: 285}, {x: 145, y: 275}, {x: 140, y: 250}
-            ],
-            rightEye: [
-                {x: 220, y: 245}, {x: 245, y: 230}, {x: 265, y: 245}, {x: 260, y: 270},
-                {x: 245, y: 280}, {x: 225, y: 270}, {x: 220, y: 245}
-            ],
-            
-            // Prominent nose
-            nose: [
-                {x: 195, y: 295}, {x: 205, y: 290}, {x: 210, y: 300}, {x: 205, y: 315},
-                {x: 200, y: 325}, {x: 195, y: 315}, {x: 190, y: 300}, {x: 195, y: 295}
-            ],
-            
-            // Big smile
-            mouth: [
-                {x: 165, y: 365}, {x: 180, y: 375}, {x: 200, y: 380}, {x: 220, y: 375}, {x: 235, y: 365}
-            ],
-            
-            // Stick arms
-            leftArm: [
-                {x: 140, y: 320}, {x: 110, y: 330}, {x: 85, y: 345}, {x: 65, y: 365}, {x: 55, y: 385}
-            ],
-            rightArm: [
-                {x: 260, y: 315}, {x: 290, y: 325}, {x: 315, y: 340}, {x: 335, y: 360}, {x: 345, y: 380}
-            ],
-            
-            // Stick legs
-            leftLeg: [
-                {x: 165, y: 555}, {x: 165, y: 600}, {x: 160, y: 640}, {x: 150, y: 670}, {x: 135, y: 690}
-            ],
-            rightLeg: [
-                {x: 235, y: 555}, {x: 235, y: 600}, {x: 240, y: 640}, {x: 250, y: 670}, {x: 265, y: 690}
-            ],
-            
-            // SpongeBob's pants
-            pants: [
-                {x: 140, y: 480}, {x: 260, y: 480}, {x: 260, y: 555}, {x: 140, y: 555}, {x: 140, y: 480}
-            ]
+        ctx.lineTo(currentX, currentY);
+        
+        // Enhanced pencil movement with smooth rotation
+        const angle = Math.atan2(end.y - start.y, end.x - start.x);
+        pencil.style.left = (currentX - 60) + 'px';
+        pencil.style.top = (currentY - 6) + 'px';
+        pencil.style.transform = `rotate(${angle}rad)`;
+        
+        // Enhanced dust effect
+        if (Math.random() < 0.4) {
+            createDrawingDust(currentX, currentY);
+        }
+    }
+    
+    ctx.stroke();
+}
+
+// Enhanced fill function with offset support
+function fillArea(points, color, offset = {x: 0, y: 0}) {
+    if (points.length < 3) return;
+    
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.moveTo(points[0].x + offset.x, points[0].y + offset.y);
+    
+    for (let i = 1; i < points.length; i++) {
+        ctx.lineTo(points[i].x + offset.x, points[i].y + offset.y);
+    }
+    
+    ctx.closePath();
+    ctx.fill();
+}
+
+// Enhanced SpongeBob details with better shading
+function drawSpongeBobDetails(offset = {x: 0, y: 0}) {
+    const ox = offset.x;
+    const oy = offset.y;
+    
+    // Eyes with gradient effect
+    const eyeGradient = ctx.createRadialGradient(162 + ox, 260 + oy, 5, 162 + ox, 260 + oy, 22);
+    eyeGradient.addColorStop(0, colors.white);
+    eyeGradient.addColorStop(1, '#F0F0F0');
+    
+    ctx.fillStyle = eyeGradient;
+    ctx.beginPath();
+    ctx.arc(162 + ox, 260 + oy, 22, 0, 2 * Math.PI);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(242 + ox, 257 + oy, 22, 0, 2 * Math.PI);
+    ctx.fill();
+    
+    // Enhanced eye outlines with shadow
+    ctx.shadowColor = 'rgba(0,0,0,0.3)';
+    ctx.shadowBlur = 3;
+    ctx.shadowOffsetX = 2;
+    ctx.shadowOffsetY = 2;
+    ctx.strokeStyle = colors.black;
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(162 + ox, 260 + oy, 22, 0, 2 * Math.PI);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(242 + ox, 257 + oy, 22, 0, 2 * Math.PI);
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+    
+    // Animated pupils with slight movement
+    const pupilOffset = isDancing ? Math.sin(Date.now() * 0.01) * 2 : 0;
+    ctx.fillStyle = colors.black;
+    ctx.beginPath();
+    ctx.arc(170 + ox + pupilOffset, 268 + oy, 6, 0, 2 * Math.PI);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(235 + ox - pupilOffset, 265 + oy, 6, 0, 2 * Math.PI);
+    ctx.fill();
+    
+    // Enhanced eye shine
+    ctx.fillStyle = colors.white;
+    ctx.beginPath();
+    ctx.arc(173 + ox + pupilOffset, 265 + oy, 2.5, 0, 2 * Math.PI);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(237 + ox - pupilOffset, 262 + oy, 2.5, 0, 2 * Math.PI);
+    ctx.fill();
+    
+    // 3D nose with gradient
+    const noseGradient = ctx.createLinearGradient(190 + ox, 290 + oy, 210 + ox, 326 + oy);
+    noseGradient.addColorStop(0, colors.yellow);
+    noseGradient.addColorStop(0.5, '#FFFF88');
+    noseGradient.addColorStop(1, '#DDDD00');
+    
+    ctx.fillStyle = noseGradient;
+    ctx.beginPath();
+    ctx.ellipse(200 + ox, 308 + oy, 10, 18, 0, 0, 2 * Math.PI);
+    ctx.fill();
+    ctx.strokeStyle = colors.black;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    
+    // Enhanced nostrils
+    ctx.fillStyle = colors.black;
+    ctx.beginPath();
+    ctx.ellipse(198 + ox, 305 + oy, 2, 1.5, 0, 0, 2 * Math.PI);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(202 + ox, 305 + oy, 2, 1.5, 0, 0, 2 * Math.PI);
+    ctx.fill();
+    
+    // Animated mouth with expression changes
+    const mouthOffset = isDancing ? Math.sin(Date.now() * 0.008) * 3 : 0;
+    ctx.strokeStyle = colors.black;
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.arc(200 + ox, 365 + oy + mouthOffset, 30, 0.1, Math.PI - 0.1);
+    ctx.stroke();
+    
+    // Enhanced teeth with individual styling
+    ctx.fillStyle = colors.white;
+    ctx.strokeStyle = colors.black;
+    ctx.lineWidth = 1.5;
+    for (let i = 0; i < 2; i++) {
+        const x = 190 + i * 20 + ox;
+        const y = 380 + oy + mouthOffset;
+        ctx.fillRect(x, y, 10, 15);
+        ctx.strokeRect(x, y, 10, 15);
+        
+        // Add small gap between teeth
+        ctx.strokeStyle = colors.black;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(x + 5, y);
+        ctx.lineTo(x + 5, y + 15);
+        ctx.stroke();
+    }
+    
+    // Enhanced pants with texture
+    const pantsGradient = ctx.createLinearGradient(140 + ox, 480 + oy, 260 + ox, 555 + oy);
+    pantsGradient.addColorStop(0, colors.brown);
+    pantsGradient.addColorStop(0.5, colors.lightBrown);
+    pantsGradient.addColorStop(1, colors.darkBrown);
+    
+    fillArea(spongebobData.pants, pantsGradient, offset);
+    
+    // Enhanced belt with metallic look
+    const beltGradient = ctx.createLinearGradient(140 + ox, 480 + oy, 140 + ox, 488 + oy);
+    beltGradient.addColorStop(0, '#333');
+    beltGradient.addColorStop(0.5, colors.black);
+    beltGradient.addColorStop(1, '#333');
+    
+    ctx.fillStyle = beltGradient;
+    ctx.fillRect(140 + ox, 480 + oy, 120, 8);
+    
+    // 3D belt buckle
+    const buckleGradient = ctx.createRadialGradient(200 + ox, 484 + oy, 2, 200 + ox, 484 + oy, 15);
+    buckleGradient.addColorStop(0, '#FFD700');
+    buckleGradient.addColorStop(0.7, colors.yellow);
+    buckleGradient.addColorStop(1, '#B8860B');
+    
+    ctx.fillStyle = buckleGradient;
+    ctx.fillRect(190 + ox, 475 + oy, 20, 18);
+    ctx.strokeStyle = colors.black;
+    ctx.lineWidth = 2;
+    ctx.strokeRect(190 + ox, 475 + oy, 20, 18);
+    
+    // Enhanced SpongeBob holes with variety
+    const holes = [
+        {x: 155, y: 220, r: 4}, {x: 185, y: 210, r: 3}, {x: 225, y: 215, r: 4},
+        {x: 245, y: 235, r: 3}, {x: 170, y: 340, r: 5}, {x: 230, y: 335, r: 4},
+        {x: 160, y: 390, r: 3}, {x: 200, y: 420, r: 4}, {x: 240, y: 415, r: 3},
+        {x: 175, y: 450, r: 4}, {x: 220, y: 445, r: 3}, {x: 155, y: 510, r: 3},
+        {x: 245, y: 505, r: 4}, {x: 180, y: 260, r: 2}, {x: 210, y: 250, r: 3}
+    ];
+    
+    holes.forEach(hole => {
+        const holeGradient = ctx.createRadialGradient(
+            hole.x + ox, hole.y + oy, 0,
+            hole.x + ox, hole.y + oy, hole.r
+        );
+        holeGradient.addColorStop(0, colors.darkBrown);
+        holeGradient.addColorStop(1, colors.brown);
+        
+        ctx.fillStyle = holeGradient;
+        ctx.beginPath();
+        ctx.arc(hole.x + ox, hole.y + oy, hole.r, 0, 2 * Math.PI);
+        ctx.fill();
+    });
+    
+    // Enhanced shoes with 3D effect
+    const shoeGradient = ctx.createRadialGradient(135 + ox, 690 + oy, 5, 135 + ox, 700 + oy, 25);
+    shoeGradient.addColorStop(0, '#333');
+    shoeGradient.addColorStop(0.7, colors.black);
+    shoeGradient.addColorStop(1, '#111');
+    
+    ctx.fillStyle = shoeGradient;
+    ctx.beginPath();
+    ctx.ellipse(135 + ox, 695 + oy, 25, 12, 0, 0, 2 * Math.PI);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(265 + ox, 695 + oy, 25, 12, 0, 0, 2 * Math.PI);
+    ctx.fill();
+    
+    // Enhanced shoe laces
+    ctx.strokeStyle = colors.white;
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round';
+    
+    // Left shoe laces
+    ctx.beginPath();
+    ctx.moveTo(125 + ox, 690 + oy);
+    ctx.lineTo(145 + ox, 690 + oy);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(130 + ox, 687 + oy);
+    ctx.lineTo(140 + ox, 687 + oy);
+    ctx.stroke();
+    
+    // Right shoe laces
+    ctx.beginPath();
+    ctx.moveTo(255 + ox, 690 + oy);
+    ctx.lineTo(275 + ox, 690 + oy);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(260 + ox, 687 + oy);
+    ctx.lineTo(270 + ox, 687 + oy);
+    ctx.stroke();
+}
+
+// Dancing animation function
+function getDanceOffset(time) {
+    const t = time * 0.003; // Slow down the dance
+    return {
+        x: Math.sin(t) * 3,
+        y: Math.sin(t * 2) * 2,
+        bodyBounce: Math.sin(t * 3) * 1,
+        armSwing: Math.sin(t * 1.5) * 10
+    };
+}
+
+// Enhanced animation function
+function animate() {
+    const elapsed = Date.now() - startTime;
+    const totalDuration = 25000; // Extended to 25 seconds
+    
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Phase 1: Rough Sketch (0-8 seconds)
+    if (elapsed < 8000) {
+        pencil.style.opacity = '1';
+        const progress = elapsed / 8000;
+        
+        if (progress < 0.35) {
+            const bodyProgress = Math.min(progress * 2.8, 1);
+            drawPath(spongebobData.body, bodyProgress, '#666', 1.5);
+        }
+        if (progress >= 0.2 && progress < 0.55) {
+            const eyeProgress = Math.min((progress - 0.2) * 2.8, 1);
+            drawPath(spongebobData.leftEye, eyeProgress, '#666', 1.5);
+            if (eyeProgress > 0.5) {
+                drawPath(spongebobData.rightEye, (eyeProgress - 0.5) * 2, '#666', 1.5);
+            }
+        }
+        if (progress >= 0.4 && progress < 0.7) {
+            const faceProgress = Math.min((progress - 0.4) * 3.3, 1);
+            drawPath(spongebobData.nose, faceProgress, '#666', 1.5);
+            if (faceProgress > 0.3) {
+                drawPath(spongebobData.mouth, (faceProgress - 0.3) * 1.4, '#666', 1.5);
+            }
+        }
+        if (progress >= 0.6) {
+            const limbProgress = Math.min((progress - 0.6) * 2.5, 1);
+            drawPath(spongebobData.leftArm, limbProgress, '#666', 1.5);
+            drawPath(spongebobData.rightArm, limbProgress, '#666', 1.5);
+            if (limbProgress > 0.4) {
+                drawPath(spongebobData.leftLeg, (limbProgress - 0.4) * 1.7, '#666', 1.5);
+                drawPath(spongebobData.rightLeg, (limbProgress - 0.4) * 1.7, '#666', 1.5);
+            }
+        }
+        if (progress >= 0.8) {
+            const pantsProgress = Math.min((progress - 0.8) * 5, 1);
+            drawPath(spongebobData.pants, pantsProgress, '#666', 1.5);
+        }
+    }
+    // Phase 2: Clean Inking (8-15 seconds)
+    else if (elapsed < 15000) {
+        pencil.style.opacity = '1';
+        const progress = (elapsed - 8000) / 7000;
+        
+        // Redraw everything with clean black lines
+        drawPath(spongebobData.body, 1, colors.black, 3);
+        drawPath(spongebobData.leftEye, 1, colors.black, 2.5);
+        drawPath(spongebobData.rightEye, 1, colors.black, 2.5);
+        drawPath(spongebobData.nose, 1, colors.black, 2);
+        drawPath(spongebobData.mouth, 1, colors.black, 3);
+        drawPath(spongebobData.leftArm, 1, colors.black, 2.5);
+        drawPath(spongebobData.rightArm, 1, colors.black, 2.5);
+        drawPath(spongebobData.leftLeg, 1, colors.black, 2.5);
+        drawPath(spongebobData.rightLeg, 1, colors.black, 2.5);
+        drawPath(spongebobData.pants, 1, colors.black, 2.5);
+        
+        // Animate pencil cleaning up lines
+        const animProgress = progress * 9;
+        const currentSection = Math.floor(animProgress);
+        const sections = [
+            spongebobData.body, spongebobData.leftEye, spongebobData.rightEye,
+            spongebobData.nose, spongebobData.mouth, spongebobData.leftArm,
+            spongebobData.rightArm, spongebobData.leftLeg, spongebobData.pants
+        ];
+        
+        if (currentSection < sections.length) {
+            const sectionProgress = animProgress - currentSection;
+            const section = sections[currentSection];
+            if (section && section.length > 0) {
+                const point = section[Math.floor(sectionProgress * (section.length - 1))];
+                if (point) {
+                    pencil.style.left = (point.x - 60) + 'px';
+                    pencil.style.top = (point.y - 6) + 'px';
+                }
+            }
+        }
+    }
+    // Phase 3: Coloring (15-22 seconds)
+    else if (elapsed < 22000) {
+        pencil.style.opacity = '0';
+        const colorProgress = (elapsed - 15000) / 7000;
+        
+        // Gradual coloring effect
+        if (colorProgress > 0.2) {
+            fillArea(spongebobData.body, colors.yellow);
+        }
+        
+        if (colorProgress > 0.5) {
+            drawSpongeBobDetails();
+        }
+        
+        // Final clean outlines
+        drawPath(spongebobData.body, 1, colors.black, 3);
+        drawPath(spongebobData.leftArm, 1, colors.black, 2.5);
+        drawPath(spongebobData.rightArm, 1, colors.black, 2.5);
+        drawPath(spongebobData.leftLeg, 1, colors.black, 2.5);
+        drawPath(spongebobData.rightLeg, 1, colors.black, 2.5);
+    }
+    // Phase 4: Dancing Animation (22+ seconds)
+    else {
+        if (!isDancing) {
+            isDancing = true;
+            danceStartTime = Date.now();
+        }
+        
+        pencil.style.opacity = '0';
+        const danceTime = Date.now() - danceStartTime;
+        const danceOffset = getDanceOffset(danceTime);
+        
+        // Apply dance transformations
+        const mainOffset = {
+            x: danceOffset.x,
+            y: danceOffset.y + danceOffset.bodyBounce
         };
         
-        const colors = {
-            yellow: '#FFFF00',
-            brown: '#8B4513',
-            white: '#FFFFFF',
-            black: '#000000',
-            red: '#DC143C',
-            blue: '#4169E1',
-            darkBlue: '#000080',
-            pink: '#FFB6C1'
+        // Draw dancing SpongeBob
+        fillArea(spongebobData.body, colors.yellow, mainOffset);
+        drawSpongeBobDetails(mainOffset);
+        
+        // Draw outlines with dance offset
+        drawPath(spongebobData.body, 1, colors.black, 3, mainOffset);
+        
+        // Animated arms with extra swing
+        const leftArmOffset = {
+            x: mainOffset.x + danceOffset.armSwing,
+            y: mainOffset.y
+        };
+        const rightArmOffset = {
+            x: mainOffset.x - danceOffset.armSwing,
+            y: mainOffset.y
         };
         
-        function createDrawingDust(x, y) {
-            const dust = document.createElement('div');
-            dust.className = 'drawing-dust';
-            dust.style.left = (x - 1) + 'px';
-            dust.style.top = (y - 1) + 'px';
-            document.querySelector('.container').appendChild(dust);
-            
-            setTimeout(() => dust.remove(), 800);
+        drawPath(spongebobData.leftArm, 1, colors.black, 2.5, leftArmOffset);
+        drawPath(spongebobData.rightArm, 1, colors.black, 2.5, rightArmOffset);
+        drawPath(spongebobData.leftLeg, 1, colors.black, 2.5, mainOffset);
+        drawPath(spongebobData.rightLeg, 1, colors.black, 2.5, mainOffset);
+        
+        // Add sparkle effects during dance
+        if (Math.random() < 0.1) {
+            const sparkleX = 200 + Math.random() * 100 - 50;
+            const sparkleY = 300 + Math.random() * 200 - 100;
+            createDrawingDust(sparkleX, sparkleY);
         }
         
-        function drawPath(points, progress, strokeStyle = '#333', lineWidth = 2) {
-            if (points.length < 2 || progress <= 0) return;
-            
-            ctx.strokeStyle = strokeStyle;
-            ctx.lineWidth = lineWidth;
-            ctx.lineCap = 'round';
-            ctx.lineJoin = 'round';
-            
-            const totalLength = points.length - 1;
-            const currentProgress = Math.min(progress * totalLength, totalLength);
-            const wholeSegments = Math.floor(currentProgress);
-            const partialSegment = currentProgress - wholeSegments;
-            
-            ctx.beginPath();
-            ctx.moveTo(points[0].x, points[0].y);
-            
-            // Draw complete segments
-            for (let i = 1; i <= wholeSegments; i++) {
-                ctx.lineTo(points[i].x, points[i].y);
-            }
-            
-            // Draw partial segment
-            if (wholeSegments < totalLength && partialSegment > 0) {
-                const start = points[wholeSegments];
-                const end = points[wholeSegments + 1];
-                const currentX = start.x + (end.x - start.x) * partialSegment;
-                const currentY = start.y + (end.y - start.y) * partialSegment;
-                
-                ctx.lineTo(currentX, currentY);
-                
-                // Update pencil position and rotation
-                const angle = Math.atan2(end.y - start.y, end.x - start.x);
-                pencil.style.left = (currentX - 60) + 'px';
-                pencil.style.top = (currentY - 6) + 'px';
-                pencil.style.transform = `rotate(${angle}rad)`;
-                
-                // Add drawing dust effect
-                if (Math.random() < 0.3) {
-                    createDrawingDust(currentX, currentY);
-                }
-            }
-            
-            ctx.stroke();
+        // Reset after 8 seconds of dancing
+        if (danceTime > 8000) {
+            startTime = Date.now();
+            isDancing = false;
         }
-        
-        function fillArea(points, color) {
-            if (points.length < 3) return;
-            
-            ctx.fillStyle = color;
-            ctx.beginPath();
-            ctx.moveTo(points[0].x, points[0].y);
-            
-            for (let i = 1; i < points.length; i++) {
-                ctx.lineTo(points[i].x, points[i].y);
-            }
-            
-            ctx.closePath();
-            ctx.fill();
-        }
-        
-        function drawSpongeBobDetails() {
-            // Eyes - white background with black outline
-            ctx.fillStyle = colors.white;
-            ctx.beginPath();
-            ctx.arc(162, 260, 22, 0, 2 * Math.PI);
-            ctx.fill();
-            ctx.beginPath();
-            ctx.arc(242, 257, 22, 0, 2 * Math.PI);
-            ctx.fill();
-            
-            // Eye outlines
-            ctx.strokeStyle = colors.black;
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            ctx.arc(162, 260, 22, 0, 2 * Math.PI);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.arc(242, 257, 22, 0, 2 * Math.PI);
-            ctx.stroke();
-            
-            // Pupils
-            ctx.fillStyle = colors.black;
-            ctx.beginPath();
-            ctx.arc(170, 268, 6, 0, 2 * Math.PI);
-            ctx.fill();
-            ctx.beginPath();
-            ctx.arc(235, 265, 6, 0, 2 * Math.PI);
-            ctx.fill();
-            
-            // Eye shine
-            ctx.fillStyle = colors.white;
-            ctx.beginPath();
-            ctx.arc(173, 265, 2, 0, 2 * Math.PI);
-            ctx.fill();
-            ctx.beginPath();
-            ctx.arc(237, 262, 2, 0, 2 * Math.PI);
-            ctx.fill();
-            
-            // Nose
-            ctx.fillStyle = colors.yellow;
-            ctx.beginPath();
-            ctx.ellipse(200, 308, 10, 18, 0, 0, 2 * Math.PI);
-            ctx.fill();
-            ctx.strokeStyle = colors.black;
-            ctx.lineWidth = 2;
-            ctx.stroke();
-            
-            // Nostrils
-            ctx.fillStyle = colors.black;
-            ctx.beginPath();
-            ctx.arc(198, 305, 1.5, 0, 2 * Math.PI);
-            ctx.fill();
-            ctx.beginPath();
-            ctx.arc(202, 305, 1.5, 0, 2 * Math.PI);
-            ctx.fill();
-            
-            // Mouth
-            ctx.strokeStyle = colors.black;
-            ctx.lineWidth = 4;
-            ctx.beginPath();
-            ctx.arc(200, 365, 30, 0.1, Math.PI - 0.1);
-            ctx.stroke();
-            
-            // Teeth
-            ctx.fillStyle = colors.white;
-            ctx.strokeStyle = colors.black;
-            ctx.lineWidth = 1;
-            for (let i = 0; i < 2; i++) {
-                const x = 190 + i * 20;
-                ctx.fillRect(x, 380, 10, 15);
-                ctx.strokeRect(x, 380, 10, 15);
-            }
-            
-            // Pants
-            ctx.fillStyle = colors.brown;
-            fillArea(spongebobData.pants, colors.brown);
-            
-            // Belt
-            ctx.fillStyle = colors.black;
-            ctx.fillRect(140, 480, 120, 8);
-            
-            // Belt buckle
-            ctx.fillStyle = colors.yellow;
-            ctx.fillRect(190, 475, 20, 18);
-            ctx.strokeStyle = colors.black;
-            ctx.lineWidth = 2;
-            ctx.strokeRect(190, 475, 20, 18);
-            
-            // SpongeBob holes (pores)
-            ctx.fillStyle = colors.brown;
-            const holes = [
-                {x: 155, y: 220, r: 4}, {x: 185, y: 210, r: 3}, {x: 225, y: 215, r: 4},
-                {x: 245, y: 235, r: 3}, {x: 170, y: 340, r: 5}, {x: 230, y: 335, r: 4},
-                {x: 160, y: 390, r: 3}, {x: 200, y: 420, r: 4}, {x: 240, y: 415, r: 3},
-                {x: 175, y: 450, r: 4}, {x: 220, y: 445, r: 3}, {x: 155, y: 510, r: 3},
-                {x: 245, y: 505, r: 4}
-            ];
-            
-            holes.forEach(hole => {
-                ctx.beginPath();
-                ctx.arc(hole.x, hole.y, hole.r, 0, 2 * Math.PI);
-                ctx.fill();
-            });
-            
-            // Shoes
-            ctx.fillStyle = colors.black;
-            ctx.beginPath();
-            ctx.ellipse(135, 695, 25, 12, 0, 0, 2 * Math.PI);
-            ctx.fill();
-            ctx.beginPath();
-            ctx.ellipse(265, 695, 25, 12, 0, 0, 2 * Math.PI);
-            ctx.fill();
-            
-            // Shoe laces
-            ctx.strokeStyle = colors.white;
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(125, 690);
-            ctx.lineTo(145, 690);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(255, 690);
-            ctx.lineTo(275, 690);
-            ctx.stroke();
-        }
-        
-        function animate() {
-            const elapsed = Date.now() - startTime;
-            const totalDuration = 20000; // 20 seconds
-            
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            // Phase 1: Rough Sketch (0-7 seconds)
-            if (elapsed < 7000) {
-                pencil.style.opacity = '1';
-                const progress = elapsed / 7000;
-                
-                if (progress < 0.4) {
-                    const bodyProgress = Math.min(progress * 2.5, 1);
-                    drawPath(spongebobData.body, bodyProgress, '#666', 1.5);
-                }
-                if (progress >= 0.2 && progress < 0.6) {
-                    const eyeProgress = Math.min((progress - 0.2) * 2.5, 1);
-                    drawPath(spongebobData.leftEye, eyeProgress, '#666', 1.5);
-                    if (eyeProgress > 0.5) {
-                        drawPath(spongebobData.rightEye, (eyeProgress - 0.5) * 2, '#666', 1.5);
-                    }
-                }
-                if (progress >= 0.4 && progress < 0.7) {
-                    const faceProgress = Math.min((progress - 0.4) * 3, 1);
-                    drawPath(spongebobData.nose, faceProgress, '#666', 1.5);
-                    if (faceProgress > 0.3) {
-                        drawPath(spongebobData.mouth, (faceProgress - 0.3) * 1.4, '#666', 1.5);
-                    }
-                }
-                if (progress >= 0.6) {
-                    const limbProgress = Math.min((progress - 0.6) * 2.5, 1);
-                    drawPath(spongebobData.leftArm, limbProgress, '#666', 1.5);
-                    drawPath(spongebobData.rightArm, limbProgress, '#666', 1.5);
-                    if (limbProgress > 0.4) {
-                        drawPath(spongebobData.leftLeg, (limbProgress - 0.4) * 1.7, '#666', 1.5);
-                        drawPath(spongebobData.rightLeg, (limbProgress - 0.4) * 1.7, '#666', 1.5);
-                    }
-                }
-            }
-            // Phase 2: Clean Inking (7-13 seconds)
-            else if (elapsed < 13000) {
-                pencil.style.opacity = '1';
-                const progress = (elapsed - 7000) / 6000;
-                
-                // Redraw everything with clean black lines
-                drawPath(spongebobData.body, 1, colors.black, 3);
-                drawPath(spongebobData.leftEye, 1, colors.black, 2.5);
-                drawPath(spongebobData.rightEye, 1, colors.black, 2.5);
-                drawPath(spongebobData.nose, 1, colors.black, 2);
-                drawPath(spongebobData.mouth, 1, colors.black, 3);
-                drawPath(spongebobData.leftArm, 1, colors.black, 2.5);
-                drawPath(spongebobData.rightArm, 1, colors.black, 2.5);
-                drawPath(spongebobData.leftLeg, 1, colors.black, 2.5);
-                drawPath(spongebobData.rightLeg, 1, colors.black, 2.5);
-                drawPath(spongebobData.pants, 1, colors.black, 2.5);
-                
-                // Animate pencil cleaning up lines
-                const animProgress = progress * 8;
-                const currentSection = Math.floor(animProgress);
-                const sections = [
-                    spongebobData.body, spongebobData.leftEye, spongebobData.rightEye,
-                    spongebobData.nose, spongebobData.mouth, spongebobData.leftArm,
-                    spongebobData.rightArm, spongebobData.pants
-                ];
-                
-                if (currentSection < sections.length) {
-                    const sectionProgress = animProgress - currentSection;
-                    const section = sections[currentSection];
-                    if (section && section.length > 0) {
-                        const point = section[Math.floor(sectionProgress * (section.length - 1))];
-                        if (point) {
-                            pencil.style.left = (point.x - 60) + 'px';
-                            pencil.style.top = (point.y - 6) + 'px';
-                        }
-                    }
-                }
-            }
-            // Phase 3: Coloring (13-20 seconds)
-            else if (elapsed < 20000) {
-                pencil.style.opacity = '0';
-                
-                // Fill body with yellow
-                fillArea(spongebobData.body, colors.yellow);
-                
-                // Add all details with smooth transition
-                drawSpongeBobDetails();
-                
-                // Final clean outlines
-                drawPath(spongebobData.body, 1, colors.black, 3);
-                drawPath(spongebobData.leftArm, 1, colors.black, 2.5);
-                drawPath(spongebobData.rightArm, 1, colors.black, 2.5);
-                drawPath(spongebobData.leftLeg, 1, colors.black, 2.5);
-                drawPath(spongebobData.rightLeg, 1, colors.black, 2.5);
-            }
-            // Loop
-            else {
-                startTime = Date.now();
-            }
-            
-            requestAnimationFrame(animate);
-        }
-        
-        // Start animation
-        animate();
+    }
+    
+    requestAnimationFrame(animate);
+}
+
+// Start animation
+animate();
     </script>
 </body>
 </html>
