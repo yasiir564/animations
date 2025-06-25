@@ -174,7 +174,7 @@
         
         canvas {
             display: block;
-            margin: 0 auto;
+            margin: 30px auto;
             background: transparent;
             border-radius: 4px;
         }
@@ -289,736 +289,704 @@
         <div class="book-lines"></div>
         <div class="margin-line"></div>
         <div class="stains"></div>
-        <div class="binding"></div>
-        <div class="page-fold"></div>
-        <canvas id="drawingCanvas" width="360" height="640"></canvas>
+        <canvas id="drawingCanvas" width="320" height="580"></canvas>
         <div class="pencil" id="pencil">
             <div class="eraser"></div>
         </div>
+        <div class="page-fold"></div>
     </div>
 
     <script>
         class PineappleHouseAnimator {
-    constructor(canvasId, pencilId) {
-        this.canvas = document.getElementById(canvasId);
-        this.ctx = this.canvas.getContext('2d');
-        this.pencil = document.getElementById(pencilId);
-        
-        // Animation state
-        this.animationId = null;
-        this.currentPhase = 0;
-        this.progress = 0;
-        this.isAnimating = false;
-        this.startTime = null;
-        
-        // Configuration for vertical format
-        this.config = {
-            phases: [
-                { name: 'sketch', duration: 4000, color: '#888', lineWidth: 1.5, opacity: 0.6, style: 'rough' },
-                { name: 'refine', duration: 3500, color: '#555', lineWidth: 2, opacity: 0.8, style: 'smooth' },
-                { name: 'ink', duration: 2500, color: '#222', lineWidth: 2.5, opacity: 1, style: 'precise' },
-                { name: 'color', duration: 5000, color: 'multicolor', lineWidth: 0, opacity: 1, style: 'fill' },
-                { name: 'highlight', duration: 1500, color: 'effects', lineWidth: 0, opacity: 1, style: 'effects' },
-                { name: 'pause', duration: 2000, color: 'transparent', lineWidth: 0, opacity: 1, style: 'none' }
-            ],
-            easing: {
-                easeInOutCubic: t => t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1,
-                easeOutBounce: t => {
-                    if (t < 1 / 2.75) return 7.5625 * t * t;
-                    if (t < 2 / 2.75) return 7.5625 * (t -= 1.5 / 2.75) * t + 0.75;
-                    if (t < 2.5 / 2.75) return 7.5625 * (t -= 2.25 / 2.75) * t + 0.9375;
-                    return 7.5625 * (t -= 2.625 / 2.75) * t + 0.984375;
-                }
-            }
-        };
-        
-        // Pineapple house structure optimized for vertical format
-        this.structure = this.initializeStructure();
-        this.colors = this.initializeColors();
-        
-        this.setupCanvas();
-        this.bindEvents();
-    }
-    
-    initializeStructure() {
-        // Adjusted for vertical 9:16 format - centered and larger
-        const centerX = 180;
-        const baseY = 480;
-        const pineappleHeight = 280;
-        const pineappleWidth = 160;
-        
-        return {
-            // Main pineapple body (oval shape)
-            pineappleBody: {
-                center: [centerX, baseY - pineappleHeight/2],
-                width: pineappleWidth,
-                height: pineappleHeight,
-                priority: 1,
-                type: 'ellipse'
-            },
-            
-            // Pineapple cross-hatch pattern
-            crossHatch: {
-                lines: this.generateCrossHatch(centerX, baseY - pineappleHeight/2, pineappleWidth, pineappleHeight),
-                priority: 2,
-                type: 'lines'
-            },
-            
-            // Leafy top
-            leaves: {
-                points: this.generateLeaves(centerX, baseY - pineappleHeight),
-                priority: 3,
-                type: 'curves',
-                closed: false
-            },
-            
-            // Door
-            door: {
-                points: [
-                    [centerX - 25, baseY],
-                    [centerX - 25, baseY - 60],
-                    [centerX + 25, baseY - 60],
-                    [centerX + 25, baseY]
-                ],
-                priority: 4,
-                type: 'polygon',
-                closed: false
-            },
-            
-            // Door arch top
-            doorArch: {
-                center: [centerX, baseY - 60],
-                radius: 25,
-                startAngle: 0,
-                endAngle: Math.PI,
-                priority: 5,
-                type: 'arc'
-            },
-            
-            // Left circular window
-            leftWindow: {
-                center: [centerX - 60, baseY - 120],
-                radius: 20,
-                priority: 6,
-                type: 'circle'
-            },
-            
-            // Right circular window
-            rightWindow: {
-                center: [centerX + 60, baseY - 120],
-                radius: 20,
-                priority: 7,
-                type: 'circle'
-            },
-            
-            // Top small window
-            topWindow: {
-                center: [centerX, baseY - 200],
-                radius: 15,
-                priority: 8,
-                type: 'circle'
-            },
-            
-            // Door knob
-            doorKnob: {
-                center: [centerX + 18, baseY - 30],
-                radius: 3,
-                priority: 9,
-                type: 'circle'
-            }
-        };
-    }
-    
-    generateCrossHatch(centerX, centerY, width, height) {
-        const lines = [];
-        const spacing = 25;
-        const halfWidth = width / 2;
-        const halfHeight = height / 2;
-        
-        // Diagonal lines creating diamond pattern
-        for (let i = -halfWidth; i <= halfWidth; i += spacing) {
-            // Left-leaning diagonals
-            lines.push([
-                [centerX + i - halfHeight, centerY - halfHeight],
-                [centerX + i + halfHeight, centerY + halfHeight]
-            ]);
-            
-            // Right-leaning diagonals
-            lines.push([
-                [centerX - i - halfHeight, centerY - halfHeight],
-                [centerX - i + halfHeight, centerY + halfHeight]
-            ]);
-        }
-        
-        return lines;
-    }
-    
-    generateLeaves(centerX, topY) {
-        const leaves = [];
-        const leafCount = 12;
-        const baseRadius = 80;
-        const leafHeight = 100;
-        
-        for (let i = 0; i < leafCount; i++) {
-            const angle = (i / leafCount) * Math.PI * 2;
-            const variance = Math.random() * 0.3 + 0.8;
-            const x = centerX + Math.cos(angle) * baseRadius * variance;
-            const y = topY - Math.abs(Math.sin(angle)) * leafHeight * variance;
-            
-            // Create curved leaf shape
-            const leafTip = [x, y - 40];
-            const leafBase = [centerX + Math.cos(angle) * 30, topY];
-            
-            leaves.push({
-                start: leafBase,
-                control1: [x * 0.7 + centerX * 0.3, y * 0.3 + topY * 0.7],
-                control2: [x * 0.9 + centerX * 0.1, y * 0.8 + topY * 0.2],
-                end: leafTip
-            });
-        }
-        
-        return leaves;
-    }
-    
-    initializeColors() {
-        return {
-            pineapple: {
-                body: '#FF8C00',
-                bodyDark: '#FF6347',
-                bodyLight: '#FFA500',
-                crossHatch: '#8B4513'
-            },
-            leaves: {
-                primary: '#228B22',
-                secondary: '#32CD32',
-                highlight: '#90EE90'
-            },
-            door: {
-                primary: '#8B4513',
-                secondary: '#A0522D',
-                highlight: '#CD853F',
-                knob: '#FFD700'
-            },
-            windows: {
-                glass: '#87CEEB',
-                frame: '#4169E1',
-                reflection: '#E6F3FF'
-            },
-            background: {
-                top: '#00CED1',
-                middle: '#20B2AA',
-                bottom: '#F5DEB3',
-                sand: '#F4A460'
-            },
-            effects: {
-                bubbles: 'rgba(255, 255, 255, 0.6)',
-                sparkle: '#FFD700',
-                glow: 'rgba(255, 255, 255, 0.8)'
-            }
-        };
-    }
-    
-    setupCanvas() {
-        const dpr = window.devicePixelRatio || 1;
-        const rect = this.canvas.getBoundingClientRect();
-        
-        this.canvas.width = rect.width * dpr;
-        this.canvas.height = rect.height * dpr;
-        this.ctx.scale(dpr, dpr);
-        
-        this.canvas.style.width = rect.width + 'px';
-        this.canvas.style.height = rect.height + 'px';
-        
-        this.ctx.imageSmoothingEnabled = true;
-        this.ctx.imageSmoothingQuality = 'high';
-    }
-    
-    bindEvents() {
-        window.addEventListener('resize', this.debounce(() => this.setupCanvas(), 250));
-        document.addEventListener('visibilitychange', () => {
-            if (document.hidden) {
-                this.pause();
-            } else {
-                this.resume();
-            }
-        });
-    }
-    
-    debounce(func, wait) {
-        let timeout;
-        return function executedFunction(...args) {
-            const later = () => {
-                clearTimeout(timeout);
-                func(...args);
-            };
-            clearTimeout(timeout);
-            timeout = setTimeout(later, wait);
-        };
-    }
-    
-    clearCanvas() {
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    }
-    
-    drawBackground(animated = false) {
-        // Underwater gradient background
-        const gradient = this.ctx.createLinearGradient(0, 0, 0, this.canvas.height);
-        gradient.addColorStop(0, this.colors.background.top);
-        gradient.addColorStop(0.4, this.colors.background.middle);
-        gradient.addColorStop(0.7, this.colors.background.bottom);
-        gradient.addColorStop(1, this.colors.background.sand);
-        
-        this.ctx.fillStyle = gradient;
-        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-        
-        if (animated) {
-            this.drawBubbles();
-            this.drawSeaweed();
-        }
-    }
-    
-    drawBubbles() {
-        const bubbleCount = 15;
-        const time = Date.now() * 0.002;
-        
-        for (let i = 0; i < bubbleCount; i++) {
-            const x = (i * 30 + Math.sin(time + i) * 20) % this.canvas.width;
-            const y = Math.sin(time * 0.8 + i * 0.7) * this.canvas.height * 0.6 + this.canvas.height * 0.2;
-            const radius = Math.sin(time + i) * 3 + 4;
-            const opacity = (Math.sin(time * 0.4 + i) + 1) * 0.3 + 0.2;
-            
-            this.ctx.save();
-            this.ctx.globalAlpha = opacity;
-            this.ctx.fillStyle = this.colors.effects.bubbles;
-            this.ctx.beginPath();
-            this.ctx.arc(x, y, radius, 0, Math.PI * 2);
-            this.ctx.fill();
-            
-            // Bubble highlight
-            this.ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-            this.ctx.beginPath();
-            this.ctx.arc(x - radius * 0.3, y - radius * 0.3, radius * 0.3, 0, Math.PI * 2);
-            this.ctx.fill();
-            this.ctx.restore();
-        }
-    }
-    
-    drawSeaweed() {
-        const time = Date.now() * 0.001;
-        this.ctx.strokeStyle = this.colors.leaves.primary;
-        this.ctx.lineWidth = 3;
-        this.ctx.lineCap = 'round';
-        
-        // Left seaweed
-        this.ctx.beginPath();
-        this.ctx.moveTo(30, this.canvas.height);
-        for (let i = 0; i < 10; i++) {
-            const x = 30 + Math.sin(time + i * 0.5) * 15;
-            const y = this.canvas.height - i * 20;
-            this.ctx.lineTo(x, y);
-        }
-        this.ctx.stroke();
-        
-        // Right seaweed
-        this.ctx.beginPath();
-        this.ctx.moveTo(330, this.canvas.height);
-        for (let i = 0; i < 8; i++) {
-            const x = 330 + Math.sin(time * 1.2 + i * 0.6) * 12;
-            const y = this.canvas.height - i * 25;
-            this.ctx.lineTo(x, y);
-        }
-        this.ctx.stroke();
-    }
-    
-    drawStructurePhase(phase, progress) {
-        const phaseConfig = this.config.phases[phase];
-        const easedProgress = this.config.easing.easeInOutCubic(progress);
-        
-        // Set drawing style
-        this.ctx.lineWidth = phaseConfig.lineWidth;
-        this.ctx.globalAlpha = phaseConfig.opacity;
-        this.ctx.strokeStyle = phaseConfig.color;
-        this.ctx.lineCap = 'round';
-        this.ctx.lineJoin = 'round';
-        
-        // Calculate which parts to draw
-        const sortedParts = Object.entries(this.structure)
-            .sort(([,a], [,b]) => a.priority - b.priority);
-        
-        const totalParts = sortedParts.length;
-        const partsToShow = Math.floor(totalParts * easedProgress);
-        const partialProgress = (totalParts * easedProgress) % 1;
-        
-        for (let i = 0; i < sortedParts.length; i++) {
-            const [name, part] = sortedParts[i];
-            
-            if (i < partsToShow) {
-                this.drawPart(part, phaseConfig.style, 1);
-            } else if (i === partsToShow && partialProgress > 0) {
-                this.drawPart(part, phaseConfig.style, partialProgress);
-            }
-        }
-        
-        this.ctx.globalAlpha = 1;
-    }
-    
-    drawPart(part, style, progress) {
-        this.ctx.save();
-        
-        switch (part.type) {
-            case 'ellipse':
-                this.drawEllipse(part, style, progress);
-                break;
-            case 'lines':
-                this.drawLines(part, style, progress);
-                break;
-            case 'curves':
-                this.drawCurves(part, style, progress);
-                break;
-            case 'polygon':
-                this.drawPolygon(part, style, progress);
-                break;
-            case 'arc':
-                this.drawArc(part, style, progress);
-                break;
-            case 'circle':
-                this.drawCircle(part, style, progress);
-                break;
-        }
-        
-        this.ctx.restore();
-    }
-    
-    drawEllipse(part, style, progress) {
-        const [centerX, centerY] = part.center;
-        const radiusX = (part.width / 2) * progress;
-        const radiusY = (part.height / 2) * progress;
-        
-        this.ctx.beginPath();
-        this.ctx.ellipse(centerX, centerY, radiusX, radiusY, 0, 0, Math.PI * 2 * progress);
-        
-        if (style === 'rough') {
-            this.ctx.save();
-            this.ctx.setLineDash([5, 3]);
-            this.ctx.stroke();
-            this.ctx.restore();
-        } else if (style === 'fill') {
-            this.ctx.fillStyle = this.colors.pineapple.body;
-            this.ctx.fill();
-            this.ctx.strokeStyle = this.colors.pineapple.bodyDark;
-            this.ctx.stroke();
-        } else {
-            this.ctx.stroke();
-        }
-    }
-    
-    drawLines(part, style, progress) {
-        const totalLines = part.lines.length;
-        const linesToDraw = Math.floor(totalLines * progress);
-        const partialProgress = (totalLines * progress) % 1;
-        
-        this.ctx.strokeStyle = style === 'fill' ? this.colors.pineapple.crossHatch : this.ctx.strokeStyle;
-        
-        for (let i = 0; i < linesToDraw; i++) {
-            this.drawLine(part.lines[i], style, 1);
-        }
-        
-        if (linesToDraw < totalLines && partialProgress > 0) {
-            this.drawLine(part.lines[linesToDraw], style, partialProgress);
-        }
-    }
-    
-    drawLine(line, style, progress) {
-        const [start, end] = line;
-        const [startX, startY] = start;
-        const [endX, endY] = end;
-        
-        const currentEndX = startX + (endX - startX) * progress;
-        const currentEndY = startY + (endY - startY) * progress;
-        
-        this.ctx.beginPath();
-        this.ctx.moveTo(startX, startY);
-        this.ctx.lineTo(currentEndX, currentEndY);
-        
-        if (style === 'rough') {
-            this.ctx.save();
-            this.ctx.setLineDash([3, 2]);
-            this.ctx.stroke();
-            this.ctx.restore();
-        } else {
-            this.ctx.stroke();
-        }
-    }
-    
-    drawCurves(part, style, progress) {
-        const totalCurves = part.points.length;
-        const curvesToDraw = Math.floor(totalCurves * progress);
-        const partialProgress = (totalCurves * progress) % 1;
-        
-        this.ctx.strokeStyle = style === 'fill' ? this.colors.leaves.primary : this.ctx.strokeStyle;
-        this.ctx.fillStyle = this.colors.leaves.secondary;
-        
-        for (let i = 0; i < curvesToDraw; i++) {
-            this.drawCurve(part.points[i], style, 1);
-        }
-        
-        if (curvesToDraw < totalCurves && partialProgress > 0) {
-            this.drawCurve(part.points[curvesToDraw], style, partialProgress);
-        }
-    }
-    
-    drawCurve(curve, style, progress) {
-        const { start, control1, control2, end } = curve;
-        
-        this.ctx.beginPath();
-        this.ctx.moveTo(start[0], start[1]);
-        
-        if (progress < 1) {
-            // Calculate intermediate point for partial drawing
-            const t = progress;
-            const x = Math.pow(1-t, 3) * start[0] + 3 * Math.pow(1-t, 2) * t * control1[0] + 
-                      3 * (1-t) * Math.pow(t, 2) * control2[0] + Math.pow(t, 3) * end[0];
-            const y = Math.pow(1-t, 3) * start[1] + 3 * Math.pow(1-t, 2) * t * control1[1] + 
-                      3 * (1-t) * Math.pow(t, 2) * control2[1] + Math.pow(t, 3) * end[1];
-            this.ctx.bezierCurveTo(control1[0], control1[1], control2[0], control2[1], x, y);
-        } else {
-            this.ctx.bezierCurveTo(control1[0], control1[1], control2[0], control2[1], end[0], end[1]);
-        }
-        
-        if (style === 'fill') {
-            this.ctx.fill();
-        }
-        this.ctx.stroke();
-    }
-    
-    drawPolygon(part, style, progress) {
-        const totalPoints = part.points.length;
-        const pointsToDraw = Math.ceil(totalPoints * progress);
-        
-        if (pointsToDraw < 2) return;
-        
-        this.ctx.beginPath();
-        this.ctx.moveTo(part.points[0][0], part.points[0][1]);
-        
-        for (let i = 1; i < pointsToDraw; i++) {
-            this.ctx.lineTo(part.points[i][0], part.points[i][1]);
-        }
-        
-        if (style === 'fill') {
-            this.ctx.fillStyle = this.colors.door.primary;
-            this.ctx.fill();
-        }
-        
-        this.ctx.stroke();
-    }
-    
-    drawArc(part, style, progress) {
-        const [centerX, centerY] = part.center;
-        const endAngle = part.startAngle + (part.endAngle - part.startAngle) * progress;
-        
-        this.ctx.beginPath();
-        this.ctx.arc(centerX, centerY, part.radius, part.startAngle, endAngle);
-        
-        if (style === 'fill') {
-            this.ctx.fillStyle = this.colors.door.primary;
-            this.ctx.fill();
-        }
-        
-        this.ctx.stroke();
-    }
-    
-    drawCircle(part, style, progress) {
-        const [centerX, centerY] = part.center;
-        const radius = part.radius * progress;
-        
-        this.ctx.beginPath();
-        this.ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
-        
-        if (style === 'fill') {
-            if (part.radius === 3) { // Door knob
-                this.ctx.fillStyle = this.colors.door.knob;
-            } else { // Windows
-                this.ctx.fillStyle = this.colors.windows.glass;
-            }
-            this.ctx.fill();
-            this.ctx.strokeStyle = this.colors.windows.frame;
-        }
-        
-        this.ctx.stroke();
-        
-        // Add window reflections
-        if (style === 'fill' && part.radius > 3) {
-            this.ctx.save();
-            this.ctx.fillStyle = this.colors.windows.reflection;
-            this.ctx.beginPath();
-            this.ctx.arc(centerX - radius * 0.3, centerY - radius * 0.3, radius * 0.4, 0, Math.PI * 2);
-            this.ctx.fill();
-            this.ctx.restore();
-        }
-    }
-    
-    drawColorPhase(progress) {
-        this.drawBackground(true);
-        
-        // Draw all structure parts with colors
-        const sortedParts = Object.entries(this.structure)
-            .sort(([,a], [,b]) => a.priority - b.priority);
-        
-        for (const [name, part] of sortedParts) {
-            this.drawPart(part, 'fill', 1);
-        }
-        
-        // Add sparkle effects
-        if (progress > 0.5) {
-            this.drawSparkles(progress);
-        }
-    }
-    
-    drawSparkles(progress) {
-        const sparkleCount = 8;
-        const time = Date.now() * 0.003;
-        
-        for (let i = 0; i < sparkleCount; i++) {
-            const angle = (i / sparkleCount) * Math.PI * 2 + time;
-            const distance = 100 + Math.sin(time + i) * 30;
-            const x = 180 + Math.cos(angle) * distance;
-            const y = 340 + Math.sin(angle) * distance * 0.5;
-            const size = Math.sin(time * 2 + i) * 3 + 4;
-            
-            this.ctx.save();
-            this.ctx.fillStyle = this.colors.effects.sparkle;
-            this.ctx.globalAlpha = (Math.sin(time * 3 + i) + 1) * 0.3 + 0.2;
-            
-            // Draw star shape
-            this.ctx.beginPath();
-            for (let j = 0; j < 8; j++) {
-                const starAngle = (j / 8) * Math.PI * 2;
-                const radius = j % 2 === 0 ? size : size * 0.4;
-                const px = x + Math.cos(starAngle) * radius;
-                const py = y + Math.sin(starAngle) * radius;
+            constructor(canvasId, pencilId) {
+                this.canvas = document.getElementById(canvasId);
+                this.ctx = this.canvas.getContext('2d');
+                this.pencil = document.getElementById(pencilId);
                 
-                if (j === 0) {
-                    this.ctx.moveTo(px, py);
+                this.animationId = null;
+                this.currentPhase = 0;
+                this.progress = 0;
+                this.isAnimating = false;
+                this.startTime = null;
+                
+                this.config = {
+                    phases: [
+                        { name: 'sketch', duration: 6000, color: '#888', lineWidth: 1.5, opacity: 0.6, style: 'rough' },
+                        { name: 'refine', duration: 4000, color: '#555', lineWidth: 2, opacity: 0.8, style: 'smooth' },
+                        { name: 'ink', duration: 3000, color: '#222', lineWidth: 2.5, opacity: 1, style: 'precise' },
+                        { name: 'color', duration: 7000, color: 'multicolor', lineWidth: 0, opacity: 1, style: 'fill' },
+                        { name: 'highlight', duration: 2000, color: 'effects', lineWidth: 0, opacity: 1, style: 'effects' },
+                        { name: 'pause', duration: 2000, color: 'transparent', lineWidth: 0, opacity: 1, style: 'none' }
+                    ],
+                    easing: {
+                        easeInOutCubic: t => t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1,
+                        easeOutBounce: t => {
+                            if (t < 1 / 2.75) return 7.5625 * t * t;
+                            if (t < 2 / 2.75) return 7.5625 * (t -= 1.5 / 2.75) * t + 0.75;
+                            if (t < 2.5 / 2.75) return 7.5625 * (t -= 2.25 / 2.75) * t + 0.9375;
+                            return 7.5625 * (t -= 2.625 / 2.75) * t + 0.984375;
+                        }
+                    }
+                };
+                
+                this.structure = this.initializeStructure();
+                this.colors = this.initializeColors();
+                
+                this.setupCanvas();
+                this.bindEvents();
+            }
+            
+            initializeStructure() {
+                return {
+                    // Pineapple body (main oval shape)
+                    pineappleBody: {
+                        points: [
+                            [160, 200], [140, 220], [120, 250], [110, 280], [105, 320], 
+                            [110, 360], [120, 400], [140, 430], [160, 440], [180, 430], 
+                            [200, 400], [210, 360], [215, 320], [210, 280], [200, 250], 
+                            [180, 220], [160, 200]
+                        ],
+                        closed: true,
+                        priority: 1,
+                        smooth: true
+                    },
+                    
+                    // Pineapple cross-hatch pattern (horizontal lines)
+                    crossHatch1: {
+                        points: [[125, 240], [195, 240]],
+                        closed: false,
+                        priority: 2
+                    },
+                    crossHatch2: {
+                        points: [[120, 270], [200, 270]],
+                        closed: false,
+                        priority: 3
+                    },
+                    crossHatch3: {
+                        points: [[115, 300], [205, 300]],
+                        closed: false,
+                        priority: 4
+                    },
+                    crossHatch4: {
+                        points: [[118, 330], [202, 330]],
+                        closed: false,
+                        priority: 5
+                    },
+                    crossHatch5: {
+                        points: [[122, 360], [198, 360]],
+                        closed: false,
+                        priority: 6
+                    },
+                    crossHatch6: {
+                        points: [[130, 390], [190, 390]],
+                        closed: false,
+                        priority: 7
+                    },
+                    crossHatch7: {
+                        points: [[140, 420], [180, 420]],
+                        closed: false,
+                        priority: 8
+                    },
+                    
+                    // Diagonal lines (left to right)
+                    diagonal1: {
+                        points: [[135, 220], [160, 260], [180, 300], [190, 340], [185, 380]],
+                        closed: false,
+                        priority: 9
+                    },
+                    diagonal2: {
+                        points: [[155, 210], [175, 250], [195, 290], [205, 330], [200, 370], [190, 410]],
+                        closed: false,
+                        priority: 10
+                    },
+                    diagonal3: {
+                        points: [[175, 220], [195, 260], [210, 300], [210, 340], [205, 380]],
+                        closed: false,
+                        priority: 11
+                    },
+                    
+                    // Diagonal lines (right to left)
+                    diagonal4: {
+                        points: [[185, 220], [160, 260], [140, 300], [130, 340], [135, 380]],
+                        closed: false,
+                        priority: 12
+                    },
+                    diagonal5: {
+                        points: [[165, 210], [145, 250], [125, 290], [115, 330], [120, 370], [130, 410]],
+                        closed: false,
+                        priority: 13
+                    },
+                    diagonal6: {
+                        points: [[145, 220], [125, 260], [110, 300], [110, 340], [115, 380]],
+                        closed: false,
+                        priority: 14
+                    },
+                    
+                    // Pineapple leaves (crown)
+                    leaf1: {
+                        points: [[160, 200], [158, 180], [155, 160], [150, 140], [145, 120], [140, 100]],
+                        closed: false,
+                        priority: 15,
+                        smooth: true
+                    },
+                    leaf2: {
+                        points: [[160, 200], [165, 175], [170, 150], [175, 125], [180, 100], [185, 75]],
+                        closed: false,
+                        priority: 16,
+                        smooth: true
+                    },
+                    leaf3: {
+                        points: [[160, 200], [155, 175], [150, 150], [145, 125], [140, 100], [135, 75]],
+                        closed: false,
+                        priority: 17,
+                        smooth: true
+                    },
+                    leaf4: {
+                        points: [[160, 200], [170, 175], [180, 150], [190, 125], [200, 100], [210, 75]],
+                        closed: false,
+                        priority: 18,
+                        smooth: true
+                    },
+                    leaf5: {
+                        points: [[160, 200], [150, 175], [140, 150], [130, 125], [120, 100], [110, 75]],
+                        closed: false,
+                        priority: 19,
+                        smooth: true
+                    },
+                    leaf6: {
+                        points: [[160, 200], [175, 175], [190, 150], [205, 125], [220, 100], [235, 75]],
+                        closed: false,
+                        priority: 20,
+                        smooth: true
+                    },
+                    leaf7: {
+                        points: [[160, 200], [145, 175], [130, 150], [115, 125], [100, 100], [85, 75]],
+                        closed: false,
+                        priority: 21,
+                        smooth: true
+                    },
+                    
+                    // Door
+                    door: {
+                        points: [[140, 440], [140, 380], [180, 380], [180, 440]],
+                        closed: false,
+                        priority: 22
+                    },
+                    
+                    // Door arch
+                    doorArch: {
+                        points: [[140, 380], [150, 370], [160, 365], [170, 370], [180, 380]],
+                        closed: false,
+                        priority: 23,
+                        smooth: true
+                    },
+                    
+                    // Windows
+                    leftWindow: {
+                        points: [[130, 320], [130, 290], [145, 290], [145, 320]],
+                        closed: true,
+                        priority: 24
+                    },
+                    rightWindow: {
+                        points: [[175, 320], [175, 290], [190, 290], [190, 320]],
+                        closed: true,
+                        priority: 25
+                    },
+                    
+                    // Window frames
+                    leftWindowFrame: {
+                        points: [[137.5, 290], [137.5, 320]],
+                        closed: false,
+                        priority: 26
+                    },
+                    rightWindowFrame: {
+                        points: [[182.5, 290], [182.5, 320]],
+                        closed: false,
+                        priority: 27
+                    },
+                    
+                    // Ground line
+                    ground: {
+                        points: [[0, 450], [320, 450]],
+                        closed: false,
+                        priority: 28
+                    }
+                };
+            }
+            
+            initializeColors() {
+                return {
+                    background: {
+                        sky: '#87CEEB',
+                        ground: '#F5DEB3'
+                    },
+                    pineapple: {
+                        body: '#FFA500',
+                        bodyGradient: {
+                            start: '#FFD700',
+                            middle: '#FFA500',
+                            end: '#FF6347'
+                        },
+                        crossHatch: '#D2691E',
+                        leaves: '#228B22',
+                        leafGradient: {
+                            start: '#7CFC00',
+                            middle: '#32CD32',
+                            end: '#228B22'
+                        }
+                    },
+                    door: {
+                        primary: '#8B4513',
+                        secondary: '#A0522D',
+                        arch: '#654321'
+                    },
+                    windows: {
+                        glass: '#87CEEB',
+                        frame: '#8B4513'
+                    },
+                    effects: {
+                        bubbles: 'rgba(255, 255, 255, 0.6)',
+                        highlights: 'rgba(255, 255, 255, 0.8)',
+                        shadows: 'rgba(0, 0, 0, 0.2)'
+                    }
+                };
+            }
+            
+            setupCanvas() {
+                const dpr = window.devicePixelRatio || 1;
+                const rect = this.canvas.getBoundingClientRect();
+                
+                this.canvas.width = rect.width * dpr;
+                this.canvas.height = rect.height * dpr;
+                this.ctx.scale(dpr, dpr);
+                
+                this.canvas.style.width = rect.width + 'px';
+                this.canvas.style.height = rect.height + 'px';
+                
+                this.ctx.imageSmoothingEnabled = true;
+                this.ctx.imageSmoothingQuality = 'high';
+            }
+            
+            bindEvents() {
+                window.addEventListener('resize', this.debounce(() => this.setupCanvas(), 250));
+                document.addEventListener('visibilitychange', () => {
+                    if (document.hidden) {
+                        this.pause();
+                    } else {
+                        this.resume();
+                    }
+                });
+            }
+            
+            debounce(func, wait) {
+                let timeout;
+                return function executedFunction(...args) {
+                    const later = () => {
+                        clearTimeout(timeout);
+                        func(...args);
+                    };
+                    clearTimeout(timeout);
+                    timeout = setTimeout(later, wait);
+                };
+            }
+            
+            clearCanvas() {
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            }
+            
+            drawBackground() {
+                // Sky gradient
+                const skyGradient = this.ctx.createLinearGradient(0, 0, 0, this.canvas.height * 0.8);
+                skyGradient.addColorStop(0, '#87CEEB');
+                skyGradient.addColorStop(0.5, '#4169E1');
+                skyGradient.addColorStop(1, '#1E90FF');
+                
+                this.ctx.fillStyle = skyGradient;
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height * 0.8);
+                
+                // Ground
+                const groundGradient = this.ctx.createLinearGradient(0, this.canvas.height * 0.8, 0, this.canvas.height);
+                groundGradient.addColorStop(0, '#F5DEB3');
+                groundGradient.addColorStop(1, '#DEB887');
+                
+                this.ctx.fillStyle = groundGradient;
+                this.ctx.fillRect(0, this.canvas.height * 0.8, this.canvas.width, this.canvas.height * 0.2);
+                
+                // Animated bubbles
+                this.drawBubbles();
+            }
+            
+            drawBubbles() {
+                const bubbleCount = 8;
+                const time = Date.now() * 0.001;
+                
+                this.ctx.fillStyle = this.colors.effects.bubbles;
+                
+                for (let i = 0; i < bubbleCount; i++) {
+                    const x = (i * 40 + Math.sin(time + i) * 15) % this.canvas.width;
+                    const y = Math.sin(time * 0.6 + i * 0.7) * this.canvas.height * 0.3 + this.canvas.height * 0.2;
+                    const radius = Math.sin(time + i) * 1.5 + 2;
+                    const opacity = (Math.sin(time * 0.4 + i) + 1) * 0.15 + 0.1;
+                    
+                    this.ctx.globalAlpha = opacity;
+                    this.ctx.beginPath();
+                    this.ctx.arc(x, y, radius, 0, Math.PI * 2);
+                    this.ctx.fill();
+                }
+                
+                this.ctx.globalAlpha = 1;
+            }
+            
+            drawSmoothPath(points, closed = false) {
+                if (points.length < 2) return;
+                
+                this.ctx.beginPath();
+                this.ctx.moveTo(points[0][0], points[0][1]);
+                
+                if (points.length === 2) {
+                    this.ctx.lineTo(points[1][0], points[1][1]);
                 } else {
-                    this.ctx.lineTo(px, py);
+                    for (let i = 1; i < points.length - 1; i++) {
+                        const xc = (points[i][0] + points[i + 1][0]) / 2;
+                        const yc = (points[i][1] + points[i + 1][1]) / 2;
+                        this.ctx.quadraticCurveTo(points[i][0], points[i][1], xc, yc);
+                    }
+                    
+                    if (closed) {
+                        const xc = (points[points.length - 1][0] + points[0][0]) / 2;
+                        const yc = (points[points.length - 1][1] + points[0][1]) / 2;
+                        this.ctx.quadraticCurveTo(points[points.length - 1][0], points[points.length - 1][1], xc, yc);
+                        this.ctx.quadraticCurveTo(points[0][0], points[0][1], points[0][0], points[0][1]);
+                    } else {
+                        this.ctx.lineTo(points[points.length - 1][0], points[points.length - 1][1]);
+                    }
+                }
+                
+                if (closed) {
+                    this.ctx.closePath();
                 }
             }
-            this.ctx.closePath();
-            this.ctx.fill();
-            this.ctx.restore();
-        }
-    }
-    
-    drawEffectsPhase(progress) {
-        this.drawColorPhase(1);
-        
-        // Add glow effect
-        this.ctx.save();
-        this.ctx.shadowColor = this.colors.effects.glow;
-        this.ctx.shadowBlur = 20 * progress;
-        this.ctx.strokeStyle = this.colors.effects.glow;
-        this.ctx.lineWidth = 3;
-        this.ctx.globalAlpha = progress * 0.5;
-        
-        // Glow around the house
-        this.ctx.beginPath();
-        this.ctx.ellipse(180, 340, 120, 180, 0, 0, Math.PI * 2);
-        this.ctx.stroke();
-        this.ctx.restore();
-        
-        // Enhanced sparkles
-        this.drawSparkles(1);
-    }
-    
-    animate(timestamp) {
-        if (!this.startTime) this.startTime = timestamp;
-        
-        const currentPhase = this.config.phases[this.currentPhase];
-        const phaseElapsed = timestamp - this.startTime;
-        const phaseProgress = Math.min(phaseElapsed / currentPhase.duration, 1);
-        
-        this.clearCanvas();
-        
-        switch (currentPhase.name) {
-            case 'sketch':
-            case 'refine':
-            case 'ink':
+            
+            drawRoughPath(points, closed = false) {
+                if (points.length < 2) return;
+                
+                this.ctx.beginPath();
+                this.ctx.moveTo(points[0][0] + Math.random() * 2 - 1, points[0][1] + Math.random() * 2 - 1);
+                
+                for (let i = 1; i < points.length; i++) {
+                    const jitterX = Math.random() * 1.5 - 0.75;
+                    const jitterY = Math.random() * 1.5 - 0.75;
+                    this.ctx.lineTo(points[i][0] + jitterX, points[i][1] + jitterY);
+                }
+                
+                if (closed) {
+                    this.ctx.closePath();
+                }
+            }
+            
+            drawPrecisePath(points, closed = false) {
+                if (points.length < 2) return;
+                
+                this.ctx.beginPath();
+                this.ctx.moveTo(points[0][0], points[0][1]);
+                
+                for (let i = 1; i < points.length; i++) {
+                    this.ctx.lineTo(points[i][0], points[i][1]);
+                }
+                
+                if (closed) {
+                    this.ctx.closePath();
+                }
+            }
+            
+            fillShape(elementKey, progress) {
+                const element = this.structure[elementKey];
+                if (!element || !element.points) return;
+                
+                this.ctx.save();
+                
+                if (elementKey === 'pineappleBody') {
+                    const gradient = this.ctx.createRadialGradient(160, 320, 20, 160, 320, 120);
+                    gradient.addColorStop(0, this.colors.pineapple.bodyGradient.start);
+                    gradient.addColorStop(0.5, this.colors.pineapple.bodyGradient.middle);
+                    gradient.addColorStop(1, this.colors.pineapple.bodyGradient.end);
+                    this.ctx.fillStyle = gradient;
+                } else if (elementKey.includes('leaf')) {
+                    const gradient = this.ctx.createLinearGradient(0, 75, 0, 200);
+                    gradient.addColorStop(0, this.colors.pineapple.leafGradient.start);
+                    gradient.addColorStop(0.5, this.colors.pineapple.leafGradient.middle);
+                    gradient.addColorStop(1, this.colors.pineapple.leafGradient.end);
+                    this.ctx.fillStyle = gradient;
+                } else if (elementKey === 'door' || elementKey === 'doorArch') {
+                    this.ctx.fillStyle = this.colors.door.primary;
+                } else if (elementKey.includes('Window')) {
+                    if (elementKey.includes('Frame')) {
+                        this.ctx.fillStyle = this.colors.windows.frame;
+                    } else {
+                        this.ctx.fillStyle = this.colors.windows.glass;
+                    }
+                } else {
+                    this.ctx.fillStyle = this.colors.pineapple.crossHatch;
+                }
+                
+                this.drawSmoothPath(element.points, element.closed);
+                this.ctx.fill();
+                
+                this.ctx.restore();
+            }
+            
+            addEffects() {
+                // Add sparkles around the pineapple
+                const sparkleCount = 12;
+                const time = Date.now() * 0.002;
+                
+                this.ctx.fillStyle = this.colors.effects.highlights;
+                
+                for (let i = 0; i < sparkleCount; i++) {
+                    const angle = (i / sparkleCount) * Math.PI * 2 + time;
+                    const radius = 140 + Math.sin(time * 2 + i) * 20;
+                    const x = 160 + Math.cos(angle) * radius;
+                    const y = 320 + Math.sin(angle) * radius * 0.8;
+                    const size = Math.sin(time * 3 + i) * 1.5 + 1;
+                    const opacity = (Math.sin(time * 1.5 + i) + 1) * 0.3 + 0.2;
+                    
+                    this.ctx.globalAlpha = opacity;
+                    this.ctx.beginPath();
+                    this.ctx.arc(x, y, size, 0, Math.PI * 2);
+                    this.ctx.fill();
+                    
+                    // Draw sparkle rays
+                    this.ctx.strokeStyle = this.colors.effects.highlights;
+                    this.ctx.lineWidth = 0.5;
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(x - size * 2, y);
+                    this.ctx.lineTo(x + size * 2, y);
+                    this.ctx.moveTo(x, y - size * 2);
+                    this.ctx.lineTo(x, y + size * 2);
+                    this.ctx.stroke();
+                }
+                
+                this.ctx.globalAlpha = 1;
+                
+                // Add glow effect to the pineapple
+                this.ctx.save();
+                this.ctx.shadowColor = '#FFD700';
+                this.ctx.shadowBlur = 15;
+                this.ctx.strokeStyle = 'rgba(255, 215, 0, 0.3)';
+                this.ctx.lineWidth = 3;
+                this.drawSmoothPath(this.structure.pineappleBody.points, true);
+                this.ctx.stroke();
+                this.ctx.restore();
+            }
+            
+            updatePencilPosition(elementKey, pointIndex, totalPoints) {
+                if (!this.structure[elementKey] || !this.structure[elementKey].points[pointIndex]) return;
+                
+                const point = this.structure[elementKey].points[pointIndex];
+                const progress = pointIndex / Math.max(totalPoints - 1, 1);
+                
+                this.pencil.style.left = (point[0] - 70) + 'px';
+                this.pencil.style.top = (point[1] - 5) + 'px';
+                this.pencil.style.opacity = '0.8';
+                
+                // Rotate pencil based on drawing direction
+                if (pointIndex > 0) {
+                    const prevPoint = this.structure[elementKey].points[pointIndex - 1];
+                    const angle = Math.atan2(point[1] - prevPoint[1], point[0] - prevPoint[0]);
+                    this.pencil.style.transform = `rotate(${angle}rad)`;
+                }
+            }
+            
+            drawElement(elementKey, progress, phase) {
+                const element = this.structure[elementKey];
+                if (!element) return;
+                
+                const config = this.config.phases[phase];
+                const totalPoints = element.points.length;
+                const pointsToShow = Math.floor(progress * totalPoints);
+                
+                if (pointsToShow < 1) return;
+                
+                const partialPoints = element.points.slice(0, pointsToShow);
+                
+                if (partialPoints.length > 0) {
+                    this.ctx.save();
+                    this.ctx.globalAlpha = config.opacity;
+                    this.ctx.strokeStyle = config.color === 'multicolor' ? this.getElementColor(elementKey) : config.color;
+                    this.ctx.lineWidth = config.lineWidth;
+                    this.ctx.lineCap = 'round';
+                    this.ctx.lineJoin = 'round';
+                    
+                    if (config.style === 'fill' && progress > 0.8) {
+                        this.fillShape(elementKey, progress);
+                    } else if (config.lineWidth > 0) {
+                        switch(config.style) {
+                            case 'rough':
+                                this.drawRoughPath(partialPoints, element.closed && progress > 0.95);
+                                break;
+                            case 'smooth':
+                                if (element.smooth) {
+                                    this.drawSmoothPath(partialPoints, element.closed && progress > 0.95);
+                                } else {
+                                    this.drawPrecisePath(partialPoints, element.closed && progress > 0.95);
+                                }
+                                break;
+                            case 'precise':
+                                this.drawPrecisePath(partialPoints, element.closed && progress > 0.95);
+                                break;
+                        }
+                        this.ctx.stroke();
+                    }
+                    
+                    this.ctx.restore();
+                    
+                    // Update pencil position
+                    if (phase < 3 && pointsToShow > 0) {
+                        this.updatePencilPosition(elementKey, Math.min(pointsToShow - 1, totalPoints - 1), totalPoints);
+                    }
+                }
+            }
+            
+            getElementColor(elementKey) {
+                if (elementKey === 'pineappleBody') return this.colors.pineapple.body;
+                if (elementKey.includes('leaf')) return this.colors.pineapple.leaves;
+                if (elementKey.includes('crossHatch') || elementKey.includes('diagonal')) return this.colors.pineapple.crossHatch;
+                if (elementKey === 'door' || elementKey === 'doorArch') return this.colors.door.primary;
+                if (elementKey.includes('Window')) {
+                    return elementKey.includes('Frame') ? this.colors.windows.frame : this.colors.windows.glass;
+                }
+                return '#333';
+            }
+            
+            animate(timestamp) {
+                if (!this.startTime) this.startTime = timestamp;
+                const elapsed = timestamp - this.startTime;
+                
+                // Clear canvas and draw background
+                this.clearCanvas();
                 this.drawBackground();
-                this.drawStructurePhase(this.currentPhase, phaseProgress);
-                break;
-            case 'color':
-                this.drawColorPhase(phaseProgress);
-                break;
-            case 'highlight':
-                this.drawEffectsPhase(phaseProgress);
-                break;
-            case 'pause':
-                this.drawEffectsPhase(1);
-                break;
+                
+                // Calculate current phase and progress
+                let totalElapsed = 0;
+                let currentPhase = 0;
+                
+                for (let i = 0; i < this.config.phases.length; i++) {
+                    if (elapsed >= totalElapsed && elapsed < totalElapsed + this.config.phases[i].duration) {
+                        currentPhase = i;
+                        this.progress = (elapsed - totalElapsed) / this.config.phases[i].duration;
+                        break;
+                    }
+                    totalElapsed += this.config.phases[i].duration;
+                }
+                
+                // If animation is complete, restart
+                if (elapsed >= totalElapsed) {
+                    this.startTime = timestamp;
+                    return;
+                }
+                
+                this.currentPhase = currentPhase;
+                
+                // Apply easing
+                const easedProgress = this.config.easing.easeInOutCubic(this.progress);
+                
+                // Get elements sorted by priority
+                const sortedElements = Object.keys(this.structure).sort((a, b) => {
+                    return this.structure[a].priority - this.structure[b].priority;
+                });
+                
+                // Draw elements for current and previous phases
+                for (let phase = 0; phase <= currentPhase; phase++) {
+                    const phaseProgress = phase === currentPhase ? easedProgress : 1;
+                    
+                    sortedElements.forEach(elementKey => {
+                        if (phase < 3) { // Drawing phases
+                            this.drawElement(elementKey, phaseProgress, phase);
+                        } else if (phase === 3) { // Coloring phase
+                            this.drawElement(elementKey, 1, 2); // Draw outline first
+                            if (phaseProgress > 0.1) {
+                                this.drawElement(elementKey, phaseProgress, phase);
+                            }
+                        } else if (phase === 4 && phaseProgress > 0.5) { // Effects phase
+                            this.drawElement(elementKey, 1, 3); // Show colored version
+                            this.addEffects();
+                        } else {
+                            this.drawElement(elementKey, 1, Math.min(phase, 3));
+                        }
+                    });
+                }
+                
+                // Hide pencil during color and effects phases
+                if (currentPhase >= 3) {
+                    this.pencil.style.opacity = '0';
+                }
+                
+                // Continue animation
+                if (this.isAnimating) {
+                    this.animationId = requestAnimationFrame(this.animate.bind(this));
+                }
+            }
+            
+            start() {
+                if (this.isAnimating) return;
+                
+                this.isAnimating = true;
+                this.startTime = null;
+                this.animationId = requestAnimationFrame(this.animate.bind(this));
+            }
+            
+            stop() {
+                this.isAnimating = false;
+                if (this.animationId) {
+                    cancelAnimationFrame(this.animationId);
+                    this.animationId = null;
+                }
+                this.pencil.style.opacity = '0';
+            }
+            
+            pause() {
+                if (this.isAnimating) {
+                    this.isAnimating = false;
+                    if (this.animationId) {
+                        cancelAnimationFrame(this.animationId);
+                    }
+                }
+            }
+            
+            resume() {
+                if (!this.isAnimating && this.animationId !== null) {
+                    this.isAnimating = true;
+                    this.animationId = requestAnimationFrame(this.animate.bind(this));
+                }
+            }
         }
         
-        // Update pencil position
-        this.updatePencilPosition(phaseProgress);
-        
-        if (phaseProgress >= 1) {
-            this.currentPhase = (this.currentPhase + 1) % this.config.phases.length;
-            this.startTime = timestamp;
-        }
-        
-        if (this.isAnimating) {
-            this.animationId = requestAnimationFrame(this.animate.bind(this));
-        }
-    }
-    
-    updatePencilPosition(progress) {
-        if (!this.pencil) return;
-        
-        // Move pencil along the drawing path
-        const angle = progress * Math.PI * 2;
-        const x = 180 + Math.cos(angle) * 100;
-        const y = 340 + Math.sin(angle) * 80;
-        
-        this.pencil.style.transform = `translate(${x - 10}px, ${y - 40}px) rotate(${angle + Math.PI/4}rad)`;
-    }
-    
-    start() {
-        if (!this.isAnimating) {
-            this.isAnimating = true;
-            this.currentPhase = 0;
-            this.startTime = null;
-            this.animate(performance.now());
-        }
-    }
-    
-    stop() {
-        this.isAnimating = false;
-        if (this.animationId) {
-            cancelAnimationFrame(this.animationId);
-            this.animationId = null;
-        }
-    }
-    
-    pause() {
-        if (this.isAnimating) {
-            this.stop();
-        }
-    }
-    
-    resume() {
-        if (!this.isAnimating) {
-            this.start();
-        }
-    }
-    
-    reset() {
-        this.stop();
-        this.currentPhase = 0;
-        this.progress = 0;
-        this.startTime = null;
-        this.clearCanvas();
-        this.drawBackground();
-    }
-}
-         </script>
+        // Initialize the animation when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            const animator = new PineappleHouseAnimator('drawingCanvas', 'pencil');
+            
+            // Auto-start the animation
+            setTimeout(() => {
+                animator.start();
+            }, 1000);
+            
+            // Add click to restart functionality
+            document.addEventListener('click', () => {
+                animator.stop();
+                setTimeout(() => {
+                    animator.start();
+                }, 100);
+            });
+            
+            // Handle window focus/blur for performance
+            window.addEventListener('focus', () => {
+                animator.resume();
+            });
+            
+            window.addEventListener('blur', () => {
+                animator.pause();
+            });
+        });
+    </script>
 </body>
 </html>
