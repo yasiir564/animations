@@ -5,142 +5,305 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Krusty Krab Drawing Animation</title>
     <style>
+        * {
+            box-sizing: border-box;
+        }
+        
         body {
             margin: 0;
             padding: 0;
+            background: 
+                radial-gradient(circle at 30% 70%, #1a1a1a 0%, #2c2c2c 50%, #1f1f1f 100%),
+                linear-gradient(45deg, #2a2a2a 25%, transparent 25%, transparent 75%, #2a2a2a 75%);
+            background-size: 100% 100%, 20px 20px;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background: #2c1810;
-            font-family: 'Times New Roman', serif;
+            font-family: 'Georgia', 'Times New Roman', serif;
+            perspective: 1000px;
         }
         
         .container {
-            width: 450px;
-            height: 650px;
-            background: linear-gradient(135deg, #f8f5f0 0%, #f2ede5 100%);
-            border-radius: 8px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
-            overflow: hidden;
+            width: 360px;
+            height: 640px;
+            background: 
+                linear-gradient(135deg, #faf8f2 0%, #f6f3ec 20%, #f2efe6 40%, #eee9dd 60%, #ebe6d8 80%, #e8e3d5 100%),
+                radial-gradient(circle at 25% 15%, rgba(139, 69, 19, 0.04) 0%, transparent 60%),
+                radial-gradient(circle at 75% 85%, rgba(160, 82, 45, 0.03) 0%, transparent 60%),
+                radial-gradient(circle at 50% 50%, rgba(101, 67, 33, 0.02) 0%, transparent 80%);
+            border-radius: 12px;
+            box-shadow: 
+                0 20px 40px rgba(0,0,0,0.4),
+                0 8px 16px rgba(0,0,0,0.2),
+                inset 0 2px 4px rgba(255,255,255,0.7),
+                inset 0 -2px 4px rgba(0,0,0,0.1),
+                inset 1px 1px 2px rgba(255,255,255,0.5),
+                inset -1px -1px 2px rgba(0,0,0,0.05);
             position: relative;
-            border: 3px solid #8b6f47;
+            overflow: hidden;
+            border: 2px solid #d8c9ab;
+            transform: rotateX(2deg) rotateY(-1deg);
+            transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
         }
         
-        .book-paper {
+        .container:hover {
+            transform: rotateX(0deg) rotateY(0deg) translateY(-5px);
+            box-shadow: 
+                0 25px 50px rgba(0,0,0,0.5),
+                0 12px 20px rgba(0,0,0,0.3),
+                inset 0 2px 4px rgba(255,255,255,0.8),
+                inset 0 -2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .paper-texture {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.6;
+            background-image: 
+                /* Enhanced fiber texture */
+                radial-gradient(circle at 12% 18%, rgba(139, 69, 19, 0.12) 0.8px, transparent 1px),
+                radial-gradient(circle at 78% 62%, rgba(160, 82, 45, 0.09) 1.2px, transparent 1.5px),
+                radial-gradient(circle at 43% 87%, rgba(101, 67, 33, 0.08) 0.6px, transparent 1px),
+                radial-gradient(circle at 67% 23%, rgba(139, 69, 19, 0.06) 1px, transparent 1.5px),
+                radial-gradient(circle at 23% 56%, rgba(160, 82, 45, 0.07) 0.9px, transparent 1.2px),
+                /* Paper grain enhancement */
+                linear-gradient(92deg, transparent 0%, rgba(139, 69, 19, 0.03) 30%, rgba(160, 82, 45, 0.04) 70%, transparent 100%),
+                linear-gradient(2deg, transparent 0%, rgba(101, 67, 33, 0.02) 40%, rgba(139, 69, 19, 0.03) 60%, transparent 100%),
+                /* Micro texture */
+                repeating-linear-gradient(45deg, rgba(139, 69, 19, 0.01) 0px, transparent 1px, rgba(160, 82, 45, 0.01) 2px);
+            background-size: 
+                140px 95px,
+                110px 130px,
+                170px 85px,
+                95px 115px,
+                125px 90px,
+                12px 8px,
+                8px 6px,
+                3px 3px;
+            mix-blend-mode: multiply;
+        }
+        
+        .book-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.15;
+            background-image: 
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 26px,
+                    rgba(70, 130, 180, 0.4) 26px,
+                    rgba(70, 130, 180, 0.35) 27px,
+                    rgba(70, 130, 180, 0.2) 28px,
+                    transparent 28px
+                );
+        }
+        
+        .margin-line {
+            position: absolute;
+            left: 42px;
+            top: 0;
+            width: 1.5px;
+            height: 100%;
+            background: 
+                linear-gradient(
+                    to bottom,
+                    rgba(255, 182, 193, 0.6) 0%,
+                    rgba(255, 182, 193, 0.5) 20%,
+                    rgba(255, 182, 193, 0.4) 50%,
+                    rgba(255, 182, 193, 0.5) 80%,
+                    rgba(255, 182, 193, 0.6) 100%
+                );
+            border-radius: 1px;
+        }
+        
+        .stains {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             background: 
-                /* Vertical lines for notebook paper */
-                repeating-linear-gradient(
-                    90deg,
-                    transparent,
-                    transparent 24px,
-                    rgba(200, 180, 150, 0.3) 24px,
-                    rgba(200, 180, 150, 0.3) 25px
-                ),
-                /* Horizontal lines */
-                repeating-linear-gradient(
-                    0deg,
-                    transparent,
-                    transparent 19px,
-                    rgba(180, 160, 140, 0.2) 19px,
-                    rgba(180, 160, 140, 0.2) 20px
-                ),
-                /* Red margin line */
-                linear-gradient(
-                    90deg,
-                    transparent 45px,
-                    #ff6b6b 45px,
-                    #ff6b6b 47px,
-                    transparent 47px
-                ),
-                /* Paper texture */
-                radial-gradient(circle at 20% 30%, rgba(139, 111, 71, 0.03) 1px, transparent 1px),
-                radial-gradient(circle at 80% 70%, rgba(139, 111, 71, 0.03) 1px, transparent 1px),
-                radial-gradient(circle at 40% 80%, rgba(139, 111, 71, 0.025) 1px, transparent 1px),
-                /* Base paper color */
-                #f8f5f0;
-            background-size: 
-                100% 100%,
-                100% 100%,
-                100% 100%,
-                50px 50px,
-                30px 30px,
-                70px 70px,
-                100% 100%;
+                /* Coffee stains */
+                radial-gradient(ellipse 35px 25px at 18% 28%, rgba(139, 69, 19, 0.12) 40%, rgba(101, 67, 33, 0.08) 60%, transparent 80%),
+                radial-gradient(ellipse 25px 18px at 83% 72%, rgba(160, 82, 45, 0.09) 35%, rgba(139, 69, 19, 0.06) 55%, transparent 75%),
+                radial-gradient(ellipse 40px 30px at 62% 12%, rgba(101, 67, 33, 0.06) 30%, rgba(160, 82, 45, 0.04) 50%, transparent 70%),
+                /* Ink spots */
+                radial-gradient(ellipse 8px 12px at 35% 45%, rgba(25, 25, 112, 0.08) 50%, transparent 70%),
+                radial-gradient(ellipse 6px 8px at 75% 85%, rgba(72, 61, 139, 0.06) 40%, transparent 60%),
+                /* Wear marks */
+                radial-gradient(ellipse 60px 20px at 50% 95%, rgba(139, 69, 19, 0.05) 20%, transparent 50%),
+                radial-gradient(ellipse 40px 15px at 20% 5%, rgba(160, 82, 45, 0.04) 30%, transparent 60%);
+            mix-blend-mode: multiply;
         }
         
-        /* Spiral binding holes */
-        .binding-holes {
+        /* Notebook rings/binding */
+        .binding {
             position: absolute;
-            left: 20px;
-            top: 30px;
-            height: calc(100% - 60px);
-            width: 10px;
+            left: 0;
+            top: 0;
+            width: 20px;
+            height: 100%;
+            background: 
+                linear-gradient(to right, 
+                    rgba(139, 69, 19, 0.1) 0%, 
+                    rgba(160, 82, 45, 0.08) 50%, 
+                    transparent 100%
+                );
+            border-right: 1px solid rgba(139, 69, 19, 0.2);
         }
         
-        .hole {
-            width: 8px;
-            height: 8px;
-            background: #2c1810;
-            border-radius: 50%;
-            margin-bottom: 40px;
-            box-shadow: inset 0 1px 2px rgba(0,0,0,0.3);
+        .binding::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 10%;
+            width: 4px;
+            height: 80%;
+            background: 
+                repeating-linear-gradient(
+                    to bottom,
+                    rgba(139, 69, 19, 0.3) 0px,
+                    rgba(139, 69, 19, 0.3) 15px,
+                    transparent 15px,
+                    transparent 25px
+                );
+            border-radius: 2px;
         }
         
         canvas {
-            width: 100%;
-            height: 100%;
             display: block;
+            margin: 30px auto;
+            background: transparent;
+            border-radius: 4px;
         }
         
         .pencil {
             position: absolute;
-            width: 90px;
-            height: 8px;
-            background: linear-gradient(90deg, #8B4513 0%, #DEB887 30%, #FFD700 60%, #FF69B4 100%);
-            border-radius: 4px;
-            z-index: 10;
+            width: 140px;
+            height: 10px;
+            background: 
+                linear-gradient(90deg, 
+                    #8b4513 0%, 
+                    #d4af37 15%, 
+                    #ffd700 50%, 
+                    #d4af37 85%, 
+                    #8b4513 100%
+                );
+            border-radius: 5px;
+            transform-origin: 100% 50%;
             opacity: 0;
-            transform-origin: left center;
-            transition: opacity 0.5s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+            box-shadow: 
+                0 3px 6px rgba(0,0,0,0.3),
+                inset 0 1px 2px rgba(255,255,255,0.4),
+                inset 0 -1px 2px rgba(0,0,0,0.2);
         }
         
         .pencil::before {
             content: '';
             position: absolute;
-            left: -12px;
-            top: 1px;
+            right: -12px;
+            top: 50%;
+            transform: translateY(-50%);
             width: 0;
             height: 0;
-            border-left: 12px solid #2F4F4F;
-            border-top: 3px solid transparent;
-            border-bottom: 3px solid transparent;
+            border-left: 12px solid #2c2c2c;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+            filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.3));
+        }
+        
+        .pencil::after {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 2px;
+            width: 80px;
+            height: 2px;
+            background: 
+                linear-gradient(90deg, 
+                    rgba(255, 255, 255, 0.6) 0%, 
+                    rgba(255, 255, 255, 0.4) 50%, 
+                    rgba(255, 255, 255, 0.2) 100%
+                );
+            border-radius: 1px;
+        }
+        
+        /* Eraser */
+        .pencil .eraser {
+            position: absolute;
+            left: -15px;
+            top: 1px;
+            width: 12px;
+            height: 8px;
+            background: 
+                linear-gradient(90deg, 
+                    #ff69b4 0%, 
+                    #ff1493 50%, 
+                    #dc143c 100%
+                );
+            border-radius: 2px;
+            border: 1px solid #b8860b;
+        }
+        
+        /* Page corner fold */
+        .page-fold {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 30px;
+            height: 30px;
+            background: 
+                linear-gradient(225deg, 
+                    rgba(139, 69, 19, 0.1) 0%, 
+                    rgba(160, 82, 45, 0.08) 50%, 
+                    transparent 100%
+                );
+            clip-path: polygon(100% 0%, 0% 100%, 100% 100%);
+            box-shadow: inset -2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        /* Subtle animation for texture */
+        @keyframes paperShimmer {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 0.7; }
+        }
+        
+        .paper-texture {
+            animation: paperShimmer 4s ease-in-out infinite;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 480px) {
+            .container {
+                width: 320px;
+                height: 560px;
+                margin: 20px;
+            }
+        }
+        
+        @media (max-height: 700px) {
+            .container {
+                height: 500px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="book-paper"></div>
-        <div class="binding-holes">
-            <div class="hole"></div>
-            <div class="hole"></div>
-            <div class="hole"></div>
-            <div class="hole"></div>
-            <div class="hole"></div>
-            <div class="hole"></div>
-            <div class="hole"></div>
-            <div class="hole"></div>
-            <div class="hole"></div>
-            <div class="hole"></div>
-            <div class="hole"></div>
-            <div class="hole"></div>
-        </div>
-        <canvas id="drawingCanvas" width="450" height="650"></canvas>
+        <div class="paper-texture"></div>
+        <div class="book-lines"></div>
+        <div class="margin-line"></div>
+        <div class="stains"></div>
+        <canvas id="drawingCanvas" width="320" height="580"></canvas>
         <div class="pencil" id="pencil"></div>
     </div>
 
@@ -149,340 +312,324 @@
         const ctx = canvas.getContext('2d');
         const pencil = document.getElementById('pencil');
         
-        // Animation state
-        let animationProgress = 0;
-        const totalDuration = 30000; // 30 seconds
-        let startTime = null;
+        let animationId;
+        let currentPhase = 0;
+        let progress = 0;
+        let isAnimating = false;
         
         // Drawing phases
-        const phases = {
-            sketch: { start: 0, end: 0.3 },
-            detail: { start: 0.3, end: 0.5 },
-            ink: { start: 0.5, end: 0.7 },
-            color: { start: 0.7, end: 1.0 }
-        };
+        const phases = [
+            { name: 'sketch', duration: 6000, color: '#666', lineWidth: 2, opacity: 0.7 },
+            { name: 'detail', duration: 4000, color: '#333', lineWidth: 1.5, opacity: 0.9 },
+            { name: 'ink', duration: 3000, color: '#000', lineWidth: 2, opacity: 1 },
+            { name: 'color', duration: 7000, color: 'color', lineWidth: 0, opacity: 1 },
+            { name: 'pause', duration: 2000, color: 'transparent', lineWidth: 0, opacity: 1 }
+        ];
         
-        // Krusty Krab structure points (matching the reference image)
+        // Krusty Krab structure points
         const structure = {
-            // Main building base (wooden logs structure)
+            // Main building base
             base: [
-                {x: 120, y: 450}, {x: 330, y: 450}, {x: 330, y: 380}, {x: 120, y: 380}
+                [60, 450], [260, 450], [260, 350], [60, 350], [60, 450]
             ],
-            // Lobster claw/wooden roof structure
+            // Roof/dome
             roof: [
-                {x: 100, y: 380}, {x: 130, y: 320}, {x: 170, y: 300}, {x: 225, y: 300},
-                {x: 280, y: 320}, {x: 320, y: 340}, {x: 350, y: 380}
+                [50, 350], [80, 300], [120, 280], [160, 270], [200, 280], [240, 300], [270, 350]
             ],
             // Sign post
             signPost: [
-                {x: 80, y: 320}, {x: 80, y: 500}
+                [30, 250], [30, 450]
             ],
-            // Clamshell sign
+            // Sign (shell shape)
             sign: [
-                {x: 50, y: 260}, {x: 110, y: 260}, {x: 115, y: 280}, {x: 110, y: 320}, 
-                {x: 50, y: 320}, {x: 45, y: 280}
-            ],
-            // Left window
-            leftWindow: [
-                {x: 140, y: 400}, {x: 180, y: 400}, {x: 180, y: 430}, {x: 140, y: 430}
-            ],
-            // Right window  
-            rightWindow: [
-                {x: 270, y: 400}, {x: 310, y: 400}, {x: 310, y: 430}, {x: 270, y: 430}
+                [10, 220], [50, 200], [70, 220], [60, 250], [40, 260], [20, 250], [10, 220]
             ],
             // Door
             door: [
-                {x: 200, y: 410}, {x: 250, y: 410}, {x: 250, y: 450}, {x: 200, y: 450}
+                [140, 450], [140, 380], [180, 380], [180, 450]
+            ],
+            // Windows
+            leftWindow: [
+                [80, 420], [120, 420], [120, 390], [80, 390], [80, 420]
+            ],
+            rightWindow: [
+                [200, 420], [240, 420], [240, 390], [200, 390], [200, 420]
             ],
             // Chimney
             chimney: [
-                {x: 285, y: 300}, {x: 305, y: 300}, {x: 305, y: 260}, {x: 285, y: 260}
+                [200, 270], [200, 240], [220, 240], [220, 270]
             ],
             // Flag bunting
             bunting: [
-                {x: 130, y: 360}, {x: 150, y: 350}, {x: 170, y: 360}, {x: 190, y: 350},
-                {x: 210, y: 360}, {x: 230, y: 350}, {x: 250, y: 360}, {x: 270, y: 350},
-                {x: 290, y: 360}, {x: 310, y: 350}, {x: 330, y: 360}
+                [70, 330], [90, 320], [110, 330], [130, 320], [150, 330], [170, 320], [190, 330], [210, 320], [230, 330], [250, 320]
             ]
         };
         
-        function getCurrentPhase(progress) {
-            if (progress <= phases.sketch.end) return 'sketch';
-            if (progress <= phases.detail.end) return 'detail';
-            if (progress <= phases.ink.end) return 'ink';
-            return 'color';
+        // Colors for final phase
+        const colors = {
+            base: '#8B4513',
+            roof: '#654321',
+            sign: '#FFF',
+            signText: '#8B0000',
+            door: '#4169E1',
+            windows: '#87CEEB',
+            chimney: '#2F4F4F',
+            bunting: ['#FF0000', '#FFFF00', '#0000FF', '#FF6347', '#32CD32'],
+            background: '#4169E1',
+            ground: '#F5DEB3'
+        };
+        
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
         }
         
-        function getPhaseProgress(progress, phase) {
-            const p = phases[phase];
-            return Math.max(0, Math.min(1, (progress - p.start) / (p.end - p.start)));
-        }
-        
-        function drawPath(points, progress, style = {}) {
-            if (points.length === 0) return;
+        function drawBackground() {
+            // Sky background
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            gradient.addColorStop(0, colors.background);
+            gradient.addColorStop(1, '#1E90FF');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height * 0.8);
             
-            ctx.beginPath();
-            ctx.moveTo(points[0].x, points[0].y);
+            // Ground
+            ctx.fillStyle = colors.ground;
+            ctx.fillRect(0, canvas.height * 0.8, canvas.width, canvas.height * 0.2);
             
-            const totalPoints = points.length;
-            const pointsToShow = Math.floor(totalPoints * progress);
-            
-            for (let i = 1; i < pointsToShow; i++) {
-                ctx.lineTo(points[i].x, points[i].y);
-            }
-            
-            // Partial line for smooth animation
-            if (pointsToShow < totalPoints && pointsToShow > 0) {
-                const prev = points[pointsToShow - 1];
-                const next = points[pointsToShow];
-                const partialProgress = (totalPoints * progress) - (pointsToShow - 1);
-                const x = prev.x + (next.x - prev.x) * partialProgress;
-                const y = prev.y + (next.y - prev.y) * partialProgress;
-                ctx.lineTo(x, y);
-                
-                // Update pencil position
-                pencil.style.left = (x - 45) + 'px';
-                pencil.style.top = (y - 4) + 'px';
-                pencil.style.transform = `rotate(${Math.atan2(next.y - prev.y, next.x - prev.x)}rad)`;
-            }
-            
-            // Apply styles
-            ctx.strokeStyle = style.color || '#333';
-            ctx.lineWidth = style.width || 2;
-            ctx.lineCap = 'round';
-            ctx.lineJoin = 'round';
-            
-            if (style.fill) {
-                ctx.fillStyle = style.fill;
+            // Underwater bubbles
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+            for (let i = 0; i < 8; i++) {
+                const x = Math.random() * canvas.width;
+                const y = Math.random() * canvas.height * 0.7;
+                const radius = Math.random() * 5 + 2;
+                ctx.beginPath();
+                ctx.arc(x, y, radius, 0, Math.PI * 2);
                 ctx.fill();
             }
+        }
+        
+        function drawPath(points, closed = false) {
+            if (points.length < 2) return;
+            
+            ctx.beginPath();
+            ctx.moveTo(points[0][0], points[0][1]);
+            
+            for (let i = 1; i < points.length; i++) {
+                ctx.lineTo(points[i][0], points[i][1]);
+            }
+            
+            if (closed) {
+                ctx.closePath();
+            }
+            
             ctx.stroke();
         }
         
-        function drawBackground(progress) {
-            // Ocean background (blue)
-            const colorProgress = getPhaseProgress(progress, 'color');
-            if (colorProgress > 0) {
-                const alpha = colorProgress * 0.9;
-                // Sky blue background
-                ctx.fillStyle = `rgba(52, 152, 219, ${alpha})`;
-                ctx.fillRect(60, 50, 370, 300);
+        function drawStructure(phase, partialProgress) {
+            if (phase >= 4) return; // Pause phase
+            
+            const currentPhaseData = phases[phase];
+            
+            ctx.lineWidth = currentPhaseData.lineWidth;
+            ctx.globalAlpha = currentPhaseData.opacity;
+            
+            if (phase < 3) {
+                // Sketch, detail, and ink phases
+                ctx.strokeStyle = currentPhaseData.color;
+                ctx.fillStyle = 'transparent';
                 
-                // Ground (sand)
-                ctx.fillStyle = `rgba(244, 208, 63, ${alpha})`;
-                ctx.fillRect(60, 470, 370, 100);
+                // Draw in order with partial progress
+                const totalParts = Object.keys(structure).length;
+                const partsToShow = Math.floor(totalParts * partialProgress);
+                const partialPart = (totalParts * partialProgress) % 1;
                 
-                // Add some underwater elements
-                // Jellyfish
-                for (let i = 0; i < 3; i++) {
-                    const x = 80 + i * 120;
-                    const y = 80 + Math.sin(Date.now() * 0.001 + i) * 10;
-                    
-                    // Jellyfish body
-                    ctx.beginPath();
-                    ctx.arc(x, y, 15, 0, Math.PI * 2);
-                    ctx.fillStyle = `rgba(147, 196, 255, ${alpha * 0.7})`;
-                    ctx.fill();
-                    
-                    // Jellyfish tentacles
-                    ctx.strokeStyle = `rgba(147, 196, 255, ${alpha * 0.7})`;
-                    ctx.lineWidth = 2;
-                    for (let j = 0; j < 4; j++) {
-                        ctx.beginPath();
-                        ctx.moveTo(x - 10 + j * 7, y + 15);
-                        ctx.lineTo(x - 10 + j * 7, y + 35 + Math.sin(Date.now() * 0.002 + j) * 5);
-                        ctx.stroke();
+                let partIndex = 0;
+                for (const [name, points] of Object.entries(structure)) {
+                    if (partIndex < partsToShow) {
+                        drawPath(points, true);
+                    } else if (partIndex === partsToShow && partialPart > 0) {
+                        // Draw partial path
+                        const partialPoints = points.slice(0, Math.floor(points.length * partialPart) + 1);
+                        drawPath(partialPoints, false);
                     }
+                    partIndex++;
                 }
+            } else {
+                // Color phase
+                drawBackground();
                 
-                // Bubbles
-                for (let i = 0; i < 8; i++) {
-                    ctx.beginPath();
-                    ctx.arc(
-                        100 + i * 40, 
-                        150 + Math.sin(Date.now() * 0.001 + i) * 30, 
-                        2 + Math.sin(Date.now() * 0.002 + i) * 1, 
-                        0, Math.PI * 2
-                    );
-                    ctx.fillStyle = `rgba(200, 230, 255, ${alpha * 0.6})`;
-                    ctx.fill();
-                }
-            }
-        }
-        
-        function drawKrustyKrab(progress) {
-            const currentPhase = getCurrentPhase(progress);
-            const phaseProgress = getPhaseProgress(progress, currentPhase);
-            
-            let strokeStyle = {
-                color: '#666',
-                width: 1
-            };
-            
-            switch (currentPhase) {
-                case 'sketch':
-                    strokeStyle = { color: '#999', width: 1 };
-                    pencil.style.opacity = '1';
-                    break;
-                case 'detail':
-                    strokeStyle = { color: '#555', width: 1.5 };
-                    break;
-                case 'ink':
-                    strokeStyle = { color: '#222', width: 2 };
-                    pencil.style.opacity = '0.5';
-                    break;
-                case 'color':
-                    strokeStyle = { color: '#000', width: 2 };
-                    pencil.style.opacity = '0';
-                    break;
-            }
-            
-            // Draw colored elements first (when in color phase)
-            if (currentPhase === 'color') {
-                const colorAlpha = getPhaseProgress(progress, 'color');
+                // Fill with colors
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = '#000';
                 
-                // Main building (brown wood)
-                ctx.fillStyle = `rgba(139, 111, 71, ${colorAlpha})`;
-                ctx.fillRect(120, 380, 210, 70);
-                
-                // Wood log texture
-                for (let i = 0; i < 5; i++) {
-                    ctx.fillStyle = `rgba(101, 83, 51, ${colorAlpha * 0.8})`;
-                    ctx.fillRect(120, 380 + i * 14, 210, 2);
-                }
-                
-                // Roof (darker brown)
-                ctx.fillStyle = `rgba(101, 67, 33, ${colorAlpha})`;
+                // Base
+                ctx.fillStyle = colors.base;
                 ctx.beginPath();
-                ctx.moveTo(100, 380);
-                structure.roof.forEach(point => ctx.lineTo(point.x, point.y));
-                ctx.lineTo(350, 380);
-                ctx.closePath();
+                drawPath(structure.base, true);
                 ctx.fill();
-                
-                // Windows (light blue)
-                ctx.fillStyle = `rgba(135, 206, 235, ${colorAlpha})`;
-                ctx.fillRect(140, 400, 40, 30);
-                ctx.fillRect(270, 400, 40, 30);
-                
-                // Window reflections
-                ctx.fillStyle = `rgba(255, 255, 255, ${colorAlpha * 0.4})`;
-                ctx.fillRect(145, 405, 15, 10);
-                ctx.fillRect(275, 405, 15, 10);
-                
-                // Door (dark brown)
-                ctx.fillStyle = `rgba(101, 67, 33, ${colorAlpha})`;
-                ctx.fillRect(200, 410, 50, 40);
-                
-                // Door handle
-                ctx.fillStyle = `rgba(255, 215, 0, ${colorAlpha})`;
-                ctx.beginPath();
-                ctx.arc(240, 430, 3, 0, Math.PI * 2);
-                ctx.fill();
-                
-                // Chimney (gray)
-                ctx.fillStyle = `rgba(128, 128, 128, ${colorAlpha})`;
-                ctx.fillRect(285, 260, 20, 40);
-                
-                // Smoke
-                ctx.fillStyle = `rgba(200, 200, 200, ${colorAlpha * 0.6})`;
-                for (let i = 0; i < 3; i++) {
-                    ctx.beginPath();
-                    ctx.arc(295 + Math.sin(Date.now() * 0.001 + i) * 5, 240 - i * 15, 4 + i, 0, Math.PI * 2);
-                    ctx.fill();
-                }
-                
-                // Clamshell sign (white/pink)
-                ctx.fillStyle = `rgba(255, 240, 245, ${colorAlpha})`;
-                ctx.beginPath();
-                structure.sign.forEach((point, i) => {
-                    if (i === 0) ctx.moveTo(point.x, point.y);
-                    else ctx.lineTo(point.x, point.y);
-                });
-                ctx.closePath();
-                ctx.fill();
-                
-                // Sign text
-                ctx.fillStyle = `rgba(139, 0, 0, ${colorAlpha})`;
-                ctx.font = 'bold 12px serif';
-                ctx.textAlign = 'center';
-                ctx.fillText('THE', 80, 275);
-                ctx.font = 'bold 10px serif';
-                ctx.fillText('KRUSTY', 80, 290);
-                ctx.fillText('KRAB', 80, 305);
-                
-                // Sign post (brown)
-                ctx.strokeStyle = `rgba(139, 111, 71, ${colorAlpha})`;
-                ctx.lineWidth = 6;
-                ctx.beginPath();
-                ctx.moveTo(80, 320);
-                ctx.lineTo(80, 500);
                 ctx.stroke();
                 
-                // Flag bunting (colorful)
-                const flagColors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD'];
-                for (let i = 0; i < flagColors.length && i * 2 < structure.bunting.length; i++) {
-                    const x1 = structure.bunting[i * 2].x;
-                    const y1 = structure.bunting[i * 2].y;
-                    const x2 = structure.bunting[i * 2 + 1] ? structure.bunting[i * 2 + 1].x : x1;
-                    const y2 = structure.bunting[i * 2 + 1] ? structure.bunting[i * 2 + 1].y : y1 - 10;
+                // Roof
+                ctx.fillStyle = colors.roof;
+                ctx.beginPath();
+                drawPath(structure.roof, true);
+                ctx.fill();
+                ctx.stroke();
+                
+                // Sign
+                ctx.fillStyle = colors.sign;
+                ctx.beginPath();
+                drawPath(structure.sign, true);
+                ctx.fill();
+                ctx.stroke();
+                
+                // Sign text
+                ctx.fillStyle = colors.signText;
+                ctx.font = 'bold 12px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('THE', 40, 225);
+                ctx.fillText('KRUSTY', 40, 240);
+                ctx.fillText('KRAB', 40, 255);
+                
+                // Door
+                ctx.fillStyle = colors.door;
+                ctx.beginPath();
+                drawPath(structure.door, true);
+                ctx.fill();
+                ctx.stroke();
+                
+                // Door knob
+                ctx.fillStyle = '#FFD700';
+                ctx.beginPath();
+                ctx.arc(170, 415, 3, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Windows
+                ctx.fillStyle = colors.windows;
+                ctx.beginPath();
+                drawPath(structure.leftWindow, true);
+                ctx.fill();
+                ctx.stroke();
+                
+                ctx.beginPath();
+                drawPath(structure.rightWindow, true);
+                ctx.fill();
+                ctx.stroke();
+                
+                // Chimney
+                ctx.fillStyle = colors.chimney;
+                ctx.beginPath();
+                drawPath(structure.chimney, true);
+                ctx.fill();
+                ctx.stroke();
+                
+                // Smoke
+                ctx.strokeStyle = '#666';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(210, 240);
+                ctx.quadraticCurveTo(215, 230, 220, 225);
+                ctx.quadraticCurveTo(225, 220, 230, 215);
+                ctx.stroke();
+                
+                // Bunting flags
+                ctx.lineWidth = 1;
+                ctx.strokeStyle = '#000';
+                for (let i = 0; i < structure.bunting.length - 1; i += 2) {
+                    const [x1, y1] = structure.bunting[i];
+                    const [x2, y2] = structure.bunting[i + 1];
                     
-                    ctx.fillStyle = flagColors[i % flagColors.length];
+                    // Flag triangle
+                    ctx.fillStyle = colors.bunting[Math.floor(i / 2) % colors.bunting.length];
                     ctx.beginPath();
                     ctx.moveTo(x1, y1);
-                    ctx.lineTo(x1 + 15, y1);
-                    ctx.lineTo(x1 + 7, y1 + 12);
+                    ctx.lineTo(x2, y2);
+                    ctx.lineTo(x1 + 15, y1 + 10);
                     ctx.closePath();
                     ctx.fill();
+                    ctx.stroke();
                 }
                 
-                // Bunting string
-                ctx.strokeStyle = `rgba(0, 0, 0, ${colorAlpha})`;
-                ctx.lineWidth = 1;
-                drawPath(structure.bunting, 1, {color: `rgba(0, 0, 0, ${colorAlpha})`, width: 1});
+                // Bunting rope
+                ctx.strokeStyle = '#8B4513';
+                ctx.lineWidth = 2;
+                drawPath(structure.bunting, false);
             }
             
-            // Draw outlines
-            drawPath(structure.base, phaseProgress, strokeStyle);
-            drawPath(structure.roof, phaseProgress, strokeStyle);
-            drawPath(structure.signPost, phaseProgress, strokeStyle);
-            drawPath(structure.sign, phaseProgress, strokeStyle);
-            drawPath(structure.leftWindow, phaseProgress, strokeStyle);
-            drawPath(structure.rightWindow, phaseProgress, strokeStyle);
-            drawPath(structure.door, phaseProgress, strokeStyle);
-            drawPath(structure.chimney, phaseProgress, strokeStyle);
-            drawPath(structure.bunting, phaseProgress, strokeStyle);
+            ctx.globalAlpha = 1;
+        }
+        
+        function updatePencilPosition(phase, progress) {
+            if (phase >= 3) {
+                pencil.style.opacity = '0';
+                return;
+            }
+            
+            pencil.style.opacity = '1';
+            
+            // Calculate position based on current drawing progress
+            const totalParts = Object.keys(structure).length;
+            const currentPart = Math.floor(totalParts * progress);
+            const partProgress = (totalParts * progress) % 1;
+            
+            let partIndex = 0;
+            for (const [name, points] of Object.entries(structure)) {
+                if (partIndex === currentPart && points.length > 0) {
+                    const pointIndex = Math.floor((points.length - 1) * partProgress);
+                    const [x, y] = points[pointIndex] || points[points.length - 1];
+                    
+                    pencil.style.left = `${x - 60}px`;
+                    pencil.style.top = `${y + 20}px`;
+                    pencil.style.transform = `rotate(${Math.random() * 10 - 5}deg)`;
+                    break;
+                }
+                partIndex++;
+            }
         }
         
         function animate(timestamp) {
-            if (!startTime) startTime = timestamp;
-            const elapsed = timestamp - startTime;
-            animationProgress = Math.min(elapsed / totalDuration, 1);
+            if (!isAnimating) return;
             
-            // Clear canvas
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            if (!animate.startTime) animate.startTime = timestamp;
+            const elapsed = timestamp - animate.startTime;
             
-            // Draw background
-            drawBackground(animationProgress);
-            
-            // Draw Krusty Krab
-            drawKrustyKrab(animationProgress);
-            
-            // Continue animation
-            if (animationProgress < 1) {
-                requestAnimationFrame(animate);
+            // Check if current phase is complete
+            if (elapsed >= phases[currentPhase].duration) {
+                currentPhase++;
+                progress = 0;
+                animate.startTime = timestamp;
+                
+                if (currentPhase >= phases.length) {
+                    // Animation complete - restart
+                    currentPhase = 0;
+                    clearCanvas();
+                    pencil.style.opacity = '0';
+                    setTimeout(() => {
+                        animate.startTime = null;
+                    }, 1000);
+                }
             } else {
-                // Animation complete, restart after 3 seconds
-                setTimeout(() => {
-                    startTime = null;
-                    animationProgress = 0;
-                    requestAnimationFrame(animate);
-                }, 3000);
+                progress = elapsed / phases[currentPhase].duration;
             }
+            
+            if (currentPhase < 4) {
+                clearCanvas();
+                drawStructure(currentPhase, progress);
+                updatePencilPosition(currentPhase, progress);
+            }
+            
+            animationId = requestAnimationFrame(animate);
         }
         
-        // Start animation
-        requestAnimationFrame(animate);
+        function startAnimation() {
+            isAnimating = true;
+            currentPhase = 0;
+            progress = 0;
+            animate.startTime = null;
+            animationId = requestAnimationFrame(animate);
+        }
+        
+        // Auto-start after 1 second and loop continuously
+        setTimeout(startAnimation, 1000);
     </script>
 </body>
 </html>
