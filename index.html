@@ -3,9 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spider-Man Drawing Animation</title>
- <style>
-        @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap');
+    <title>Spider-Man Animation</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Poppins:wght@300;400;600&display=swap');
+
+        :root {
+            --primary-red: #E30613; /* Strong Spider-Man Red */
+            --primary-blue: #0A2E8A; /* Strong Spider-Man Blue */
+            --accent-gold: #FFD700; /* Subtle sparkle/highlight */
+            --background-dark: #12121e;
+            --background-light: #f0f2f5;
+            --paper-lines: #c2d4da;
+            --paper-margin: #e74c3c;
+            --text-dark: #333;
+            --text-light: #ffffff;
+            --shadow-dark: rgba(0,0,0,0.4);
+            --shadow-light: rgba(255,255,255,0.1);
+        }
 
         * {
             margin: 0;
@@ -14,11 +28,8 @@
         }
 
         body {
-            background: 
-                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.2) 0%, transparent 50%),
-                linear-gradient(135deg, #0f0f23 0%, #1a1a2e 25%, #16213e 50%, #0e3460 100%);
-            font-family: 'Comic Neue', cursive;
+            background: linear-gradient(135deg, var(--background-dark) 0%, #0a0a1a 100%);
+            font-family: 'Poppins', sans-serif;
             overflow: hidden;
             height: 100vh;
             display: flex;
@@ -29,28 +40,28 @@
 
         @keyframes backgroundShift {
             0% { filter: hue-rotate(0deg) brightness(1); }
-            100% { filter: hue-rotate(15deg) brightness(1.1); }
+            100% { filter: hue-rotate(15deg) brightness(1.05); }
         }
 
         .container {
             width: 540px;
             height: 960px;
-            background: 
-                linear-gradient(135deg, #ffffff 0%, #f8f8f8 50%, #f0f0f0 100%);
-            border-radius: 25px;
+            background: linear-gradient(135deg, var(--background-light) 0%, #e0e4e8 50%, #d5dae0 100%);
+            border-radius: 30px;
             box-shadow: 
-                0 25px 50px rgba(0,0,0,0.4),
-                0 10px 25px rgba(0,0,0,0.2),
-                inset 0 1px 0 rgba(255,255,255,0.8);
+                0 30px 60px var(--shadow-dark),
+                0 15px 30px rgba(0,0,0,0.2),
+                inset 0 2px 0 rgba(255,255,255,0.8);
             position: relative;
             overflow: hidden;
-            transform: perspective(1000px) rotateX(2deg);
+            transform: perspective(1000px) rotateX(3deg) scale(0.95);
             animation: containerFloat 6s ease-in-out infinite alternate;
+            transition: transform 0.5s ease;
         }
 
         @keyframes containerFloat {
-            0% { transform: perspective(1000px) rotateX(2deg) translateY(0px); }
-            100% { transform: perspective(1000px) rotateX(2deg) translateY(-5px); }
+            0% { transform: perspective(1000px) rotateX(3deg) translateY(0px) scale(0.95); }
+            100% { transform: perspective(1000px) rotateX(3deg) translateY(-8px) scale(0.95); }
         }
 
         .container::before {
@@ -60,41 +71,70 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%);
-            border-radius: 25px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%);
+            border-radius: 30px;
             pointer-events: none;
+            z-index: 1;
         }
 
         .paper {
             width: 100%;
             height: 100%;
             background: 
-                linear-gradient(90deg, transparent 78px, #abced4 78px, #abced4 82px, transparent 82px),
+                linear-gradient(90deg, transparent 78px, var(--paper-lines) 78px, var(--paper-lines) 82px, transparent 82px),
                 repeating-linear-gradient(
                     0deg,
                     transparent,
-                    transparent 23px,
-                    rgba(171, 206, 212, 0.3) 23px,
-                    rgba(171, 206, 212, 0.3) 24px
+                    transparent 28px,
+                    rgba(var(--paper-lines), 0.4) 28px,
+                    rgba(var(--paper-lines), 0.4) 29px
                 );
-            background-size: 100% 24px;
+            background-size: 100% 29px;
             position: relative;
-            border-radius: 25px;
+            border-radius: 30px;
+            padding: 20px;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.05);
         }
 
         .paper::before {
             content: '';
             position: absolute;
             top: 0;
-            left: 30px;
+            left: 50px;
             width: 2px;
             height: 100%;
             background: linear-gradient(to bottom, 
                 transparent 0%, 
-                #ff6b6b 10%, 
-                #ff6b6b 90%, 
+                var(--paper-margin) 10%, 
+                var(--paper-margin) 90%, 
                 transparent 100%);
-            opacity: 0.6;
+            opacity: 0.7;
+        }
+
+        .title {
+            position: absolute;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'Montserrat', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary-red);
+            text-shadow: 
+                3px 3px 8px rgba(0,0,0,0.5),
+                0 0 25px rgba(227, 6, 19, 0.4);
+            opacity: 0;
+            animation: 
+                titleAppear 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 26s forwards,
+                titleGlow 3s ease-in-out 27s infinite alternate;
+            letter-spacing: 3px;
+            white-space: nowrap;
+            z-index: 2;
+        }
+
+        @keyframes titleGlow {
+            0% { text-shadow: 3px 3px 8px rgba(0,0,0,0.5), 0 0 25px rgba(227, 6, 19, 0.4); }
+            100% { text-shadow: 3px 3px 12px rgba(0,0,0,0.6), 0 0 40px rgba(227, 6, 19, 0.8); }
         }
 
         .drawing-area {
@@ -102,106 +142,88 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 400px;
-            height: 500px;
+            width: 400px; /* Adjust based on desired drawing size */
+            height: 500px; /* Adjust based on desired drawing size */
+            z-index: 5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         .hand {
             position: absolute;
-            top: -60px;
-            right: -40px;
-            width: 90px;
-            height: 130px;
+            top: 20%; /* Adjust to position relative to drawing area */
+            left: 80%; /* Adjust to position relative to drawing area */
+            width: 70px;
+            height: 100px;
             z-index: 100;
-            transform: rotate(15deg);
+            transform: rotate(20deg) translate(0px, 0px);
             opacity: 0;
-            animation: 
-                handAppear 0.8s ease-out 1s forwards,
-                handMove 15s ease-in-out 2s forwards,
-                handFloat 3s ease-in-out 2s infinite alternate;
+            animation: handAppear 0.8s cubic-bezier(0.17, 0.67, 0.83, 0.67) 1s forwards;
         }
 
-        @keyframes handMove {
-            0% { transform: rotate(15deg) translate(0, 0); }
-            20% { transform: rotate(10deg) translate(-30px, 50px); }
-            40% { transform: rotate(20deg) translate(-60px, 100px); }
-            60% { transform: rotate(5deg) translate(-40px, 150px); }
-            80% { transform: rotate(15deg) translate(-20px, 80px); }
-            100% { transform: rotate(12deg) translate(-10px, 20px); }
-        }
-
-        @keyframes handFloat {
-            0% { transform: rotate(12deg) translate(-10px, 20px) scale(1); }
-            100% { transform: rotate(12deg) translate(-10px, 20px) scale(1.02); }
+        @keyframes handAppear {
+            0% { opacity: 0; transform: rotate(20deg) translateY(-30px); }
+            100% { opacity: 1; transform: rotate(20deg) translateY(0); }
         }
 
         .hand svg {
             width: 100%;
             height: 100%;
-            filter: drop-shadow(3px 3px 8px rgba(0,0,0,0.4));
+            filter: drop-shadow(4px 4px 10px rgba(0,0,0,0.4));
         }
 
         .pencil {
             position: absolute;
-            top: 100px;
-            right: 20px;
-            width: 8px;
-            height: 70px;
+            top: 45%; /* Adjusted to connect to hand */
+            left: 90%; /* Adjusted to connect to hand */
+            width: 10px;
+            height: 80px;
             background: linear-gradient(to bottom, 
-                #f4d03f 0%, 
-                #f7dc6f 30%, 
-                #f39c12 60%, 
-                #8b4513 80%, 
-                #654321 100%);
-            border-radius: 4px;
+                #FFEB3B 0%, 
+                #FFC107 30%, 
+                #FF9800 60%, 
+                #795548 80%, 
+                #4E342E 100%);
+            border-radius: 5px;
             z-index: 101;
             opacity: 0;
-            animation: 
-                pencilAppear 0.8s ease-out 1.3s forwards,
-                pencilMove 15s ease-in-out 2s forwards,
-                pencilTilt 2s ease-in-out 2s infinite alternate;
+            animation: pencilAppear 0.8s cubic-bezier(0.17, 0.67, 0.83, 0.67) 1.3s forwards;
             box-shadow: 
-                2px 2px 4px rgba(0,0,0,0.3),
-                inset 1px 0 0 rgba(255,255,255,0.3);
+                2px 2px 5px rgba(0,0,0,0.3),
+                inset 1px 0 0 rgba(255,255,255,0.4);
+            transform-origin: bottom center; /* Pivot point for rotation */
+            transform: rotate(0deg);
         }
 
-        @keyframes pencilMove {
-            0% { transform: translate(0, 0) rotate(0deg); }
-            20% { transform: translate(-30px, 50px) rotate(-10deg); }
-            40% { transform: translate(-60px, 100px) rotate(-20deg); }
-            60% { transform: translate(-40px, 150px) rotate(-5deg); }
-            80% { transform: translate(-20px, 80px) rotate(-15deg); }
-            100% { transform: translate(-10px, 20px) rotate(-8deg); }
-        }
-
-        @keyframes pencilTilt {
-            0% { transform: translate(-10px, 20px) rotate(-8deg); }
-            100% { transform: translate(-10px, 20px) rotate(-12deg); }
+        @keyframes pencilAppear {
+            0% { opacity: 0; transform: scale(0.7) rotate(0deg); }
+            100% { opacity: 1; transform: scale(1) rotate(-15deg); }
         }
 
         .pencil::before {
             content: '';
             position: absolute;
-            top: -10px;
+            top: -12px;
             left: 50%;
             transform: translateX(-50%);
             width: 0;
             height: 0;
-            border-left: 4px solid transparent;
-            border-right: 4px solid transparent;
-            border-bottom: 10px solid #2c3e50;
-            filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.3));
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-bottom: 12px solid #212121;
+            filter: drop-shadow(1px 1px 3px rgba(0,0,0,0.4));
         }
 
         .pencil::after {
             content: '';
             position: absolute;
-            top: -12px;
+            top: -14px;
             left: 50%;
             transform: translateX(-50%);
-            width: 2px;
-            height: 2px;
-            background: #34495e;
+            width: 3px;
+            height: 3px;
+            background: #424242;
             border-radius: 50%;
         }
 
@@ -211,155 +233,48 @@
             position: relative;
         }
 
-        .sketch-layer {
+        .sketch-layer, .color-layer {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             opacity: 0;
-        }
-
-        .color-layer {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-        }
-
-        .title {
-            position: absolute;
-            top: 40px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 28px;
-            font-weight: 700;
-            color: #e74c3c;
-            text-shadow: 
-                3px 3px 6px rgba(0,0,0,0.4),
-                0 0 20px rgba(231, 76, 60, 0.3);
-            opacity: 0;
-            animation: 
-                titleAppear 1.5s ease-out 26s forwards,
-                titleGlow 3s ease-in-out 27s infinite alternate;
-            letter-spacing: 2px;
-        }
-
-        @keyframes titleGlow {
-            0% { text-shadow: 3px 3px 6px rgba(0,0,0,0.4), 0 0 20px rgba(231, 76, 60, 0.3); }
-            100% { text-shadow: 3px 3px 6px rgba(0,0,0,0.4), 0 0 30px rgba(231, 76, 60, 0.6); }
-        }
-
-        .progress-container {
-            position: absolute;
-            bottom: 40px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 220px;
-            text-align: center;
-        }
-
-        .progress-label {
-            font-size: 12px;
-            color: rgba(0,0,0,0.6);
-            margin-bottom: 8px;
-            font-weight: 400;
-            opacity: 0;
-            animation: labelAppear 0.5s ease-out 1.5s forwards;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 6px;
-            background: 
-                linear-gradient(135deg, 
-                    rgba(255,255,255,0.4) 0%, 
-                    rgba(0,0,0,0.1) 100%);
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 
-                inset 0 2px 4px rgba(0,0,0,0.2),
-                0 1px 0 rgba(255,255,255,0.3);
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, 
-                #e74c3c 0%, 
-                #f39c12 25%, 
-                #3498db 50%, 
-                #e74c3c 75%, 
-                #9b59b6 100%);
-            background-size: 200% 100%;
-            width: 0%;
-            border-radius: 10px;
-            animation: 
-                progressFill 25s linear 2s forwards,
-                shimmer 3s linear infinite;
-            box-shadow: 0 0 10px rgba(231, 76, 60, 0.5);
-        }
-
-        @keyframes shimmer {
-            0% { background-position: -200% 0; }
-            100% { background-position: 200% 0; }
-        }
-
-        @keyframes handAppear {
-            0% { opacity: 0; transform: rotate(15deg) translateY(-20px); }
-            100% { opacity: 1; transform: rotate(15deg) translateY(0); }
-        }
-
-        @keyframes pencilAppear {
-            0% { opacity: 0; transform: scale(0.8); }
-            100% { opacity: 1; transform: scale(1); }
-        }
-
-        @keyframes titleAppear {
-            0% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
-            100% { opacity: 1; transform: translateX(-50%) translateY(0); }
-        }
-
-        @keyframes labelAppear {
-            0% { opacity: 0; }
-            100% { opacity: 1; }
-        }
-
-        @keyframes progressFill {
-            to { width: 100%; }
         }
 
         .sketch-animation {
-            animation: sketchDraw 12s ease-in-out 2s forwards;
+            animation: sketchDrawEffect 12s cubic-bezier(0.25, 0.46, 0.45, 0.94) 2s forwards;
         }
 
         .color-animation {
-            animation: colorReveal 10s ease-in-out 14s forwards;
+            animation: colorRevealEffect 10s cubic-bezier(0.25, 0.46, 0.45, 0.94) 14s forwards;
         }
 
-        @keyframes sketchDraw {
+        @keyframes sketchDrawEffect {
             0% { opacity: 0; }
             10% { opacity: 1; }
             100% { opacity: 1; }
         }
 
-        @keyframes colorReveal {
+        @keyframes colorRevealEffect {
             0% { opacity: 0; }
             10% { opacity: 1; }
             100% { opacity: 1; }
         }
 
-        .drawing-effect {
-            stroke-dasharray: 1000;
-            stroke-dashoffset: 1000;
-            animation: drawPath 12s ease-in-out 2s forwards;
+        .drawing-path {
+            fill: none;
+            stroke: #333;
+            stroke-width: 3;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            stroke-dasharray: 2000; /* Needs to be larger than the longest path */
+            stroke-dashoffset: 2000;
+            animation: drawLine 12s linear forwards;
         }
 
-        @keyframes drawPath {
-            to {
-                stroke-dashoffset: 0;
-            }
+        @keyframes drawLine {
+            to { stroke-dashoffset: 0; }
         }
 
         .color-fill {
@@ -372,6 +287,62 @@
             100% { opacity: 1; }
         }
 
+        .progress-container {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 250px;
+            text-align: center;
+            z-index: 10;
+        }
+
+        .progress-label {
+            font-size: 14px;
+            color: var(--text-dark);
+            margin-bottom: 10px;
+            font-weight: 600;
+            opacity: 0;
+            animation: labelAppear 0.5s ease-out 1.5s forwards;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        @keyframes labelAppear {
+            0% { opacity: 0; transform: translateY(10px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(0,0,0,0.1) 100%);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 
+                inset 0 2px 5px rgba(0,0,0,0.2),
+                0 1px 0 rgba(255,255,255,0.3);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, 
+                var(--primary-red) 0%, 
+                var(--primary-blue) 50%, 
+                var(--primary-red) 100%);
+            background-size: 200% 100%;
+            width: 0%;
+            border-radius: 15px;
+            animation: 
+                progressFill 25s linear 2s forwards,
+                shimmer 3s linear infinite;
+            box-shadow: 0 0 12px rgba(var(--primary-red), 0.6);
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
         .final-glow {
             position: absolute;
             top: 0;
@@ -380,46 +351,35 @@
             height: 100%;
             background: 
                 radial-gradient(circle at center, 
-                    rgba(231,76,60,0.4) 0%, 
-                    rgba(52,152,219,0.2) 40%, 
+                    rgba(var(--primary-red),0.4) 0%, 
+                    rgba(var(--primary-blue),0.2) 40%, 
                     transparent 70%);
             opacity: 0;
             animation: finalGlow 3s ease-in-out 24s forwards;
+            z-index: 8;
         }
 
         @keyframes finalGlow {
-            0% { opacity: 0; transform: scale(0.8); }
-            50% { opacity: 1; transform: scale(1.02); }
+            0% { opacity: 0; transform: scale(0.7); }
+            50% { opacity: 1; transform: scale(1.05); }
             100% { opacity: 0.4; transform: scale(1); }
         }
 
         .sparkle {
             position: absolute;
-            width: 4px;
-            height: 4px;
-            background: #fff;
+            background: var(--accent-gold);
             border-radius: 50%;
             opacity: 0;
-            animation: sparkle 2s ease-in-out infinite;
+            animation: sparkle 1.5s ease-in-out infinite;
+            z-index: 10;
         }
 
-        .sparkle:nth-child(1) {
-            top: 20%;
-            left: 80%;
-            animation-delay: 0s;
-        }
+        .sparkle:nth-child(1) { top: 20%; left: 80%; width: 4px; height: 4px; animation-delay: 0s; }
+        .sparkle:nth-child(2) { top: 60%; left: 20%; width: 5px; height: 5px; animation-delay: 0.3s; }
+        .sparkle:nth-child(3) { top: 80%; left: 70%; width: 3px; height: 3px; animation-delay: 0.6s; }
+        .sparkle:nth-child(4) { top: 35%; left: 10%; width: 6px; height: 6px; animation-delay: 0.9s; }
+        .sparkle:nth-child(5) { top: 10%; left: 45%; width: 4px; height: 4px; animation-delay: 1.2s; }
 
-        .sparkle:nth-child(2) {
-            top: 60%;
-            left: 20%;
-            animation-delay: 0.5s;
-        }
-
-        .sparkle:nth-child(3) {
-            top: 80%;
-            left: 70%;
-            animation-delay: 1s;
-        }
 
         @keyframes sparkle {
             0%, 100% { opacity: 0; transform: scale(0); }
@@ -431,31 +391,23 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 200px;
-            height: 200px;
+            width: 250px;
+            height: 250px;
             background: 
                 radial-gradient(circle, 
-                    rgba(231,76,60,0.8) 0%, 
-                    rgba(52,152,219,0.6) 50%, 
+                    rgba(var(--primary-red),0.8) 0%, 
+                    rgba(var(--primary-blue),0.6) 50%, 
                     transparent 70%);
             border-radius: 50%;
             opacity: 0;
-            animation: completionBurst 1s ease-out 25s forwards;
+            animation: completionBurst 1.5s cubic-bezier(0.17, 0.67, 0.83, 0.67) 25s forwards;
+            z-index: 9;
         }
 
         @keyframes completionBurst {
-            0% { 
-                opacity: 0; 
-                transform: translate(-50%, -50%) scale(0); 
-            }
-            50% { 
-                opacity: 1; 
-                transform: translate(-50%, -50%) scale(1.5); 
-            }
-            100% { 
-                opacity: 0; 
-                transform: translate(-50%, -50%) scale(2); 
-            }
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0); }
+            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.8); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(2.5); }
         }
     </style>
 </head>
@@ -466,11 +418,11 @@
             
             <div class="hand">
                 <svg viewBox="0 0 100 120">
-                    <path d="M20 40 Q30 35 40 40 L45 45 Q50 35 60 40 L65 45 Q70 35 75 45 L80 50 Q75 60 70 65 L65 70 Q60 75 55 70 L50 65 Q45 70 40 65 L35 60 Q30 65 25 60 L20 55 Z" 
-                          fill="#fdbcb4" stroke="#e85d75" stroke-width="1"/>
-                    <circle cx="35" cy="50" r="2" fill="#d4a574"/>
-                    <circle cx="50" cy="48" r="2" fill="#d4a574"/>
-                    <circle cx="65" cy="52" r="2" fill="#d4a574"/>
+                    <path d="M30 40 Q40 30 50 40 L55 50 Q60 40 70 50 L75 60 Q70 70 65 75 L60 80 Q55 85 50 80 L45 75 Q40 80 35 75 L30 70 Q25 75 20 65 L25 55 Z" 
+                          fill="#f8d4b8" stroke="#d6a782" stroke-width="2"/>
+                    <circle cx="40" cy="55" r="3" fill="#c49a6e"/>
+                    <circle cx="55" cy="53" r="3" fill="#c49a6e"/>
+                    <circle cx="70" cy="57" r="3" fill="#c49a6e"/>
                 </svg>
             </div>
             
@@ -478,81 +430,51 @@
             
             <div class="drawing-area">
                 <div class="spider-man">
-                    <!-- Sketch Layer -->
                     <div class="sketch-layer sketch-animation">
                         <svg viewBox="0 0 400 500" style="width: 100%; height: 100%;">
-                            <!-- Spider-Man Outline -->
-                            <path class="drawing-effect" d="M200 50 Q180 60 170 80 Q160 100 165 120 L160 140 Q155 160 160 180 L170 200 Q180 220 200 230 L220 240 Q240 250 250 270 L260 290 Q270 310 275 330 L280 350 Q285 370 280 390 L275 410 Q270 430 260 440 L240 450 Q220 455 200 450 L180 445 Q160 440 150 430 L140 410 Q135 390 140 370 L145 350 Q150 330 160 310 L170 290 Q180 270 190 250 L200 230 Q210 210 215 190 L220 170 Q225 150 220 130 L215 110 Q210 90 200 70 Z" 
-                                  fill="none" stroke="#333" stroke-width="2"/>
+                            <path class="drawing-path" 
+                                d="M190 70 Q180 50 160 55 L140 60 Q120 70 110 90 L90 150 Q80 200 100 240 L130 280 Q160 310 180 330 L200 340 L220 330 Q240 310 270 280 L300 240 Q320 200 310 150 L290 90 Q280 70 260 60 L240 55 Q220 50 210 70 Z
+                                   M110 240 Q100 260 95 280 L90 320 Q85 360 100 380 L120 420 Q140 450 170 460 L180 470 Q190 480 200 470 L210 460 Q240 450 260 420 L280 380 Q295 360 290 320 L285 280 Q280 260 270 240 Z
+                                   M140 200 Q120 210 110 230 L100 250 Q90 270 100 290 L110 310 Q120 330 140 340 Z
+                                   M260 200 Q280 210 290 230 L300 250 Q310 270 300 290 L290 310 Q280 330 260 340 Z" />
+
+                            <circle class="drawing-path" cx="200" cy="80" r="40" />
                             
-                            <!-- Head -->
-                            <circle class="drawing-effect" cx="200" cy="80" r="30" fill="none" stroke="#333" stroke-width="2"/>
+                            <path class="drawing-path" d="M175 65 Q185 55 195 65 Q205 75 195 85 Q185 95 175 85 Q165 75 175 65 Z" />
+                            <path class="drawing-path" d="M225 65 Q215 55 205 65 Q195 75 205 85 Q215 95 225 85 Q235 75 225 65 Z" />
                             
-                            <!-- Eye shapes -->
-                            <path class="drawing-effect" d="M185 75 Q190 70 195 75 Q200 80 195 85 Q190 90 185 85 Q180 80 185 75 Z" 
-                                  fill="none" stroke="#333" stroke-width="1.5"/>
-                            <path class="drawing-effect" d="M205 75 Q210 70 215 75 Q220 80 215 85 Q210 90 205 85 Q200 80 205 75 Z" 
-                                  fill="none" stroke="#333" stroke-width="1.5"/>
-                            
-                            <!-- Web pattern on head -->
-                            <path class="drawing-effect" d="M175 60 Q200 65 225 60 M175 70 Q200 75 225 70 M175 80 Q200 85 225 80 M175 90 Q200 95 225 90 M175 100 Q200 105 225 100" 
-                                  fill="none" stroke="#333" stroke-width="1"/>
-                            
-                            <!-- Arms -->
-                            <path class="drawing-effect" d="M170 120 Q150 130 140 150 Q130 170 140 190 Q150 210 170 220" 
-                                  fill="none" stroke="#333" stroke-width="2"/>
-                            <path class="drawing-effect" d="M230 120 Q250 130 260 150 Q270 170 260 190 Q250 210 230 220" 
-                                  fill="none" stroke="#333" stroke-width="2"/>
-                            
-                            <!-- Legs -->
-                            <path class="drawing-effect" d="M180 340 Q170 360 160 380 Q150 400 160 420 Q170 440 180 450" 
-                                  fill="none" stroke="#333" stroke-width="2"/>
-                            <path class="drawing-effect" d="M220 340 Q230 360 240 380 Q250 400 240 420 Q230 440 220 450" 
-                                  fill="none" stroke="#333" stroke-width="2"/>
-                            
-                            <!-- Spider symbol -->
-                            <path class="drawing-effect" d="M200 150 L195 160 L205 160 Z M200 150 L190 170 L210 170 M200 150 L185 180 L215 180" 
-                                  fill="none" stroke="#333" stroke-width="1.5"/>
+                            <path class="drawing-path" d="M200 230 L195 240 L205 240 Z M200 230 L185 250 L215 250 M200 230 L175 270 L225 270 L200 230" />
+
+                            <path class="drawing-path" d="M165 60 L235 60 M160 70 L240 70 M155 80 L245 80 M150 90 L250 90 M145 100 L255 100 M140 110 L260 110" />
+                            <path class="drawing-path" d="M200 40 V120 M180 50 L160 90 M220 50 L240 90 M170 100 L140 110 M230 100 L260 110" />
+
                         </svg>
                     </div>
                     
-                    <!-- Color Layer -->
                     <div class="color-layer color-animation">
                         <svg viewBox="0 0 400 500" style="width: 100%; height: 100%;">
-                            <!-- Red body parts -->
-                            <path class="color-fill" d="M200 50 Q180 60 170 80 Q160 100 165 120 L160 140 Q155 160 160 180 L170 200 Q180 220 200 230 L220 240 Q240 250 250 270 L260 290 Q270 310 275 330 L280 350 Q285 370 280 390 L275 410 Q270 430 260 440 L240 450 Q220 455 200 450 L180 445 Q160 440 150 430 L140 410 Q135 390 140 370 L145 350 Q150 330 160 310 L170 290 Q180 270 190 250 L200 230 Q210 210 215 190 L220 170 Q225 150 220 130 L215 110 Q210 90 200 70 Z" 
-                                  fill="#DC143C" stroke="#8B0000" stroke-width="1"/>
+                            <path class="color-fill" fill="var(--primary-red)" stroke="darkred" stroke-width="1"
+                                d="M190 70 Q180 50 160 55 L140 60 Q120 70 110 90 L90 150 Q80 200 100 240 L130 280 Q160 310 180 330 L200 340 L220 330 Q240 310 270 280 L300 240 Q320 200 310 150 L290 90 Q280 70 260 60 L240 55 Q220 50 210 70 Z
+                                   M140 200 Q120 210 110 230 L100 250 Q90 270 100 290 L110 310 Q120 330 140 340 Z
+                                   M260 200 Q280 210 290 230 L300 250 Q310 270 300 290 L290 310 Q280 330 260 340 Z" />
+
+                            <path class="color-fill" fill="var(--primary-blue)" stroke="darkblue" stroke-width="1"
+                                d="M110 240 Q100 260 95 280 L90 320 Q85 360 100 380 L120 420 Q140 450 170 460 L180 470 Q190 480 200 470 L210 460 Q240 450 260 420 L280 380 Q295 360 290 320 L285 280 Q280 260 270 240 Z" />
                             
-                            <!-- Blue body parts -->
-                            <path class="color-fill" d="M180 340 Q170 360 160 380 Q150 400 160 420 Q170 440 180 450 L220 450 Q230 440 240 420 Q250 400 240 380 Q230 360 220 340 Z" 
-                                  fill="#0047AB" stroke="#002366" stroke-width="1"/>
+                            <circle class="color-fill" cx="200" cy="80" r="40" fill="var(--primary-red)" stroke="darkred" stroke-width="1"/>
                             
-                            <!-- Arms in red -->
-                            <path class="color-fill" d="M170 120 Q150 130 140 150 Q130 170 140 190 Q150 210 170 220" 
-                                  fill="#DC143C" stroke="#8B0000" stroke-width="1"/>
-                            <path class="color-fill" d="M230 120 Q250 130 260 150 Q270 170 260 190 Q250 210 230 220" 
-                                  fill="#DC143C" stroke="#8B0000" stroke-width="1"/>
+                            <path class="color-fill" fill="white" stroke="#333" stroke-width="1"
+                                d="M175 65 Q185 55 195 65 Q205 75 195 85 Q185 95 175 85 Q165 75 175 65 Z" />
+                            <path class="color-fill" fill="white" stroke="#333" stroke-width="1"
+                                d="M225 65 Q215 55 205 65 Q195 75 205 85 Q215 95 225 85 Q235 75 225 65 Z" />
                             
-                            <!-- Head in red -->
-                            <circle class="color-fill" cx="200" cy="80" r="30" fill="#DC143C" stroke="#8B0000" stroke-width="1"/>
+                            <path class="color-fill" fill="none" stroke="black" stroke-width="1.5"
+                                d="M165 60 L235 60 M160 70 L240 70 M155 80 L245 80 M150 90 L250 90 M145 100 L255 100 M140 110 L260 110" />
+                            <path class="color-fill" fill="none" stroke="black" stroke-width="1.5"
+                                d="M200 40 V120 M180 50 L160 90 M220 50 L240 90 M170 100 L140 110 M230 100 L260 110" />
                             
-                            <!-- White eye lenses -->
-                            <path class="color-fill" d="M185 75 Q190 70 195 75 Q200 80 195 85 Q190 90 185 85 Q180 80 185 75 Z" 
-                                  fill="white" stroke="#333" stroke-width="1"/>
-                            <path class="color-fill" d="M205 75 Q210 70 215 75 Q220 80 215 85 Q210 90 205 85 Q200 80 205 75 Z" 
-                                  fill="white" stroke="#333" stroke-width="1"/>
-                            
-                            <!-- Black web pattern -->
-                            <path class="color-fill" d="M175 60 Q200 65 225 60 M175 70 Q200 75 225 70 M175 80 Q200 85 225 80 M175 90 Q200 95 225 90 M175 100 Q200 105 225 100" 
-                                  fill="none" stroke="black" stroke-width="1.5"/>
-                            
-                            <!-- Spider symbol in black -->
-                            <path class="color-fill" d="M200 150 L195 160 L205 160 Z M200 150 L190 170 L210 170 M200 150 L185 180 L215 180" 
-                                  fill="black" stroke="black" stroke-width="1"/>
-                            
-                            <!-- Additional web lines for detail -->
-                            <path class="color-fill" d="M160 120 Q180 130 200 120 Q220 130 240 120 M160 140 Q180 150 200 140 Q220 150 240 140 M160 160 Q180 170 200 160 Q220 170 240 160" 
-                                  fill="none" stroke="black" stroke-width="1"/>
+                            <path class="color-fill" fill="black" stroke="black" stroke-width="1"
+                                d="M200 230 L195 240 L205 240 Z M200 230 L185 250 L215 250 M200 230 L175 270 L225 270 L200 230" />
                         </svg>
                     </div>
                     
@@ -560,8 +482,11 @@
                 </div>
             </div>
             
-            <div class="progress-bar">
-                <div class="progress-fill"></div>
+            <div class="progress-container">
+                <div class="progress-label">Drawing Progress...</div>
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -570,94 +495,134 @@
         // Add some interactive sparkle effects
         function createSparkle() {
             const sparkle = document.createElement('div');
-            sparkle.style.position = 'absolute';
-            sparkle.style.width = '4px';
-            sparkle.style.height = '4px';
-            sparkle.style.backgroundColor = '#FFD700';
-            sparkle.style.borderRadius = '50%';
-            sparkle.style.pointerEvents = 'none';
-            sparkle.style.zIndex = '1000';
+            sparkle.classList.add('sparkle');
             
             const container = document.querySelector('.drawing-area');
             const rect = container.getBoundingClientRect();
             
             sparkle.style.left = Math.random() * rect.width + 'px';
             sparkle.style.top = Math.random() * rect.height + 'px';
+            sparkle.style.width = Math.random() * 3 + 3 + 'px'; // Random size 3-6px
+            sparkle.style.height = sparkle.style.width;
             
             container.appendChild(sparkle);
             
-            // Animate sparkle
-            sparkle.animate([
-                { opacity: 0, transform: 'scale(0)' },
-                { opacity: 1, transform: 'scale(1)' },
-                { opacity: 0, transform: 'scale(0)' }
-            ], {
-                duration: 1000,
-                easing: 'ease-in-out'
-            });
-            
+            // Sparkle animation is handled by CSS, just remove after some time
             setTimeout(() => {
                 sparkle.remove();
-            }, 1000);
+            }, 1500); // Match CSS animation duration
         }
 
         // Add sparkles during color phase
         setTimeout(() => {
-            const sparkleInterval = setInterval(createSparkle, 200);
+            const sparkleInterval = setInterval(createSparkle, 150);
             setTimeout(() => {
                 clearInterval(sparkleInterval);
-            }, 8000);
-        }, 16000);
-
-        // Add drawing sound effect simulation
-        const drawingPhases = [
-            { start: 2000, duration: 12000, intensity: 'sketch' },
-            { start: 14000, duration: 10000, intensity: 'color' }
-        ];
+            }, 8000); // Duration for sparkles
+        }, 16000); // Start sparkles when color animation begins
 
         // Simulate pencil movement
         const hand = document.querySelector('.hand');
         const pencil = document.querySelector('.pencil');
+        const drawingArea = document.querySelector('.drawing-area');
+        const drawingPaths = document.querySelectorAll('.drawing-path');
+        const colorFills = document.querySelectorAll('.color-fill');
 
         function animatePencil() {
-            const movements = [
-                { x: 0, y: 0, rotation: 15 },
-                { x: 10, y: 20, rotation: 25 },
-                { x: -5, y: 15, rotation: 10 },
-                { x: 15, y: 5, rotation: 30 },
-                { x: 0, y: 0, rotation: 15 }
-            ];
+            const pathData = Array.from(drawingPaths).map(path => {
+                const length = path.getTotalLength();
+                path.style.strokeDasharray = length;
+                path.style.strokeDashoffset = length;
+                return { pathElement: path, length: length };
+            });
 
-            let currentMove = 0;
-            const moveInterval = setInterval(() => {
-                const move = movements[currentMove % movements.length];
-                if (hand) {
-                    hand.style.transform = `translate(${move.x}px, ${move.y}px) rotate(${move.rotation}deg)`;
+            let currentPathIndex = 0;
+            let currentPathProgress = 0;
+            const animationDuration = 12000; // Total duration for drawing lines
+            const startTime = Date.now();
+
+            function drawFrame() {
+                const elapsed = Date.now() - startTime;
+                const progress = elapsed / animationDuration;
+
+                if (progress >= 1) {
+                    // All paths drawn, stop animation
+                    drawingPaths.forEach(path => path.style.strokeDashoffset = 0);
+                    if (hand) hand.style.opacity = '0';
+                    if (pencil) pencil.style.opacity = '0';
+                    return;
                 }
-                currentMove++;
-            }, 500);
 
-            // Stop pencil animation when drawing is complete
-            setTimeout(() => {
-                clearInterval(moveInterval);
-                if (hand) hand.style.opacity = '0';
-                if (pencil) pencil.style.opacity = '0';
-            }, 24000);
+                // Animate each path sequentially
+                let totalLengthDrawn = 0;
+                for (let i = 0; i < currentPathIndex; i++) {
+                    totalLengthDrawn += pathData[i].length;
+                }
+                totalLengthDrawn += currentPathProgress;
+
+                const targetTotalLength = progress * pathData.reduce((sum, p) => sum + p.length, 0);
+
+                if (currentPathIndex < pathData.length) {
+                    const currentPathObj = pathData[currentPathIndex];
+                    currentPathProgress = targetTotalLength - pathData.slice(0, currentPathIndex).reduce((sum, p) => sum + p.length, 0);
+
+                    if (currentPathProgress > currentPathObj.length) {
+                        currentPathProgress = currentPathObj.length;
+                        currentPathIndex++;
+                    }
+
+                    if (currentPathObj) {
+                        currentPathObj.pathElement.style.strokeDashoffset = currentPathObj.length - currentPathProgress;
+                        
+                        // Get the current point on the path
+                        let point;
+                        try {
+                            point = currentPathObj.pathElement.getPointAtLength(currentPathProgress);
+                        } catch (e) {
+                            // Fallback if getPointAtLength fails for complex paths or invalid points
+                            console.warn("getPointAtLength failed, using previous point or default.");
+                            point = point || { x: 0, y: 0 }; 
+                        }
+
+                        // Adjust for drawing area's position relative to the document
+                        const drawingRect = drawingArea.getBoundingClientRect();
+                        const containerRect = document.querySelector('.container').getBoundingClientRect();
+
+                        const handX = point.x + drawingRect.left - containerRect.left + 20; // Offset for hand position
+                        const handY = point.y + drawingRect.top - containerRect.top - 50; // Offset for hand position
+
+                        const handRotation = Math.sin(progress * Math.PI * 8) * 10 + 20; // Wavy rotation
+                        const pencilRotation = Math.sin(progress * Math.PI * 8) * -10 - 15; // Inverse wavy rotation
+
+                        if (hand) {
+                            hand.style.transform = `translate(${handX}px, ${handY}px) rotate(${handRotation}deg)`;
+                            hand.style.transition = 'transform 50ms linear'; // Smooth movement
+                        }
+                        if (pencil) {
+                            pencil.style.transform = `translate(${handX + 30}px, ${handY + 55}px) rotate(${pencilRotation}deg)`; // Adjust pencil offset from hand
+                            pencil.style.transition = 'transform 50ms linear'; // Smooth movement
+                        }
+                    }
+                }
+                requestAnimationFrame(drawFrame);
+            }
+
+            requestAnimationFrame(drawFrame);
         }
 
-        // Start pencil animation
+        // Start pencil animation after a short delay
         setTimeout(animatePencil, 2000);
 
         // Add completion celebration
         setTimeout(() => {
             const container = document.querySelector('.container');
-            container.style.transform = 'scale(1.02)';
-            container.style.transition = 'transform 0.5s ease-in-out';
+            container.style.transform = 'perspective(1000px) rotateX(0deg) scale(1.02)';
+            container.style.transition = 'transform 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55)'; // Bouncy effect
             
             setTimeout(() => {
-                container.style.transform = 'scale(1)';
-            }, 500);
-        }, 26000);
+                container.style.transform = 'perspective(1000px) rotateX(3deg) scale(0.95)';
+            }, 800);
+        }, 26000); // Adjust based on total animation time
     </script>
 </body>
 </html>
