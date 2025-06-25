@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spiderman Drawing Animation</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f5f5f5;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+        
+        .drawing-container {
+            position: relative;
+            width: 600px;
+            height: 800px;
+        }
+        
+        .paper {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-color: #fff8e6;
+            border-radius: 2px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+        
+        .paper:before {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: linear-gradient(#e0e0e0 1px, transparent 1px);
+            background-size: 20px 20px;
+            opacity: 0.2;
+        }
+        
+        .hand {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M30,10 L40,0 L90,40 L80,50 L70,40 L60,50 L50,40 L40,50 L30,40 L20,50 L10,40 Z" fill="%23f5d3b3"/><path d="M30,10 L40,0 L90,40 L80,50 L70,40 L60,50 L50,40 L40,50 L30,40 L20,50 L10,40 Z" fill="none" stroke="%23333" stroke-width="0.5"/></svg>');
+            background-size: contain;
+            background-repeat: no-repeat;
+            transform-origin: 0% 0%;
+            z-index: 10;
+            pointer-events: none;
+        }
+        
+        .pencil {
+            position: absolute;
+            width: 120px;
+            height: 8px;
+            background: linear-gradient(90deg, #f5d3b3 0%, #f5d3b3 10%, #ffd700 10%, #ffd700 20%, #8b4513 20%, #8b4513 25%, #ff0000 25%, #ff0000 30%, #8b4513 30%, #8b4513 100%);
+            transform-origin: 0% 50%;
+            z-index: 9;
+            pointer-events: none;
+        }
+        
+        .drawing {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .controls {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+        
+        button {
+            padding: 10px 20px;
+            background-color: #e63946;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #d62839;
+        }
+        
+        .progress-container {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 5px;
+            background-color: #ddd;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background-color: #e63946;
+            width: 0%;
+            transition: width 0.1s;
+        }
+        
+        .title {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #333;
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+    <div class="drawing-container">
+        <div class="title">Drawing Spiderman</div>
+        <div class="paper">
+            <div class="drawing" id="drawing"></div>
+            <div class="hand" id="hand"></div>
+            <div class="pencil" id="pencil"></div>
+        </div>
+        <div class="progress-container">
+            <div class="progress-bar" id="progress"></div>
+        </div>
+    </div>
+    
+    <div class="controls">
+        <button id="startBtn">Start Drawing</button>
+        <button id="resetBtn">Reset</button>
+    </div>
+
+    <script>
+        const drawing = document.getElementById('drawing');
+        const hand = document.getElementById('hand');
+        const pencil = document.getElementById('pencil');
+        const startBtn = document.getElementById('startBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const progress = document.getElementById('progress');
+        
+        let isDrawing = false;
+        let animationFrame;
+        let currentStep = 0;
+        
+        // Spiderman drawing steps (SVG paths)
+        const drawingSteps = [
+            // Head outline
+            {path: 'M300,200 Q350,150 400,200 Q450,250 400,300 Q350,350 300,300 Q250,250 300,200 Z', color: '#000', width: 2, duration: 1000},
+            
+            // Eyes outline
+            {path: 'M320,220 Q340,200 360,220 Q340,240 320,220 Z', color: '#000', width: 2, duration: 800},
+            {path: 'M380,220 Q400,200 420,220 Q400,240 380,220 Z', color: '#000', width: 2, duration: 800},
+            
+            // Body outline
+            {path: 'M350,300 L350,500', color: '#000', width: 2, duration: 800},
+            {path: 'M350,350 L300,400', color: '#000', width: 2, duration: 800},
+            {path: 'M350,350 L400,400', color: '#000', width: 2, duration: 800},
+            {path: 'M350,500 L300,600', color: '#000', width: 2, duration: 800},
+            {path: 'M350,500 L400,600', color: '#000', width: 2, duration: 800},
+            
+            // Arms
+            {path: 'M350,350 L280,320', color: '#000', width: 2, duration: 800},
+            {path: 'M350,350 L420,320', color: '#000', width: 2, duration: 800},
+            
+            // Web pattern on head
+            {path: 'M300,200 L400,300', color: '#000', width: 1, duration: 600},
+            {path: 'M400,200 L300,300', color: '#000', width: 1, duration: 600},
+            {path: 'M350,150 L350,350', color: '#000', width: 1, duration: 600},
+            
+            // Web pattern on body
+            {path: 'M300,400 L400,400', color: '#000', width: 1, duration: 600},
+            {path: 'M280,320 L420,320', color: '#000', width: 1, duration: 600},
+            {path: 'M300,400 L350,350 L400,400', color: '#000', width: 1, duration: 600},
+            
+            // Spider logo
+            {path: 'M350,380 Q330,400 350,420 Q370,400 350,380 Z', color: '#000', width: 2, duration: 800},
+            {path: 'M350,380 L350,360', color: '#000', width: 2, duration: 400},
+            {path: 'M350,420 L350,440', color: '#000', width: 2, duration: 400},
+            {path: 'M330,400 L310,400', color: '#000', width: 2, duration: 400},
+            {path: 'M370,400 L390,400', color: '#000', width: 2, duration: 400},
+            
+            // Color filling - red parts
+            {path: 'M300,200 Q350,150 400,200 Q450,250 400,300 Q350,350 300,300 Q250,250 300,200 Z', color: '#e63946', width: 0, duration: 1200, fill: true},
+            {path: 'M320,220 Q340,200 360,220 Q340,240 320,220 Z', color: '#000', width: 0, duration: 800, fill: true},
+            {path: 'M380,220 Q400,200 420,220 Q400,240 380,220 Z', color: '#000', width: 0, duration: 800, fill: true},
+            {path: 'M350,350 L280,320 L350,300 Z', color: '#e63946', width: 0, duration: 1000, fill: true},
+            {path: 'M350,350 L420,320 L350,300 Z', color: '#e63946', width: 0, duration: 1000, fill: true},
+            {path: 'M350,350 L300,400 L350,500 L400,400 Z', color: '#e63946', width: 0, duration: 1200, fill: true},
+            
+            // Color filling - blue parts
+            {path: 'M280,320 L300,400 L350,350 Z', color: '#1d3557', width: 0, duration: 1000, fill: true},
+            {path: 'M420,320 L400,400 L350,350 Z', color: '#1d3557', width: 0, duration: 1000, fill: true},
+            {path: 'M300,400 L350,500 L300,600 Z', color: '#1d3557', width: 0, duration: 1000, fill: true},
+            {path: 'M400,400 L350,500 L400,600 Z', color: '#1d3557', width: 0, duration: 1000, fill: true},
+            
+            // Web lines
+            {path: 'M300,200 L400,300', color: '#f1faee', width: 1, duration: 400},
+            {path: 'M400,200 L300,300', color: '#f1faee', width: 1, duration: 400},
+            {path: 'M350,150 L350,350', color: '#f1faee', width: 1, duration: 400},
+            {path: 'M300,400 L400,400', color: '#f1faee', width: 1, duration: 400},
+            {path: 'M280,320 L420,320', color: '#f1faee', width: 1, duration: 400},
+            {path: 'M300,400 L350,350 L400,400', color: '#f1faee', width: 1, duration: 400},
+            
+            // Final details
+            {path: 'M340,240 L360,240', color: '#f1faee', width: 2, duration: 400},
+            {path: 'M340,260 L360,260', color: '#f1faee', width: 2, duration: 400},
+        ];
+        
+        // Hand positions for each step
+        const handPositions = [
+            {x: 300, y: 180, angle: 30},  // Head outline
+            {x: 320, y: 200, angle: 45},  // Left eye
+            {x: 380, y: 200, angle: -45}, // Right eye
+            {x: 350, y: 280, angle: 90},  // Body center
+            {x: 320, y: 350, angle: 120}, // Left shoulder
+            {x: 380, y: 350, angle: 60},  // Right shoulder
+            {x: 350, y: 450, angle: 90},  // Waist
+            {x: 320, y: 500, angle: 120}, // Left leg
+            {x: 380, y: 500, angle: 60},  // Right leg
+            {x: 280, y: 300, angle: 150}, // Left arm
+            {x: 420, y: 300, angle: 30},  // Right arm
+            {x: 350, y: 250, angle: -45}, // Head web 1
+            {x: 350, y: 250, angle: 45},  // Head web 2
+            {x: 350, y: 150, angle: 90},  // Head web 3
+            {x: 350, y: 400, angle: 0},   // Body web 1
+            {x: 350, y: 320, angle: 0},  // Body web 2
+            {x: 350, y: 350, angle: 0},  // Body web 3
+            {x: 350, y: 400, angle: 0},  // Spider logo center
+            {x: 350, y: 370, angle: 90},  // Spider logo top
+            {x: 350, y: 430, angle: 90},  // Spider logo bottom
+            {x: 320, y: 400, angle: 180}, // Spider logo left
+            {x: 380, y: 400, angle: 0},   // Spider logo right
+            // Coloring positions
+            {x: 350, y: 250, angle: 0},   // Head color
+            {x: 320, y: 220, angle: 45},  // Left eye color
+            {x: 380, y: 220, angle: -45}, // Right eye color
+            {x: 310, y: 330, angle: 120}, // Left arm color
+            {x: 390, y: 330, angle: 60},   // Right arm color
+            {x: 350, y: 420, angle: 90},   // Torso color
+            {x: 310, y: 350, angle: 120},  // Left side color
+            {x: 390, y: 350, angle: 60},   // Right side color
+            {x: 320, y: 550, angle: 120}, // Left leg color
+            {x: 380, y: 550, angle: 60},   // Right leg color
+            // Web lines
+            {x: 350, y: 250, angle: -45}, // Head web 1 color
+            {x: 350, y: 250, angle: 45},   // Head web 2 color
+            {x: 350, y: 150, angle: 90},   // Head web 3 color
+            {x: 350, y: 400, angle: 0},    // Body web 1 color
+            {x: 350, y: 320, angle: 0},    // Body web 2 color
+            {x: 350, y: 350, angle: 0},    // Body web 3 color
+            // Final details
+            {x: 340, y: 240, angle: 0},    // Left eye detail
+            {x: 340, y: 260, angle: 0},    // Left eye detail 2
+        ];
+        
+        function animateDrawing() {
+            if (currentStep >= drawingSteps.length) {
+                isDrawing = false;
+                startBtn.textContent = 'Start Drawing';
+                return;
+            }
+            
+            const step = drawingSteps[currentStep];
+            const handPos = handPositions[currentStep % handPositions.length];
+            
+            // Update hand and pencil position
+            hand.style.left = `${handPos.x}px`;
+            hand.style.top = `${handPos.y}px`;
+            hand.style.transform = `rotate(${handPos.angle}deg)`;
+            
+            pencil.style.left = `${handPos.x}px`;
+            pencil.style.top = `${handPos.y + 10}px`;
+            pencil.style.transform = `rotate(${handPos.angle}deg)`;
+            
+            // Create SVG path for this step
+            const svgNS = "http://www.w3.org/2000/svg";
+            const path = document.createElementNS(svgNS, "path");
+            
+            path.setAttribute("d", step.path);
+            path.setAttribute("stroke", step.color);
+            path.setAttribute("stroke-width", step.width);
+            path.setAttribute("fill", step.fill ? step.color : "none");
+            path.setAttribute("stroke-linecap", "round");
+            path.setAttribute("stroke-linejoin", "round");
+            
+            // Animate the drawing
+            const length = path.getTotalLength();
+            path.style.strokeDasharray = length;
+            path.style.strokeDashoffset = length;
+            
+            drawing.appendChild(path);
+            
+            // Animate the path
+            const startTime = Date.now();
+            const duration = step.duration;
+            
+            function animate() {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                path.style.strokeDashoffset = length * (1 - progress);
+                
+                // Update overall progress bar
+                const totalProgress = ((currentStep + progress) / drawingSteps.length) * 100;
+                document.getElementById('progress').style.width = `${totalProgress}%`;
+                
+                if (progress < 1) {
+                    animationFrame = requestAnimationFrame(animate);
+                } else {
+                    currentStep++;
+                    setTimeout(animateDrawing, 100);
+                }
+            }
+            
+            animate();
+        }
+        
+        function startDrawing() {
+            if (isDrawing) {
+                cancelAnimationFrame(animationFrame);
+                isDrawing = false;
+                startBtn.textContent = 'Resume';
+            } else {
+                isDrawing = true;
+                startBtn.textContent = 'Pause';
+                if (currentStep >= drawingSteps.length) {
+                    resetDrawing();
+                }
+                animateDrawing();
+            }
+        }
+        
+        function resetDrawing() {
+            cancelAnimationFrame(animationFrame);
+            drawing.innerHTML = '';
+            currentStep = 0;
+            isDrawing = false;
+            startBtn.textContent = 'Start Drawing';
+            progress.style.width = '0%';
+        }
+        
+        startBtn.addEventListener('click', startDrawing);
+        resetBtn.addEventListener('click', resetDrawing);
+        
+        // Initialize hand position
+        hand.style.left = '300px';
+        hand.style.top = '180px';
+        pencil.style.left = '300px';
+        pencil.style.top = '190px';
+    </script>
+</body>
+</html>
