@@ -3,852 +3,486 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tom & Jerry Drawing Animation</title>
+    <title>Krusty Krab Drawing Animation</title>
     <style>
-        * {
+        body {
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            background-color: #f5f5f5;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            overflow: hidden;
-            font-family: 'Arial', sans-serif;
+            min-height: 100vh;
+            background: #2c1810;
+            font-family: 'Times New Roman', serif;
         }
         
-        .shorts-container {
-            position: relative;
-            width: 100%;
-            max-width: 540px;
-            height: 960px;
-            background-color: white;
+        .container {
+            width: 450px;
+            height: 650px;
+            background: linear-gradient(135deg, #f8f5f0 0%, #f2ede5 100%);
             border-radius: 8px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
             overflow: hidden;
+            position: relative;
+            border: 3px solid #8b6f47;
         }
         
-        .drawing-container {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 90%;
-            height: 80%;
-        }
-        
-        canvas {
+        .book-paper {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
+            background: 
+                /* Vertical lines for notebook paper */
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 24px,
+                    rgba(200, 180, 150, 0.3) 24px,
+                    rgba(200, 180, 150, 0.3) 25px
+                ),
+                /* Horizontal lines */
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 19px,
+                    rgba(180, 160, 140, 0.2) 19px,
+                    rgba(180, 160, 140, 0.2) 20px
+                ),
+                /* Red margin line */
+                linear-gradient(
+                    90deg,
+                    transparent 45px,
+                    #ff6b6b 45px,
+                    #ff6b6b 47px,
+                    transparent 47px
+                ),
+                /* Paper texture */
+                radial-gradient(circle at 20% 30%, rgba(139, 111, 71, 0.03) 1px, transparent 1px),
+                radial-gradient(circle at 80% 70%, rgba(139, 111, 71, 0.03) 1px, transparent 1px),
+                radial-gradient(circle at 40% 80%, rgba(139, 111, 71, 0.025) 1px, transparent 1px),
+                /* Base paper color */
+                #f8f5f0;
+            background-size: 
+                100% 100%,
+                100% 100%,
+                100% 100%,
+                50px 50px,
+                30px 30px,
+                70px 70px,
+                100% 100%;
         }
         
-        .progress-bar {
+        /* Spiral binding holes */
+        .binding-holes {
             position: absolute;
-            top: 10px;
-            left: 10px;
-            width: calc(100% - 20px);
-            height: 4px;
-            background-color: rgba(0, 0, 0, 0.1);
-            border-radius: 2px;
-            overflow: hidden;
+            left: 20px;
+            top: 30px;
+            height: calc(100% - 60px);
+            width: 10px;
         }
         
-        .progress {
-            height: 100%;
-            width: 0%;
-            background-color: #ff0000;
-            border-radius: 2px;
-            transition: width 0.1s linear;
+        .hole {
+            width: 8px;
+            height: 8px;
+            background: #2c1810;
+            border-radius: 50%;
+            margin-bottom: 40px;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.3);
         }
         
-        .timer {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            color: #333;
-            font-size: 14px;
-            font-weight: bold;
-            background-color: rgba(255, 255, 255, 0.7);
-            padding: 3px 8px;
-            border-radius: 12px;
-        }
-        
-        .step-indicator {
-            position: absolute;
-            bottom: 30px;
-            left: 0;
+        canvas {
             width: 100%;
-            text-align: center;
-            font-size: 16px;
-            font-weight: bold;
-            color: #333;
-            background-color: rgba(255, 255, 255, 0.7);
-            padding: 8px 0;
-            border-radius: 20px;
-            margin: 0 auto;
-            max-width: 200px;
-            left: 50%;
-            transform: translateX(-50%);
+            height: 100%;
+            display: block;
         }
         
-        @media (max-width: 540px) {
-            .shorts-container {
-                height: 100vh;
-                width: 100vw;
-                border-radius: 0;
-            }
+        .pencil {
+            position: absolute;
+            width: 90px;
+            height: 8px;
+            background: linear-gradient(90deg, #8B4513 0%, #DEB887 30%, #FFD700 60%, #FF69B4 100%);
+            border-radius: 4px;
+            z-index: 10;
+            opacity: 0;
+            transform-origin: left center;
+            transition: opacity 0.5s ease;
+        }
+        
+        .pencil::before {
+            content: '';
+            position: absolute;
+            left: -12px;
+            top: 1px;
+            width: 0;
+            height: 0;
+            border-left: 12px solid #2F4F4F;
+            border-top: 3px solid transparent;
+            border-bottom: 3px solid transparent;
         }
     </style>
 </head>
 <body>
-    <div class="shorts-container">
-        <div class="progress-bar">
-            <div class="progress" id="progress"></div>
+    <div class="container">
+        <div class="book-paper"></div>
+        <div class="binding-holes">
+            <div class="hole"></div>
+            <div class="hole"></div>
+            <div class="hole"></div>
+            <div class="hole"></div>
+            <div class="hole"></div>
+            <div class="hole"></div>
+            <div class="hole"></div>
+            <div class="hole"></div>
+            <div class="hole"></div>
+            <div class="hole"></div>
+            <div class="hole"></div>
+            <div class="hole"></div>
         </div>
-        <div class="timer" id="timer">0:00</div>
-        <div class="step-indicator" id="stepIndicator">Starting...</div>
-        
-        <div class="drawing-container">
-            <canvas id="drawingCanvas"></canvas>
-        </div>
+        <canvas id="drawingCanvas" width="450" height="650"></canvas>
+        <div class="pencil" id="pencil"></div>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const canvas = document.getElementById('drawingCanvas');
-            const ctx = canvas.getContext('2d');
-            const progress = document.getElementById('progress');
-            const timer = document.getElementById('timer');
-            const stepIndicator = document.getElementById('stepIndicator');
+        const canvas = document.getElementById('drawingCanvas');
+        const ctx = canvas.getContext('2d');
+        const pencil = document.getElementById('pencil');
+        
+        // Animation state
+        let animationProgress = 0;
+        const totalDuration = 30000; // 30 seconds
+        let startTime = null;
+        
+        // Drawing phases
+        const phases = {
+            sketch: { start: 0, end: 0.3 },
+            detail: { start: 0.3, end: 0.5 },
+            ink: { start: 0.5, end: 0.7 },
+            color: { start: 0.7, end: 1.0 }
+        };
+        
+        // Krusty Krab structure points (matching the reference image)
+        const structure = {
+            // Main building base (wooden logs structure)
+            base: [
+                {x: 120, y: 450}, {x: 330, y: 450}, {x: 330, y: 380}, {x: 120, y: 380}
+            ],
+            // Lobster claw/wooden roof structure
+            roof: [
+                {x: 100, y: 380}, {x: 130, y: 320}, {x: 170, y: 300}, {x: 225, y: 300},
+                {x: 280, y: 320}, {x: 320, y: 340}, {x: 350, y: 380}
+            ],
+            // Sign post
+            signPost: [
+                {x: 80, y: 320}, {x: 80, y: 500}
+            ],
+            // Clamshell sign
+            sign: [
+                {x: 50, y: 260}, {x: 110, y: 260}, {x: 115, y: 280}, {x: 110, y: 320}, 
+                {x: 50, y: 320}, {x: 45, y: 280}
+            ],
+            // Left window
+            leftWindow: [
+                {x: 140, y: 400}, {x: 180, y: 400}, {x: 180, y: 430}, {x: 140, y: 430}
+            ],
+            // Right window  
+            rightWindow: [
+                {x: 270, y: 400}, {x: 310, y: 400}, {x: 310, y: 430}, {x: 270, y: 430}
+            ],
+            // Door
+            door: [
+                {x: 200, y: 410}, {x: 250, y: 410}, {x: 250, y: 450}, {x: 200, y: 450}
+            ],
+            // Chimney
+            chimney: [
+                {x: 285, y: 300}, {x: 305, y: 300}, {x: 305, y: 260}, {x: 285, y: 260}
+            ],
+            // Flag bunting
+            bunting: [
+                {x: 130, y: 360}, {x: 150, y: 350}, {x: 170, y: 360}, {x: 190, y: 350},
+                {x: 210, y: 360}, {x: 230, y: 350}, {x: 250, y: 360}, {x: 270, y: 350},
+                {x: 290, y: 360}, {x: 310, y: 350}, {x: 330, y: 360}
+            ]
+        };
+        
+        function getCurrentPhase(progress) {
+            if (progress <= phases.sketch.end) return 'sketch';
+            if (progress <= phases.detail.end) return 'detail';
+            if (progress <= phases.ink.end) return 'ink';
+            return 'color';
+        }
+        
+        function getPhaseProgress(progress, phase) {
+            const p = phases[phase];
+            return Math.max(0, Math.min(1, (progress - p.start) / (p.end - p.start)));
+        }
+        
+        function drawPath(points, progress, style = {}) {
+            if (points.length === 0) return;
             
-            // Set canvas size
-            canvas.width = 540;
-            canvas.height = 960;
+            ctx.beginPath();
+            ctx.moveTo(points[0].x, points[0].y);
             
-            // Animation timing (30 seconds total)
-            const totalDuration = 30000; // 30 seconds in milliseconds
-            let startTime;
+            const totalPoints = points.length;
+            const pointsToShow = Math.floor(totalPoints * progress);
             
-            // Drawing steps with their durations and colors
-            const drawingSteps = [
-                {
-                    name: "Basic Outline",
-                    duration: 8000,
-                    color: "#333333",
-                    lineWidth: 2,
-                    paths: generateOutlinePaths()
-                },
-                {
-                    name: "Detailed Sketch",
-                    duration: 7000,
-                    color: "#555555",
-                    lineWidth: 1.5,
-                    paths: generateDetailPaths()
-                },
-                {
-                    name: "Base Colors",
-                    duration: 8000,
-                    color: "none",
-                    fill: true,
-                    paths: generateColorPaths()
-                },
-                {
-                    name: "Shading & Highlights",
-                    duration: 5000,
-                    color: "none",
-                    shading: true,
-                    paths: generateShadingPaths()
-                },
-                {
-                    name: "Final Touches",
-                    duration: 2000,
-                    color: "#000000",
-                    lineWidth: 1,
-                    final: true,
-                    paths: generateFinalPaths()
-                }
-            ];
-            
-            // Start the animation
-            function startAnimation() {
-                startTime = performance.now();
-                requestAnimationFrame(animate);
+            for (let i = 1; i < pointsToShow; i++) {
+                ctx.lineTo(points[i].x, points[i].y);
             }
             
-            // Animation loop
-            function animate(currentTime) {
-                if (!startTime) startTime = currentTime;
-                const elapsed = currentTime - startTime;
-                const progressPercent = Math.min(elapsed / totalDuration, 1);
+            // Partial line for smooth animation
+            if (pointsToShow < totalPoints && pointsToShow > 0) {
+                const prev = points[pointsToShow - 1];
+                const next = points[pointsToShow];
+                const partialProgress = (totalPoints * progress) - (pointsToShow - 1);
+                const x = prev.x + (next.x - prev.x) * partialProgress;
+                const y = prev.y + (next.y - prev.y) * partialProgress;
+                ctx.lineTo(x, y);
                 
-                // Update progress bar and timer
-                progress.style.width = `${progressPercent * 100}%`;
-                updateTimer(elapsed);
-                
-                // Clear canvas
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                
-                // Draw paper texture
-                drawPaperTexture();
-                
-                // Calculate current step
-                let accumulatedTime = 0;
-                let currentStep = null;
-                let stepProgress = 0;
-                
-                for (let i = 0; i < drawingSteps.length; i++) {
-                    if (elapsed >= accumulatedTime && elapsed < accumulatedTime + drawingSteps[i].duration) {
-                        currentStep = drawingSteps[i];
-                        stepProgress = (elapsed - accumulatedTime) / currentStep.duration;
-                        stepIndicator.textContent = currentStep.name;
-                        break;
-                    }
-                    accumulatedTime += drawingSteps[i].duration;
-                }
-                
-                // If all steps are done, show final result
-                if (!currentStep) {
-                    drawAllSteps();
-                    stepIndicator.textContent = "Finished!";
-                    return;
-                }
-                
-                // Draw up to the current step
-                drawStepsUpTo(drawingSteps.indexOf(currentStep), stepProgress);
-                
-                // Continue animation if not finished
-                if (progressPercent < 1) {
-                    requestAnimationFrame(animate);
-                }
+                // Update pencil position
+                pencil.style.left = (x - 45) + 'px';
+                pencil.style.top = (y - 4) + 'px';
+                pencil.style.transform = `rotate(${Math.atan2(next.y - prev.y, next.x - prev.x)}rad)`;
             }
             
-            // Draw all completed steps
-            function drawStepsUpTo(stepIndex, progress) {
-                for (let i = 0; i <= stepIndex; i++) {
-                    const step = drawingSteps[i];
-                    const isCurrentStep = i === stepIndex;
-                    const paths = step.paths;
-                    
-                    if (step.fill) {
-                        // Coloring step
-                        for (let j = 0; j < paths.length; j++) {
-                            const path = paths[j];
-                            const drawUpTo = isCurrentStep ? Math.floor(progress * path.points.length) : path.points.length;
-                            
-                            ctx.fillStyle = path.color;
-                            ctx.beginPath();
-                            
-                            // Draw the outline
-                            for (let k = 0; k < path.outline.length; k++) {
-                                const point = path.outline[k];
-                                if (k === 0) {
-                                    ctx.moveTo(point.x, point.y);
-                                } else {
-                                    ctx.lineTo(point.x, point.y);
-                                }
-                            }
-                            
-                            // Fill if we're in this step or beyond
-                            if (i < stepIndex || (isCurrentStep && drawUpTo > 0)) {
-                                ctx.fill();
-                            }
-                        }
-                    } else if (step.shading) {
-                        // Shading step
-                        for (let j = 0; j < paths.length; j++) {
-                            const path = paths[j];
-                            const drawUpTo = isCurrentStep ? Math.floor(progress * path.points.length) : path.points.length;
-                            
-                            for (let k = 0; k < drawUpTo; k++) {
-                                const point = path.points[k];
-                                ctx.fillStyle = path.color;
-                                ctx.globalAlpha = path.alpha || 0.3;
-                                ctx.beginPath();
-                                ctx.arc(point.x, point.y, path.radius || 5, 0, Math.PI * 2);
-                                ctx.fill();
-                            }
-                        }
-                        ctx.globalAlpha = 1;
-                    } else {
-                        // Drawing step
-                        ctx.strokeStyle = step.color;
-                        ctx.lineWidth = step.lineWidth;
-                        ctx.lineCap = 'round';
-                        ctx.lineJoin = 'round';
-                        
-                        for (let j = 0; j < paths.length; j++) {
-                            const path = paths[j];
-                            const drawUpTo = isCurrentStep ? Math.floor(progress * path.points.length) : path.points.length;
-                            
-                            if (drawUpTo > 0) {
-                                ctx.beginPath();
-                                ctx.moveTo(path.points[0].x, path.points[0].y);
-                                
-                                for (let k = 1; k < drawUpTo; k++) {
-                                    const point = path.points[k];
-                                    ctx.lineTo(point.x, point.y);
-                                }
-                                
-                                ctx.stroke();
-                            }
-                        }
-                    }
-                }
-            }
+            // Apply styles
+            ctx.strokeStyle = style.color || '#333';
+            ctx.lineWidth = style.width || 2;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
             
-            // Draw all steps (for final frame)
-            function drawAllSteps() {
-                drawStepsUpTo(drawingSteps.length - 1, 1);
+            if (style.fill) {
+                ctx.fillStyle = style.fill;
+                ctx.fill();
             }
-            
-            // Update timer display
-            function updateTimer(elapsed) {
-                const seconds = Math.floor(elapsed / 1000);
-                const remainingMs = elapsed % 1000;
-                const displayMs = Math.floor(remainingMs / 100);
-                timer.textContent = `${Math.floor(seconds / 60)}:${(seconds % 60).toString().padStart(2, '0')}.${displayMs}`;
-            }
-            
-            // Draw paper texture
-            function drawPaperTexture() {
-                ctx.fillStyle = '#f9f9f5';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.stroke();
+        }
+        
+        function drawBackground(progress) {
+            // Ocean background (blue)
+            const colorProgress = getPhaseProgress(progress, 'color');
+            if (colorProgress > 0) {
+                const alpha = colorProgress * 0.9;
+                // Sky blue background
+                ctx.fillStyle = `rgba(52, 152, 219, ${alpha})`;
+                ctx.fillRect(60, 50, 370, 300);
                 
-                // Subtle paper texture
-                ctx.fillStyle = 'rgba(200, 200, 180, 0.02)';
-                for (let i = 0; i < 200; i++) {
-                    const x = Math.random() * canvas.width;
-                    const y = Math.random() * canvas.height;
-                    const size = Math.random() * 3 + 1;
-                    ctx.fillRect(x, y, size, size);
-                }
-            }
-            
-            // Generate paths for outline step
-            function generateOutlinePaths() {
-                const centerX = canvas.width / 2;
-                const centerY = canvas.height / 2;
-                const scale = 1.8;
+                // Ground (sand)
+                ctx.fillStyle = `rgba(244, 208, 63, ${alpha})`;
+                ctx.fillRect(60, 470, 370, 100);
                 
-                // Simplified Tom & Jerry outline paths
-                const paths = [];
-                
-                // Tom's head outline
-                paths.push({
-                    points: generateSmoothPath([
-                        {x: centerX - 50*scale, y: centerY - 20*scale},
-                        {x: centerX - 80*scale, y: centerY - 10*scale},
-                        {x: centerX - 90*scale, y: centerY + 20*scale},
-                        {x: centerX - 80*scale, y: centerY + 50*scale},
-                        {x: centerX - 60*scale, y: centerY + 70*scale},
-                        {x: centerX - 30*scale, y: centerY + 80*scale},
-                        {x: centerX + 10*scale, y: centerY + 70*scale},
-                        {x: centerX + 40*scale, y: centerY + 50*scale},
-                        {x: centerX + 60*scale, y: centerY + 20*scale},
-                        {x: centerX + 60*scale, y: centerY - 20*scale},
-                        {x: centerX + 40*scale, y: centerY - 40*scale},
-                        {x: centerX + 10*scale, y: centerY - 50*scale},
-                        {x: centerX - 30*scale, y: centerY - 40*scale},
-                        {x: centerX - 50*scale, y: centerY - 20*scale}
-                    ], 30)
-                });
-                
-                // Tom's ears
-                paths.push({
-                    points: generateSmoothPath([
-                        {x: centerX - 60*scale, y: centerY - 30*scale},
-                        {x: centerX - 70*scale, y: centerY - 50*scale},
-                        {x: centerX - 90*scale, y: centerY - 60*scale},
-                        {x: centerX - 80*scale, y: centerY - 40*scale},
-                        {x: centerX - 70*scale, y: centerY - 30*scale}
-                    ], 15)
-                });
-                
-                paths.push({
-                    points: generateSmoothPath([
-                        {x: centerX - 20*scale, y: centerY - 50*scale},
-                        {x: centerX - 10*scale, y: centerY - 70*scale},
-                        {x: centerX + 10*scale, y: centerY - 80*scale},
-                        {x: centerX + 30*scale, y: centerY - 70*scale},
-                        {x: centerX + 30*scale, y: centerY - 50*scale}
-                    ], 15)
-                });
-                
-                // Jerry's head outline
-                paths.push({
-                    points: generateSmoothPath([
-                        {x: centerX + 20*scale, y: centerY - 80*scale},
-                        {x: centerX + 40*scale, y: centerY - 90*scale},
-                        {x: centerX + 70*scale, y: centerY - 80*scale},
-                        {x: centerX + 90*scale, y: centerY - 60*scale},
-                        {x: centerX + 90*scale, y: centerY - 30*scale},
-                        {x: centerX + 70*scale, y: centerY - 10*scale},
-                        {x: centerX + 40*scale, y: centerY + 10*scale},
-                        {x: centerX + 10*scale, y: centerY + 10*scale},
-                        {x: centerX - 10*scale, y: centerY + 5*scale},
-                        {x: centerX - 20*scale, y: centerY - 10*scale},
-                        {x: centerX - 10*scale, y: centerY - 30*scale},
-                        {x: centerX + 10*scale, y: centerY - 50*scale},
-                        {x: centerX + 20*scale, y: centerY - 80*scale}
-                    ], 30)
-                });
-                
-                // Jerry's ears
-                paths.push({
-                    points: generateSmoothPath([
-                        {x: centerX + 30*scale, y: centerY - 90*scale},
-                        {x: centerX + 20*scale, y: centerY - 110*scale},
-                        {x: centerX + 40*scale, y: centerY - 120*scale},
-                        {x: centerX + 60*scale, y: centerY - 110*scale},
-                        {x: centerX + 50*scale, y: centerY - 90*scale}
-                    ], 15)
-                });
-                
-                paths.push({
-                    points: generateSmoothPath([
-                        {x: centerX + 70*scale, y: centerY - 90*scale},
-                        {x: centerX + 80*scale, y: centerY - 110*scale},
-                        {x: centerX + 100*scale, y: centerY - 100*scale},
-                        {x: centerX + 90*scale, y: centerY - 80*scale}
-                    ], 12)
-                });
-                
-                return paths;
-            }
-            
-            // Generate paths for detail step
-            function generateDetailPaths() {
-                const centerX = canvas.width / 2;
-                const centerY = canvas.height / 2;
-                const scale = 1.8;
-                
-                const paths = [];
-                
-                // Tom's facial features
-                // Eyes
-                paths.push({
-                    points: generateSmoothPath([
-                        {x: centerX - 30*scale, y: centerY - 10*scale},
-                        {x: centerX - 20*scale, y: centerY - 15*scale},
-                        {x: centerX - 10*scale, y: centerY - 10*scale},
-                        {x: centerX - 15*scale, y: centerY - 5*scale},
-                        {x: centerX - 25*scale, y: centerY - 5*scale},
-                        {x: centerX - 30*scale, y: centerY - 10*scale}
-                    ], 15)
-                });
-                
-                paths.push({
-                    points: generateSmoothPath([
-                        {x: centerX + 20*scale, y: centerY - 15*scale},
-                        {x: centerX + 30*scale, y: centerY - 20*scale},
-                        {x: centerX + 40*scale, y: centerY - 15*scale},
-                        {x: centerX + 35*scale, y: centerY - 10*scale},
-                        {x: centerX + 25*scale, y: centerY - 10*scale},
-                        {x: centerX + 20*scale, y: centerY - 15*scale}
-                    ], 15)
-                });
-                
-                // Nose
-                paths.push({
-                    points: generateSmoothPath([
-                        {x: centerX, y: centerY},
-                        {x: centerX + 5*scale, y: centerY + 5*scale},
-                        {x: centerX, y: centerY + 10*scale},
-                        {x: centerX - 5*scale, y: centerY + 5*scale},
-                        {x: centerX, y: centerY}
-                    ], 10)
-                });
-                
-                // Mouth
-                paths.push({
-                    points: generateSmoothPath([
-                        {x: centerX, y: centerY + 10*scale},
-                        {x: centerX, y: centerY + 30*scale},
-                        {x: centerX - 10*scale, y: centerY + 40*scale},
-                        {x: centerX - 30*scale, y: centerY + 45*scale}
-                    ], 15)
-                });
-                
-                paths.push({
-                    points: generateSmoothPath([
-                        {x: centerX, y: centerY + 30*scale},
-                        {x: centerX + 15*scale, y: centerY + 35*scale},
-                        {x: centerX + 30*scale, y: centerY + 30*scale}
-                    ], 10)
-                });
-                
-                // Whiskers
+                // Add some underwater elements
+                // Jellyfish
                 for (let i = 0; i < 3; i++) {
-                    const offset = i * 5 * scale;
-                    paths.push({
-                        points: generateSmoothPath([
-                            {x: centerX - 10*scale, y: centerY + 5*scale + offset},
-                            {x: centerX - 40*scale, y: centerY + offset},
-                            {x: centerX - 60*scale, y: centerY - 10*scale + offset}
-                        ], 5)
-                    });
+                    const x = 80 + i * 120;
+                    const y = 80 + Math.sin(Date.now() * 0.001 + i) * 10;
                     
-                    paths.push({
-                        points: generateSmoothPath([
-                            {x: centerX - 10*scale, y: centerY + 5*scale + offset},
-                            {x: centerX - 40*scale, y: centerY + 10*scale + offset},
-                            {x: centerX - 60*scale, y: centerY + 20*scale + offset}
-                        ], 5)
-                    });
-                }
-                
-                // Jerry's facial features
-                // Eyes
-                paths.push({
-                    points: generateSmoothPath([
-                        {x: centerX + 50*scale, y: centerY - 50*scale},
-                        {x: centerX + 55*scale, y: centerY - 55*scale},
-                        {x: centerX + 60*scale, y: centerY - 50*scale},
-                        {x: centerX + 55*scale, y: centerY - 45*scale},
-                        {x: centerX + 50*scale, y: centerY - 50*scale}
-                    ], 10)
-                });
-                
-                paths.push({
-                    points: generateSmoothPath([
-                        {x: centerX + 70*scale, y: centerY - 50*scale},
-                        {x: centerX + 75*scale, y: centerY - 55*scale},
-                        {x: centerX + 80*scale, y: centerY - 50*scale},
-                        {x: centerX + 75*scale, y: centerY - 45*scale},
-                        {x: centerX + 70*scale, y: centerY - 50*scale}
-                    ], 10)
-                });
-                
-                // Nose
-                paths.push({
-                    points: generateSmoothPath([
-                        {x: centerX + 60*scale, y: centerY - 40*scale},
-                        {x: centerX + 65*scale, y: centerY - 35*scale},
-                        {x: centerX + 60*scale, y: centerY - 30*scale}
-                    ], 5)
-                });
-                
-                // Mouth
-                paths.push({
-                    points: generateSmoothPath([
-                        {x: centerX + 60*scale, y: centerY - 30*scale},
-                        {x: centerX + 60*scale, y: centerY - 20*scale},
-                        {x: centerX + 55*scale, y: centerY - 15*scale}
-                    ], 5)
-                });
-                
-                return paths;
-            }
-            
-            // Generate paths for coloring step
-            function generateColorPaths() {
-                const centerX = canvas.width / 2;
-                const centerY = canvas.height / 2;
-                const scale = 1.8;
-                
-                const paths = [];
-                
-                // Tom's body (gray)
-                paths.push({
-                    color: '#a0a0a0',
-                    outline: generateSmoothPath([
-                        {x: centerX - 50*scale, y: centerY - 20*scale},
-                        {x: centerX - 80*scale, y: centerY - 10*scale},
-                        {x: centerX - 90*scale, y: centerY + 20*scale},
-                        {x: centerX - 80*scale, y: centerY + 50*scale},
-                        {x: centerX - 60*scale, y: centerY + 70*scale},
-                        {x: centerX - 30*scale, y: centerY + 80*scale},
-                        {x: centerX + 10*scale, y: centerY + 70*scale},
-                        {x: centerX + 40*scale, y: centerY + 50*scale},
-                        {x: centerX + 60*scale, y: centerY + 20*scale},
-                        {x: centerX + 60*scale, y: centerY - 20*scale},
-                        {x: centerX + 40*scale, y: centerY - 40*scale},
-                        {x: centerX + 10*scale, y: centerY - 50*scale},
-                        {x: centerX - 30*scale, y: centerY - 40*scale},
-                        {x: centerX - 50*scale, y: centerY - 20*scale}
-                    ], 30).points,
-                    points: generateFillPoints(20)
-                });
-                
-                // Tom's ears (inner pink)
-                paths.push({
-                    color: '#ffb6c1',
-                    outline: generateSmoothPath([
-                        {x: centerX - 70*scale, y: centerY - 50*scale},
-                        {x: centerX - 80*scale, y: centerY - 40*scale},
-                        {x: centerX - 70*scale, y: centerY - 30*scale}
-                    ], 10).points,
-                    points: generateFillPoints(5)
-                });
-                
-                paths.push({
-                    color: '#ffb6c1',
-                    outline: generateSmoothPath([
-                        {x: centerX - 10*scale, y: centerY - 70*scale},
-                        {x: centerX + 10*scale, y: centerY - 80*scale},
-                        {x: centerX + 30*scale, y: centerY - 70*scale},
-                        {x: centerX + 30*scale, y: centerY - 50*scale}
-                    ], 12).points,
-                    points: generateFillPoints(5)
-                });
-                
-                // Jerry's body (brown)
-                paths.push({
-                    color: '#d2b48c',
-                    outline: generateSmoothPath([
-                        {x: centerX + 20*scale, y: centerY - 80*scale},
-                        {x: centerX + 40*scale, y: centerY - 90*scale},
-                        {x: centerX + 70*scale, y: centerY - 80*scale},
-                        {x: centerX + 90*scale, y: centerY - 60*scale},
-                        {x: centerX + 90*scale, y: centerY - 30*scale},
-                        {x: centerX + 70*scale, y: centerY - 10*scale},
-                        {x: centerX + 40*scale, y: centerY + 10*scale},
-                        {x: centerX + 10*scale, y: centerY + 10*scale},
-                        {x: centerX - 10*scale, y: centerY + 5*scale},
-                        {x: centerX - 20*scale, y: centerY - 10*scale},
-                        {x: centerX - 10*scale, y: centerY - 30*scale},
-                        {x: centerX + 10*scale, y: centerY - 50*scale},
-                        {x: centerX + 20*scale, y: centerY - 80*scale}
-                    ], 30).points,
-                    points: generateFillPoints(20)
-                });
-                
-                // Jerry's ears (inner pink)
-                paths.push({
-                    color: '#ffb6c1',
-                    outline: generateSmoothPath([
-                        {x: centerX + 20*scale, y: centerY - 110*scale},
-                        {x: centerX + 40*scale, y: centerY - 120*scale},
-                        {x: centerX + 60*scale, y: centerY - 110*scale},
-                        {x: centerX + 50*scale, y: centerY - 90*scale}
-                    ], 12).points,
-                    points: generateFillPoints(5)
-                });
-                
-                paths.push({
-                    color: '#ffb6c1',
-                    outline: generateSmoothPath([
-                        {x: centerX + 80*scale, y: centerY - 110*scale},
-                        {x: centerX + 100*scale, y: centerY - 100*scale},
-                        {x: centerX + 90*scale, y: centerY - 80*scale}
-                    ], 10).points,
-                    points: generateFillPoints(5)
-                });
-                
-                // Tom's nose (red)
-                paths.push({
-                    color: '#ff0000',
-                    outline: generateSmoothPath([
-                        {x: centerX, y: centerY},
-                        {x: centerX + 5*scale, y: centerY + 5*scale},
-                        {x: centerX, y: centerY + 10*scale},
-                        {x: centerX - 5*scale, y: centerY + 5*scale},
-                        {x: centerX, y: centerY}
-                    ], 10).points,
-                    points: generateFillPoints(3)
-                });
-                
-                // Jerry's nose (black)
-                paths.push({
-                    color: '#000000',
-                    outline: generateSmoothPath([
-                        {x: centerX + 60*scale, y: centerY - 40*scale},
-                        {x: centerX + 65*scale, y: centerY - 35*scale},
-                        {x: centerX + 60*scale, y: centerY - 30*scale}
-                    ], 5).points,
-                    points: generateFillPoints(2)
-                });
-                
-                return paths;
-            }
-            
-            // Generate paths for shading step
-            function generateShadingPaths() {
-                const centerX = canvas.width / 2;
-                const centerY = canvas.height / 2;
-                const scale = 1.8;
-                
-                const paths = [];
-                
-                // Tom's shading
-                paths.push({
-                    color: '#808080',
-                    alpha: 0.3,
-                    radius: 8,
-                    points: generateRandomPointsInArea([
-                        {x: centerX - 70*scale, y: centerY - 20*scale},
-                        {x: centerX - 80*scale, y: centerY + 10*scale},
-                        {x: centerX - 60*scale, y: centerY + 40*scale},
-                        {x: centerX - 30*scale, y: centerY + 50*scale}
-                    ], 30)
-                });
-                
-                paths.push({
-                    color: '#808080',
-                    alpha: 0.2,
-                    radius: 6,
-                    points: generateRandomPointsInArea([
-                        {x: centerX - 40*scale, y: centerY - 30*scale},
-                        {x: centerX - 20*scale, y: centerY - 20*scale},
-                        {x: centerX - 10*scale, y: centerY + 10*scale},
-                        {x: centerX - 30*scale, y: centerY + 30*scale}
-                    ], 20)
-                });
-                
-                // Jerry's shading
-                paths.push({
-                    color: '#a0522d',
-                    alpha: 0.3,
-                    radius: 6,
-                    points: generateRandomPointsInArea([
-                        {x: centerX + 60*scale, y: centerY - 70*scale},
-                        {x: centerX + 80*scale, y: centerY - 50*scale},
-                        {x: centerX + 70*scale, y: centerY - 20*scale},
-                        {x: centerX + 50*scale, y: centerY - 40*scale}
-                    ], 25)
-                });
-                
-                paths.push({
-                    color: '#a0522d',
-                    alpha: 0.2,
-                    radius: 5,
-                    points: generateRandomPointsInArea([
-                        {x: centerX + 30*scale, y: centerY - 60*scale},
-                        {x: centerX + 50*scale, y: centerY - 50*scale},
-                        {x: centerX + 40*scale, y: centerY - 30*scale},
-                        {x: centerX + 20*scale, y: centerY - 40*scale}
-                    ], 15)
-                });
-                
-                // Highlights
-                paths.push({
-                    color: '#ffffff',
-                    alpha: 0.4,
-                    radius: 4,
-                    points: [
-                        {x: centerX - 60*scale, y: centerY - 30*scale},
-                        {x: centerX - 20*scale, y: centerY - 20*scale},
-                        {x: centerX + 50*scale, y: centerY - 60*scale},
-                        {x: centerX + 70*scale, y: centerY - 60*scale}
-                    ]
-                });
-                
-                return paths;
-            }
-            
-            // Generate paths for final step
-            function generateFinalPaths() {
-                const centerX = canvas.width / 2;
-                const centerY = canvas.height / 2;
-                const scale = 1.8;
-                
-                const paths = [];
-                
-                // Final outline touches
-                paths.push({
-                    points: generateSmoothPath([
-                        {x: centerX - 50*scale, y: centerY - 20*scale},
-                        {x: centerX - 80*scale, y: centerY - 10*scale},
-                        {x: centerX - 90*scale, y: centerY + 20*scale}
-                    ], 10)
-                });
-                
-                paths.push({
-                    points: generateSmoothPath([
-                        {x: centerX + 60*scale, y: centerY + 20*scale},
-                        {x: centerX + 60*scale, y: centerY - 20*scale},
-                        {x: centerX + 40*scale, y: centerY - 40*scale}
-                    ], 10)
-                });
-                
-                paths.push({
-                    points: generateSmoothPath([
-                        {x: centerX + 20*scale, y: centerY - 80*scale},
-                        {x: centerX + 40*scale, y: centerY - 90*scale},
-                        {x: centerX + 70*scale, y: centerY - 80*scale}
-                    ], 10)
-                });
-                
-                paths.push({
-                    points: generateSmoothPath([
-                        {x: centerX + 90*scale, y: centerY - 30*scale},
-                        {x: centerX + 70*scale, y: centerY - 10*scale},
-                        {x: centerX + 40*scale, y: centerY + 10*scale}
-                    ], 10)
-                });
-                
-                return paths;
-            }
-            
-            // Helper function to generate a smooth path from points
-            function generateSmoothPath(points, segments) {
-                const result = [];
-                
-                for (let i = 0; i < points.length; i++) {
-                    const p0 = points[(i - 1 + points.length) % points.length];
-                    const p1 = points[i];
-                    const p2 = points[(i + 1) % points.length];
-                    const p3 = points[(i + 2) % points.length];
+                    // Jellyfish body
+                    ctx.beginPath();
+                    ctx.arc(x, y, 15, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(147, 196, 255, ${alpha * 0.7})`;
+                    ctx.fill();
                     
-                    for (let t = 0; t < segments; t++) {
-                        const tVal = t / segments;
-                        const x = catmullRom(tVal, p0.x, p1.x, p2.x, p3.x);
-                        const y = catmullRom(tVal, p0.y, p1.y, p2.y, p3.y);
-                        result.push({x, y});
+                    // Jellyfish tentacles
+                    ctx.strokeStyle = `rgba(147, 196, 255, ${alpha * 0.7})`;
+                    ctx.lineWidth = 2;
+                    for (let j = 0; j < 4; j++) {
+                        ctx.beginPath();
+                        ctx.moveTo(x - 10 + j * 7, y + 15);
+                        ctx.lineTo(x - 10 + j * 7, y + 35 + Math.sin(Date.now() * 0.002 + j) * 5);
+                        ctx.stroke();
                     }
                 }
                 
-                return { points: result };
+                // Bubbles
+                for (let i = 0; i < 8; i++) {
+                    ctx.beginPath();
+                    ctx.arc(
+                        100 + i * 40, 
+                        150 + Math.sin(Date.now() * 0.001 + i) * 30, 
+                        2 + Math.sin(Date.now() * 0.002 + i) * 1, 
+                        0, Math.PI * 2
+                    );
+                    ctx.fillStyle = `rgba(200, 230, 255, ${alpha * 0.6})`;
+                    ctx.fill();
+                }
+            }
+        }
+        
+        function drawKrustyKrab(progress) {
+            const currentPhase = getCurrentPhase(progress);
+            const phaseProgress = getPhaseProgress(progress, currentPhase);
+            
+            let strokeStyle = {
+                color: '#666',
+                width: 1
+            };
+            
+            switch (currentPhase) {
+                case 'sketch':
+                    strokeStyle = { color: '#999', width: 1 };
+                    pencil.style.opacity = '1';
+                    break;
+                case 'detail':
+                    strokeStyle = { color: '#555', width: 1.5 };
+                    break;
+                case 'ink':
+                    strokeStyle = { color: '#222', width: 2 };
+                    pencil.style.opacity = '0.5';
+                    break;
+                case 'color':
+                    strokeStyle = { color: '#000', width: 2 };
+                    pencil.style.opacity = '0';
+                    break;
             }
             
-            // Catmull-Rom spline interpolation
-            function catmullRom(t, p0, p1, p2, p3) {
-                const v0 = (p2 - p0) * 0.5;
-                const v1 = (p3 - p1) * 0.5;
-                const t2 = t * t;
-                const t3 = t * t2;
-                return (2 * p1 - 2 * p2 + v0 + v1) * t3 + 
-                       (-3 * p1 + 3 * p2 - 2 * v0 - v1) * t2 + 
-                       v0 * t + p1;
-            }
-            
-            // Helper function to generate random points within an area
-            function generateRandomPointsInArea(area, count) {
-                const points = [];
-                const minX = Math.min(...area.map(p => p.x));
-                const maxX = Math.max(...area.map(p => p.x));
-                const minY = Math.min(...area.map(p => p.y));
-                const maxY = Math.max(...area.map(p => p.y));
+            // Draw colored elements first (when in color phase)
+            if (currentPhase === 'color') {
+                const colorAlpha = getPhaseProgress(progress, 'color');
                 
-                for (let i = 0; i < count; i++) {
-                    points.push({
-                        x: minX + Math.random() * (maxX - minX),
-                        y: minY + Math.random() * (maxY - minY)
-                    });
+                // Main building (brown wood)
+                ctx.fillStyle = `rgba(139, 111, 71, ${colorAlpha})`;
+                ctx.fillRect(120, 380, 210, 70);
+                
+                // Wood log texture
+                for (let i = 0; i < 5; i++) {
+                    ctx.fillStyle = `rgba(101, 83, 51, ${colorAlpha * 0.8})`;
+                    ctx.fillRect(120, 380 + i * 14, 210, 2);
                 }
                 
-                return points;
-            }
-            
-            // Helper function to generate fill points
-            function generateFillPoints(count) {
-                const points = [];
-                for (let i = 0; i < count; i++) {
-                    points.push({x: 0, y: 0}); // Actual positions don't matter for fill
+                // Roof (darker brown)
+                ctx.fillStyle = `rgba(101, 67, 33, ${colorAlpha})`;
+                ctx.beginPath();
+                ctx.moveTo(100, 380);
+                structure.roof.forEach(point => ctx.lineTo(point.x, point.y));
+                ctx.lineTo(350, 380);
+                ctx.closePath();
+                ctx.fill();
+                
+                // Windows (light blue)
+                ctx.fillStyle = `rgba(135, 206, 235, ${colorAlpha})`;
+                ctx.fillRect(140, 400, 40, 30);
+                ctx.fillRect(270, 400, 40, 30);
+                
+                // Window reflections
+                ctx.fillStyle = `rgba(255, 255, 255, ${colorAlpha * 0.4})`;
+                ctx.fillRect(145, 405, 15, 10);
+                ctx.fillRect(275, 405, 15, 10);
+                
+                // Door (dark brown)
+                ctx.fillStyle = `rgba(101, 67, 33, ${colorAlpha})`;
+                ctx.fillRect(200, 410, 50, 40);
+                
+                // Door handle
+                ctx.fillStyle = `rgba(255, 215, 0, ${colorAlpha})`;
+                ctx.beginPath();
+                ctx.arc(240, 430, 3, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Chimney (gray)
+                ctx.fillStyle = `rgba(128, 128, 128, ${colorAlpha})`;
+                ctx.fillRect(285, 260, 20, 40);
+                
+                // Smoke
+                ctx.fillStyle = `rgba(200, 200, 200, ${colorAlpha * 0.6})`;
+                for (let i = 0; i < 3; i++) {
+                    ctx.beginPath();
+                    ctx.arc(295 + Math.sin(Date.now() * 0.001 + i) * 5, 240 - i * 15, 4 + i, 0, Math.PI * 2);
+                    ctx.fill();
                 }
-                return points;
+                
+                // Clamshell sign (white/pink)
+                ctx.fillStyle = `rgba(255, 240, 245, ${colorAlpha})`;
+                ctx.beginPath();
+                structure.sign.forEach((point, i) => {
+                    if (i === 0) ctx.moveTo(point.x, point.y);
+                    else ctx.lineTo(point.x, point.y);
+                });
+                ctx.closePath();
+                ctx.fill();
+                
+                // Sign text
+                ctx.fillStyle = `rgba(139, 0, 0, ${colorAlpha})`;
+                ctx.font = 'bold 12px serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('THE', 80, 275);
+                ctx.font = 'bold 10px serif';
+                ctx.fillText('KRUSTY', 80, 290);
+                ctx.fillText('KRAB', 80, 305);
+                
+                // Sign post (brown)
+                ctx.strokeStyle = `rgba(139, 111, 71, ${colorAlpha})`;
+                ctx.lineWidth = 6;
+                ctx.beginPath();
+                ctx.moveTo(80, 320);
+                ctx.lineTo(80, 500);
+                ctx.stroke();
+                
+                // Flag bunting (colorful)
+                const flagColors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD'];
+                for (let i = 0; i < flagColors.length && i * 2 < structure.bunting.length; i++) {
+                    const x1 = structure.bunting[i * 2].x;
+                    const y1 = structure.bunting[i * 2].y;
+                    const x2 = structure.bunting[i * 2 + 1] ? structure.bunting[i * 2 + 1].x : x1;
+                    const y2 = structure.bunting[i * 2 + 1] ? structure.bunting[i * 2 + 1].y : y1 - 10;
+                    
+                    ctx.fillStyle = flagColors[i % flagColors.length];
+                    ctx.beginPath();
+                    ctx.moveTo(x1, y1);
+                    ctx.lineTo(x1 + 15, y1);
+                    ctx.lineTo(x1 + 7, y1 + 12);
+                    ctx.closePath();
+                    ctx.fill();
+                }
+                
+                // Bunting string
+                ctx.strokeStyle = `rgba(0, 0, 0, ${colorAlpha})`;
+                ctx.lineWidth = 1;
+                drawPath(structure.bunting, 1, {color: `rgba(0, 0, 0, ${colorAlpha})`, width: 1});
             }
             
-            // Start the animation
-            startAnimation();
-        });
+            // Draw outlines
+            drawPath(structure.base, phaseProgress, strokeStyle);
+            drawPath(structure.roof, phaseProgress, strokeStyle);
+            drawPath(structure.signPost, phaseProgress, strokeStyle);
+            drawPath(structure.sign, phaseProgress, strokeStyle);
+            drawPath(structure.leftWindow, phaseProgress, strokeStyle);
+            drawPath(structure.rightWindow, phaseProgress, strokeStyle);
+            drawPath(structure.door, phaseProgress, strokeStyle);
+            drawPath(structure.chimney, phaseProgress, strokeStyle);
+            drawPath(structure.bunting, phaseProgress, strokeStyle);
+        }
+        
+        function animate(timestamp) {
+            if (!startTime) startTime = timestamp;
+            const elapsed = timestamp - startTime;
+            animationProgress = Math.min(elapsed / totalDuration, 1);
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw background
+            drawBackground(animationProgress);
+            
+            // Draw Krusty Krab
+            drawKrustyKrab(animationProgress);
+            
+            // Continue animation
+            if (animationProgress < 1) {
+                requestAnimationFrame(animate);
+            } else {
+                // Animation complete, restart after 3 seconds
+                setTimeout(() => {
+                    startTime = null;
+                    animationProgress = 0;
+                    requestAnimationFrame(animate);
+                }, 3000);
+            }
+        }
+        
+        // Start animation
+        requestAnimationFrame(animate);
     </script>
 </body>
 </html>
