@@ -2,353 +2,853 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tom & Jerry Drawing Short</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tom & Jerry Drawing Animation</title>
     <style>
-        body {
+        * {
             margin: 0;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background-color: #f0f0f0; /* Light background for drawing effect */
-            font-family: sans-serif;
-            flex-direction: column;
-            color: #333;
-        }
-
-        .short-container {
-            width: 100vw;
-            height: 177.78vw; /* 16:9 ratio for width, so 9/16 * 100vw = 56.25vw for height, wait, it's 9:16 portrait. So 9vw width, 16vw height? No, it's 1080x1920. */
-            /* For 1080x1920 on a typical phone, we want height to be 100vh, and width to be proportional */
-            height: 100vh;
-            width: calc(100vh * (1080 / 1920)); /* Calculate width based on 100vh and 1080/1920 ratio */
-            max-width: 100vw; /* Ensure it doesn't exceed screen width */
-            max-height: calc(100vw * (1920 / 1080)); /* Ensure it doesn't exceed screen height if width is maxed out */
-
-            background-color: #ffffff;
-            border: 1px solid #ddd;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
+            padding: 0;
             box-sizing: border-box;
         }
-
-        .drawing-canvas {
-            width: 90%; /* Scale SVG within the container */
-            height: 90%;
-            display: block;
+        
+        body {
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        .shorts-container {
+            position: relative;
+            width: 100%;
+            max-width: 540px;
+            height: 960px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .drawing-container {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            /* Ensure the SVG scales properly */
-            max-width: 100%;
-            max-height: 100%;
+            width: 90%;
+            height: 80%;
         }
-
-        .drawing-canvas path, .drawing-canvas polygon, .drawing-canvas circle {
-            fill: none;
-            stroke: #333; /* Default sketch color */
-            stroke-width: 2;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-            opacity: 0; /* Hidden by default */
-            transition: stroke-dashoffset 1s ease-out, opacity 0.5s ease-in, fill 1s ease-in-out; /* Smooth transitions */
-            /* Initial state for drawing effect */
-            stroke-dasharray: var(--length); /* Set by JS */
-            stroke-dashoffset: var(--length); /* Set by JS */
-        }
-
-        /* Classes to trigger drawing and coloring */
-        .draw-stroke {
-            opacity: 1;
-            stroke-dashoffset: 0 !important;
-            transition: stroke-dashoffset var(--draw-speed) ease-out, opacity 0.3s ease-in;
-        }
-
-        .fade-in {
-            opacity: 1 !important;
-            transition: opacity 0.8s ease-in;
-        }
-
-        .fill-color {
-            fill: var(--fill-color, black) !important;
-            transition: fill 0.8s ease-in, opacity 0.8s ease-in;
-            opacity: 1 !important; /* Ensure visibility for fill */
-            stroke-width: 0; /* Hide stroke for filled shapes */
-            stroke: none; /* No stroke for filled shapes */
-        }
-
-        /* Specific colors for Tom & Jerry */
-        .tom-grey { fill: #8b9dc3; } /* Slightly desaturated blue-grey */
-        .tom-pink { fill: #f2a8b9; } /* Nose, inner ear, paw pads */
-        .tom-white { fill: #ffffff; } /* Muzzle, chest, paws */
-        .tom-yellow-eye { fill: #f0e68c; } /* Yellowish eye */
-        .tom-green-eye { fill: #8cc46d; } /* Green pupil */
-
-        .jerry-brown { fill: #cc9966; } /* Main body brown */
-        .jerry-peach { fill: #f0c39a; } /* Belly, muzzle, inner ear */
-        .jerry-pink { fill: #f2a8b9; } /* Nose, inner ear */
-        .jerry-white-eye { fill: #ffffff; } /* White eye */
-        .jerry-black-eye { fill: #333333; } /* Black pupil */
-
-        /* Overlay for "pencil" effect */
-        .hand-overlay {
-            position: absolute;
-            width: 100px; /* Size of the hand image */
-            height: 100px;
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="%23555" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pencil"><path d="M12.1 19.1L12 22 14.5 21.9 14.6 19.4 12.1 19.1Z"/><path d="M14.4 17.6l2.1-.3 2.9-2.9-2.1-2.1c-.8-.8-2-.8-2.8 0L14.4 17.6Z"/><path d="M5.1 19.1L3 22 5.5 21.9 5.6 19.4 5.1 19.1Z"/><path d="M7.4 17.6l2.1-.3 2.9-2.9-2.1-2.1c-.8-.8-2-.8-2.8 0L7.4 17.6Z"/><path d="M2 19L19 2l3 3L5 22Z"/></svg>');
-            background-size: contain;
-            background-repeat: no-repeat;
-            pointer-events: none; /* Allows clicks to pass through */
-            opacity: 0;
-            transform: translate(-50%, -50%); /* Center the hand on its cursor point */
-            animation: handMove 30s linear forwards; /* Controlled by JS for precise movement */
-            z-index: 10;
-        }
-
-        /* Simplified hand movement (will be overridden by JS) */
-        @keyframes handMove {
-            0% { transform: translate(-50%, -50%) translate(0%, 0%); opacity: 0; }
-            5% { opacity: 1; }
-            95% { opacity: 1; }
-            100% { opacity: 0; }
-        }
-
-        /* Keyframe for "paper texture" (optional but adds realism) */
-        .short-container::before {
-            content: '';
+        
+        canvas {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAC5SURBVHgB7djBCcAgDANBL/70nU4Qo83d5lAQD5/xJ6S0hF9F+F+Q3W9I6QkXN/8vSNW/m2+8C8iCfwHIAnyAJPCbgCTAPcAEqA9wgAHABGgDg2HGDGkAgwEAAwGGfRgzJoCBMQCDbgyL9mHAGfAGgGGgP+s21gA0pP0d+7QnAGg+R+Y3+A8iBPwBIAnyAJPCbgCTAPcAEqA9wgAHABGgDg2HGDGkAgwEAAwGGfRgzJoCBMQCDbgyL9mHAGfAGgGGgP+s21gD/QAB538fCg/j1AAAAAElFTkSuQmCC'); /* Tiny tileable noise */
-            background-size: 25px 25px; /* Adjust size for subtle texture */
-            opacity: 0.05; /* Very subtle */
-            pointer-events: none;
-            z-index: 1;
         }
-
+        
+        .progress-bar {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: calc(100% - 20px);
+            height: 4px;
+            background-color: rgba(0, 0, 0, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            width: 0%;
+            background-color: #ff0000;
+            border-radius: 2px;
+            transition: width 0.1s linear;
+        }
+        
+        .timer {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: #333;
+            font-size: 14px;
+            font-weight: bold;
+            background-color: rgba(255, 255, 255, 0.7);
+            padding: 3px 8px;
+            border-radius: 12px;
+        }
+        
+        .step-indicator {
+            position: absolute;
+            bottom: 30px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            background-color: rgba(255, 255, 255, 0.7);
+            padding: 8px 0;
+            border-radius: 20px;
+            margin: 0 auto;
+            max-width: 200px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        @media (max-width: 540px) {
+            .shorts-container {
+                height: 100vh;
+                width: 100vw;
+                border-radius: 0;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="short-container">
-        <svg class="drawing-canvas" viewBox="0 0 400 400">
-            <g id="tom-group">
-                <path id="tom-head-outline" d="M190 100 C250 50, 300 100, 310 170 C320 250, 270 300, 200 300 C130 300, 80 250, 90 170 C100 100, 150 50, 190 100Z" class="outline-stroke"></path>
-                <path id="tom-ear-left-outline" d="M130 100 Q110 50, 150 70 Q160 80, 130 100Z" class="outline-stroke"></path>
-                <path id="tom-ear-right-outline" d="M270 100 Q290 50, 250 70 Q240 80, 270 100Z" class="outline-stroke"></path>
-                <path id="tom-muzzle-outline" d="M160 210 C180 200, 220 200, 240 210 C250 220, 230 240, 200 240 C170 240, 150 220, 160 210Z" class="outline-stroke"></path>
-                <path id="tom-body-outline" d="M180 290 C150 350, 100 390, 100 390 C100 390, 180 390, 200 390 C220 390, 300 390, 300 390 C300 390, 250 350, 220 290 Z" class="outline-stroke"></path>
-
-                <path id="tom-nose" d="M200 215 Q195 220, 200 225 Q205 220, 200 215Z" class="detail-stroke"></path>
-                <path id="tom-mouth" d="M180 235 C190 245, 210 245, 220 235" class="detail-stroke"></path>
-                <path id="tom-whisker-l1" d="M140 215 L100 210" class="detail-stroke"></path>
-                <path id="tom-whisker-l2" d="M145 225 L105 230" class="detail-stroke"></path>
-                <path id="tom-whisker-r1" d="M260 215 L300 210" class="detail-stroke"></path>
-                <path id="tom-whisker-r2" d="M255 225 L295 230" class="detail-stroke"></path>
-                <path id="tom-eye-l-outline" d="M165 170 C170 160, 180 160, 185 170 C180 180, 170 180, 165 170Z" class="detail-stroke"></path>
-                <path id="tom-eye-r-outline" d="M215 170 C220 160, 230 160, 235 170 C230 180, 220 180, 215 170Z" class="detail-stroke"></path>
-                <path id="tom-inner-ear-l" d="M140 85 Q130 70, 145 75 Z" class="detail-stroke"></path>
-                <path id="tom-inner-ear-r" d="M260 85 Q270 70, 255 75 Z" class="detail-stroke"></path>
-
-                <path id="tom-head-fill" d="M190 100 C250 50, 300 100, 310 170 C320 250, 270 300, 200 300 C130 300, 80 250, 90 170 C100 100, 150 50, 190 100Z" class="fill-color tom-grey"></path>
-                <path id="tom-body-fill" d="M180 290 C150 350, 100 390, 100 390 C100 390, 180 390, 200 390 C220 390, 300 390, 300 390 C300 390, 250 350, 220 290 Z" class="fill-color tom-grey"></path>
-                <path id="tom-muzzle-fill" d="M160 210 C180 200, 220 200, 240 210 C250 220, 230 240, 200 240 C170 240, 150 220, 160 210Z" class="fill-color tom-white"></path>
-                <path id="tom-inner-ear-l-fill" d="M140 85 Q130 70, 145 75 Z" class="fill-color tom-pink"></path>
-                <path id="tom-inner-ear-r-fill" d="M260 85 Q270 70, 255 75 Z" class="fill-color tom-pink"></path>
-                <path id="tom-nose-fill" d="M200 215 Q195 220, 200 225 Q205 220, 200 215Z" class="fill-color tom-pink"></path>
-                <path id="tom-eye-l-white-fill" d="M165 170 C170 160, 180 160, 185 170 C180 180, 170 180, 165 170Z" class="fill-color tom-yellow-eye"></path>
-                <path id="tom-eye-r-white-fill" d="M215 170 C220 160, 230 160, 235 170 C230 180, 220 180, 215 170Z" class="fill-color tom-yellow-eye"></path>
-                <circle id="tom-eye-l-pupil" cx="175" cy="170" r="3" class="fill-color tom-green-eye"></circle>
-                <circle id="tom-eye-r-pupil" cx="225" cy="170" r="3" class="fill-color tom-green-eye"></circle>
-            </g>
-
-            <g id="jerry-group" transform="translate(150 150)">
-                <path id="jerry-body-outline" d="M50 100 C70 50, 120 50, 140 100 C160 150, 130 190, 90 190 C50 190, 20 150, 50 100Z" class="outline-stroke"></path>
-                <path id="jerry-ear-outline" d="M60 80 Q50 50, 80 60 Q90 70, 60 80Z" class="outline-stroke"></path>
-                <path id="jerry-tail-outline" d="M130 140 Q145 150, 150 160 Q155 170, 140 175" class="outline-stroke"></path>
-
-                <path id="jerry-muzzle-outline" d="M75 130 C85 125, 105 125, 115 130 C120 135, 110 145, 95 145 C80 145, 70 135, 75 130Z" class="detail-stroke"></path>
-                <path id="jerry-nose" d="M95 132 Q93 135, 95 138 Q97 135, 95 132Z" class="detail-stroke"></path>
-                <path id="jerry-mouth" d="M85 142 C90 148, 100 148, 105 142" class="detail-stroke"></path>
-                <path id="jerry-eye-l-outline" d="M80 110 C83 105, 90 105, 93 110 C90 115, 83 115, 80 110Z" class="detail-stroke"></path>
-                <path id="jerry-eye-r-outline" d="M100 110 C103 105, 110 105, 113 110 C110 115, 103 115, 100 110Z" class="detail-stroke"></path>
-
-                <path id="jerry-body-fill" d="M50 100 C70 50, 120 50, 140 100 C160 150, 130 190, 90 190 C50 190, 20 150, 50 100Z" class="fill-color jerry-brown"></path>
-                <path id="jerry-ear-fill" d="M60 80 Q50 50, 80 60 Q90 70, 60 80Z" class="fill-color jerry-peach"></path>
-                <path id="jerry-muzzle-fill" d="M75 130 C85 125, 105 125, 115 130 C120 135, 110 145, 95 145 C80 145, 70 135, 75 130Z" class="fill-color jerry-peach"></path>
-                <path id="jerry-nose-fill" d="M95 132 Q93 135, 95 138 Q97 135, 95 132Z" class="fill-color jerry-pink"></path>
-                <path id="jerry-eye-l-white-fill" d="M80 110 C83 105, 90 105, 93 110 C90 115, 83 115, 80 110Z" class="fill-color jerry-white-eye"></path>
-                <path id="jerry-eye-r-white-fill" d="M100 110 C103 105, 110 105, 113 110 C110 115, 103 115, 100 110Z" class="fill-color jerry-white-eye"></path>
-                <circle id="jerry-eye-l-pupil" cx="87" cy="110" r="2" class="fill-color jerry-black-eye"></circle>
-                <circle id="jerry-eye-r-pupil" cx="107" cy="110" r="2" class="fill-color jerry-black-eye"></circle>
-            </g>
-        </svg>
-        <div class="hand-overlay" id="handOverlay"></div>
+    <div class="shorts-container">
+        <div class="progress-bar">
+            <div class="progress" id="progress"></div>
+        </div>
+        <div class="timer" id="timer">0:00</div>
+        <div class="step-indicator" id="stepIndicator">Starting...</div>
+        
+        <div class="drawing-container">
+            <canvas id="drawingCanvas"></canvas>
+        </div>
     </div>
 
     <script>
-        const svg = document.querySelector('.drawing-canvas');
-        const hand = document.getElementById('handOverlay');
-
-        // Function to set initial stroke-dasharray and offset
-        function initializePaths(selector) {
-            document.querySelectorAll(selector).forEach(path => {
-                const length = path.getTotalLength();
-                path.style.setProperty('--length', length);
-                path.style.setProperty('--draw-speed', `${length / 200}s`); // Speed based on length
-            });
-        }
-
-        // Delay function
-        function delay(ms) {
-            return new Promise(resolve => setTimeout(resolve, ms));
-        }
-
-        // Simple hand movement simulation (more complex would be an array of XY coordinates)
-        async function moveHand(targetElement, durationMs, offset = {x: 0, y: 0}) {
-            if (!targetElement) return;
-
-            const targetRect = targetElement.getBoundingClientRect();
-            const svgRect = svg.getBoundingClientRect();
-
-            // Calculate SVG coordinates for the center of the target element
-            // Adjust for viewBox and current SVG scaling
-            const svgX = (targetRect.left + targetRect.width / 2 - svgRect.left) / svgRect.width * svg.viewBox.baseVal.width;
-            const svgY = (targetRect.top + targetRect.height / 2 - svgRect.top) / svgRect.height * svg.viewBox.baseVal.height;
-
-            // Convert SVG coordinates back to screen coordinates for the hand
-            const handX = svgRect.left + (svgX / svg.viewBox.baseVal.width) * svgRect.width + offset.x;
-            const handY = svgRect.top + (svgY / svg.viewBox.baseVal.height) * svgRect.height + offset.y;
-
-
-            hand.style.transition = `transform ${durationMs / 1000}s ease-in-out, opacity 0.2s ease-in`;
-            hand.style.transform = `translate(${handX}px, ${handY}px) translate(-50%, -50%)`;
-            hand.style.opacity = 1;
-
-            await delay(durationMs);
-        }
-
-        async function hideHand(durationMs = 200) {
-            hand.style.transition = `opacity ${durationMs / 1000}s ease-out`;
-            hand.style.opacity = 0;
-            await delay(durationMs);
-        }
-
-
-        // Animation sequence
-        async function animateDrawing() {
-            // Initialize all paths
-            initializePaths('.drawing-canvas path, .drawing-canvas polygon, .drawing-canvas circle');
-
-            hand.style.opacity = 0; // Ensure hand is hidden initially
-
-            const tomOutlinePaths = document.querySelectorAll('#tom-group .outline-stroke');
-            const tomDetailPaths = document.querySelectorAll('#tom-group .detail-stroke');
-            const tomFillPaths = document.querySelectorAll('#tom-group .fill-color');
-
-            const jerryOutlinePaths = document.querySelectorAll('#jerry-group .outline-stroke');
-            const jerryDetailPaths = document.querySelectorAll('#jerry-group .detail-stroke');
-            const jerryFillPaths = document.querySelectorAll('#jerry-group .fill-color');
-
-            const totalDuration = 30000; // 30 seconds in ms
-            let elapsed = 0;
-
-            // Helper to draw a group of paths sequentially
-            async function drawElements(elements, startDelayMs = 0, elementDelayMs = 50, moveHandDuration = 300, hideHandDelay = 200) {
-                await delay(startDelayMs);
-                for (const element of elements) {
-                    await moveHand(element, moveHandDuration, {x: -20, y: -20}); // Move hand before drawing
-                    element.classList.add('draw-stroke');
-                    const drawTime = parseFloat(element.style.getPropertyValue('--draw-speed')) * 1000;
-                    await delay(drawTime + elementDelayMs);
-                    if (drawTime > 0) { // Only hide hand if actual drawing occurred
-                        await hideHand(hideHandDelay);
+        document.addEventListener('DOMContentLoaded', function() {
+            const canvas = document.getElementById('drawingCanvas');
+            const ctx = canvas.getContext('2d');
+            const progress = document.getElementById('progress');
+            const timer = document.getElementById('timer');
+            const stepIndicator = document.getElementById('stepIndicator');
+            
+            // Set canvas size
+            canvas.width = 540;
+            canvas.height = 960;
+            
+            // Animation timing (30 seconds total)
+            const totalDuration = 30000; // 30 seconds in milliseconds
+            let startTime;
+            
+            // Drawing steps with their durations and colors
+            const drawingSteps = [
+                {
+                    name: "Basic Outline",
+                    duration: 8000,
+                    color: "#333333",
+                    lineWidth: 2,
+                    paths: generateOutlinePaths()
+                },
+                {
+                    name: "Detailed Sketch",
+                    duration: 7000,
+                    color: "#555555",
+                    lineWidth: 1.5,
+                    paths: generateDetailPaths()
+                },
+                {
+                    name: "Base Colors",
+                    duration: 8000,
+                    color: "none",
+                    fill: true,
+                    paths: generateColorPaths()
+                },
+                {
+                    name: "Shading & Highlights",
+                    duration: 5000,
+                    color: "none",
+                    shading: true,
+                    paths: generateShadingPaths()
+                },
+                {
+                    name: "Final Touches",
+                    duration: 2000,
+                    color: "#000000",
+                    lineWidth: 1,
+                    final: true,
+                    paths: generateFinalPaths()
+                }
+            ];
+            
+            // Start the animation
+            function startAnimation() {
+                startTime = performance.now();
+                requestAnimationFrame(animate);
+            }
+            
+            // Animation loop
+            function animate(currentTime) {
+                if (!startTime) startTime = currentTime;
+                const elapsed = currentTime - startTime;
+                const progressPercent = Math.min(elapsed / totalDuration, 1);
+                
+                // Update progress bar and timer
+                progress.style.width = `${progressPercent * 100}%`;
+                updateTimer(elapsed);
+                
+                // Clear canvas
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Draw paper texture
+                drawPaperTexture();
+                
+                // Calculate current step
+                let accumulatedTime = 0;
+                let currentStep = null;
+                let stepProgress = 0;
+                
+                for (let i = 0; i < drawingSteps.length; i++) {
+                    if (elapsed >= accumulatedTime && elapsed < accumulatedTime + drawingSteps[i].duration) {
+                        currentStep = drawingSteps[i];
+                        stepProgress = (elapsed - accumulatedTime) / currentStep.duration;
+                        stepIndicator.textContent = currentStep.name;
+                        break;
+                    }
+                    accumulatedTime += drawingSteps[i].duration;
+                }
+                
+                // If all steps are done, show final result
+                if (!currentStep) {
+                    drawAllSteps();
+                    stepIndicator.textContent = "Finished!";
+                    return;
+                }
+                
+                // Draw up to the current step
+                drawStepsUpTo(drawingSteps.indexOf(currentStep), stepProgress);
+                
+                // Continue animation if not finished
+                if (progressPercent < 1) {
+                    requestAnimationFrame(animate);
+                }
+            }
+            
+            // Draw all completed steps
+            function drawStepsUpTo(stepIndex, progress) {
+                for (let i = 0; i <= stepIndex; i++) {
+                    const step = drawingSteps[i];
+                    const isCurrentStep = i === stepIndex;
+                    const paths = step.paths;
+                    
+                    if (step.fill) {
+                        // Coloring step
+                        for (let j = 0; j < paths.length; j++) {
+                            const path = paths[j];
+                            const drawUpTo = isCurrentStep ? Math.floor(progress * path.points.length) : path.points.length;
+                            
+                            ctx.fillStyle = path.color;
+                            ctx.beginPath();
+                            
+                            // Draw the outline
+                            for (let k = 0; k < path.outline.length; k++) {
+                                const point = path.outline[k];
+                                if (k === 0) {
+                                    ctx.moveTo(point.x, point.y);
+                                } else {
+                                    ctx.lineTo(point.x, point.y);
+                                }
+                            }
+                            
+                            // Fill if we're in this step or beyond
+                            if (i < stepIndex || (isCurrentStep && drawUpTo > 0)) {
+                                ctx.fill();
+                            }
+                        }
+                    } else if (step.shading) {
+                        // Shading step
+                        for (let j = 0; j < paths.length; j++) {
+                            const path = paths[j];
+                            const drawUpTo = isCurrentStep ? Math.floor(progress * path.points.length) : path.points.length;
+                            
+                            for (let k = 0; k < drawUpTo; k++) {
+                                const point = path.points[k];
+                                ctx.fillStyle = path.color;
+                                ctx.globalAlpha = path.alpha || 0.3;
+                                ctx.beginPath();
+                                ctx.arc(point.x, point.y, path.radius || 5, 0, Math.PI * 2);
+                                ctx.fill();
+                            }
+                        }
+                        ctx.globalAlpha = 1;
+                    } else {
+                        // Drawing step
+                        ctx.strokeStyle = step.color;
+                        ctx.lineWidth = step.lineWidth;
+                        ctx.lineCap = 'round';
+                        ctx.lineJoin = 'round';
+                        
+                        for (let j = 0; j < paths.length; j++) {
+                            const path = paths[j];
+                            const drawUpTo = isCurrentStep ? Math.floor(progress * path.points.length) : path.points.length;
+                            
+                            if (drawUpTo > 0) {
+                                ctx.beginPath();
+                                ctx.moveTo(path.points[0].x, path.points[0].y);
+                                
+                                for (let k = 1; k < drawUpTo; k++) {
+                                    const point = path.points[k];
+                                    ctx.lineTo(point.x, point.y);
+                                }
+                                
+                                ctx.stroke();
+                            }
+                        }
                     }
                 }
             }
-
-            // Helper to fill a group of paths
-            async function fillElements(elements, startDelayMs = 0, elementDelayMs = 50, moveHandDuration = 300, hideHandDelay = 200) {
-                await delay(startDelayMs);
-                for (const element of elements) {
-                    await moveHand(element, moveHandDuration, {x: 10, y: 10}); // Move hand before filling
-                    element.classList.add('fill-color');
-                    element.classList.add('fade-in'); // Ensure opacity is 1
-                    await delay(800 + elementDelayMs); // Fill transition is 0.8s
-                    await hideHand(hideHandDelay);
+            
+            // Draw all steps (for final frame)
+            function drawAllSteps() {
+                drawStepsUpTo(drawingSteps.length - 1, 1);
+            }
+            
+            // Update timer display
+            function updateTimer(elapsed) {
+                const seconds = Math.floor(elapsed / 1000);
+                const remainingMs = elapsed % 1000;
+                const displayMs = Math.floor(remainingMs / 100);
+                timer.textContent = `${Math.floor(seconds / 60)}:${(seconds % 60).toString().padStart(2, '0')}.${displayMs}`;
+            }
+            
+            // Draw paper texture
+            function drawPaperTexture() {
+                ctx.fillStyle = '#f9f9f5';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Subtle paper texture
+                ctx.fillStyle = 'rgba(200, 200, 180, 0.02)';
+                for (let i = 0; i < 200; i++) {
+                    const x = Math.random() * canvas.width;
+                    const y = Math.random() * canvas.height;
+                    const size = Math.random() * 3 + 1;
+                    ctx.fillRect(x, y, size, size);
                 }
             }
-
-            // --- Tom's Outline (approx 5s) ---
-            await drawElements(tomOutlinePaths, 500, 100);
-            elapsed += 5000; // Rough estimate
-
-            // --- Tom's Details (approx 5s) ---
-            await drawElements(tomDetailPaths, 500, 80);
-            elapsed += 5000;
-
-            // --- Jerry's Outline (approx 5s) ---
-            await drawElements(jerryOutlinePaths, 500, 100);
-            elapsed += 5000;
-
-            // --- Jerry's Details (approx 5s) ---
-            await drawElements(jerryDetailPaths, 500, 80);
-            elapsed += 5000;
-
-            // --- Tom's Coloring (approx 3.5s) ---
-            // Tom's Grey parts
-            await fillElements(document.querySelectorAll('#tom-head-fill, #tom-body-fill'), 500, 100);
-            // Tom's Muzzle & Inner Ears
-            await fillElements(document.querySelectorAll('#tom-muzzle-fill, #tom-inner-ear-l-fill, #tom-inner-ear-r-fill'), 100, 50);
-            // Tom's Nose & Eyes (whites/yellows)
-            await fillElements(document.querySelectorAll('#tom-nose-fill, #tom-eye-l-white-fill, #tom-eye-r-white-fill'), 100, 50);
-            // Tom's Pupils
-            await fillElements(document.querySelectorAll('#tom-eye-l-pupil, #tom-eye-r-pupil'), 100, 50);
-            elapsed += 3500;
-
-            // --- Jerry's Coloring + Final Polish (approx 3.5s) ---
-            // Jerry's Brown parts
-            await fillElements(document.querySelectorAll('#jerry-body-fill'), 500, 100);
-            // Jerry's Peach parts
-            await fillElements(document.querySelectorAll('#jerry-ear-fill, #jerry-muzzle-fill'), 100, 50);
-            // Jerry's Nose & Eyes (whites)
-            await fillElements(document.querySelectorAll('#jerry-nose-fill, #jerry-eye-l-white-fill, #jerry-eye-r-white-fill'), 100, 50);
-            // Jerry's Pupils
-            await fillElements(document.querySelectorAll('#jerry-eye-l-pupil, #jerry-eye-r-pupil'), 100, 50);
-            elapsed += 3500;
-
-
-            // Ensure hand is hidden at the very end
-            await hideHand(500);
-
-            // Final slight fade in for all outlines to make them pop
-            document.querySelectorAll('.outline-stroke, .detail-stroke').forEach(path => {
-                path.style.transition = 'stroke-width 0.5s ease-in, stroke 0.5s ease-in';
-                path.style.strokeWidth = '3'; /* Make lines slightly thicker */
-                path.style.stroke = '#222'; /* Darker final outline */
-            });
-
-            console.log(`Animation finished. Total estimated time: ${elapsed / 1000}s`);
-
-            // If there's remaining time to fill up to 30 seconds, just wait.
-            const remainingTime = totalDuration - elapsed;
-            if (remainingTime > 0) {
-                console.log(`Waiting for ${remainingTime / 1000}s to reach 30s total.`);
-                await delay(remainingTime);
+            
+            // Generate paths for outline step
+            function generateOutlinePaths() {
+                const centerX = canvas.width / 2;
+                const centerY = canvas.height / 2;
+                const scale = 1.8;
+                
+                // Simplified Tom & Jerry outline paths
+                const paths = [];
+                
+                // Tom's head outline
+                paths.push({
+                    points: generateSmoothPath([
+                        {x: centerX - 50*scale, y: centerY - 20*scale},
+                        {x: centerX - 80*scale, y: centerY - 10*scale},
+                        {x: centerX - 90*scale, y: centerY + 20*scale},
+                        {x: centerX - 80*scale, y: centerY + 50*scale},
+                        {x: centerX - 60*scale, y: centerY + 70*scale},
+                        {x: centerX - 30*scale, y: centerY + 80*scale},
+                        {x: centerX + 10*scale, y: centerY + 70*scale},
+                        {x: centerX + 40*scale, y: centerY + 50*scale},
+                        {x: centerX + 60*scale, y: centerY + 20*scale},
+                        {x: centerX + 60*scale, y: centerY - 20*scale},
+                        {x: centerX + 40*scale, y: centerY - 40*scale},
+                        {x: centerX + 10*scale, y: centerY - 50*scale},
+                        {x: centerX - 30*scale, y: centerY - 40*scale},
+                        {x: centerX - 50*scale, y: centerY - 20*scale}
+                    ], 30)
+                });
+                
+                // Tom's ears
+                paths.push({
+                    points: generateSmoothPath([
+                        {x: centerX - 60*scale, y: centerY - 30*scale},
+                        {x: centerX - 70*scale, y: centerY - 50*scale},
+                        {x: centerX - 90*scale, y: centerY - 60*scale},
+                        {x: centerX - 80*scale, y: centerY - 40*scale},
+                        {x: centerX - 70*scale, y: centerY - 30*scale}
+                    ], 15)
+                });
+                
+                paths.push({
+                    points: generateSmoothPath([
+                        {x: centerX - 20*scale, y: centerY - 50*scale},
+                        {x: centerX - 10*scale, y: centerY - 70*scale},
+                        {x: centerX + 10*scale, y: centerY - 80*scale},
+                        {x: centerX + 30*scale, y: centerY - 70*scale},
+                        {x: centerX + 30*scale, y: centerY - 50*scale}
+                    ], 15)
+                });
+                
+                // Jerry's head outline
+                paths.push({
+                    points: generateSmoothPath([
+                        {x: centerX + 20*scale, y: centerY - 80*scale},
+                        {x: centerX + 40*scale, y: centerY - 90*scale},
+                        {x: centerX + 70*scale, y: centerY - 80*scale},
+                        {x: centerX + 90*scale, y: centerY - 60*scale},
+                        {x: centerX + 90*scale, y: centerY - 30*scale},
+                        {x: centerX + 70*scale, y: centerY - 10*scale},
+                        {x: centerX + 40*scale, y: centerY + 10*scale},
+                        {x: centerX + 10*scale, y: centerY + 10*scale},
+                        {x: centerX - 10*scale, y: centerY + 5*scale},
+                        {x: centerX - 20*scale, y: centerY - 10*scale},
+                        {x: centerX - 10*scale, y: centerY - 30*scale},
+                        {x: centerX + 10*scale, y: centerY - 50*scale},
+                        {x: centerX + 20*scale, y: centerY - 80*scale}
+                    ], 30)
+                });
+                
+                // Jerry's ears
+                paths.push({
+                    points: generateSmoothPath([
+                        {x: centerX + 30*scale, y: centerY - 90*scale},
+                        {x: centerX + 20*scale, y: centerY - 110*scale},
+                        {x: centerX + 40*scale, y: centerY - 120*scale},
+                        {x: centerX + 60*scale, y: centerY - 110*scale},
+                        {x: centerX + 50*scale, y: centerY - 90*scale}
+                    ], 15)
+                });
+                
+                paths.push({
+                    points: generateSmoothPath([
+                        {x: centerX + 70*scale, y: centerY - 90*scale},
+                        {x: centerX + 80*scale, y: centerY - 110*scale},
+                        {x: centerX + 100*scale, y: centerY - 100*scale},
+                        {x: centerX + 90*scale, y: centerY - 80*scale}
+                    ], 12)
+                });
+                
+                return paths;
             }
-            console.log("30 second mark reached.");
-        }
-
-        // Start the animation when the DOM is fully loaded
-        document.addEventListener('DOMContentLoaded', animateDrawing);
+            
+            // Generate paths for detail step
+            function generateDetailPaths() {
+                const centerX = canvas.width / 2;
+                const centerY = canvas.height / 2;
+                const scale = 1.8;
+                
+                const paths = [];
+                
+                // Tom's facial features
+                // Eyes
+                paths.push({
+                    points: generateSmoothPath([
+                        {x: centerX - 30*scale, y: centerY - 10*scale},
+                        {x: centerX - 20*scale, y: centerY - 15*scale},
+                        {x: centerX - 10*scale, y: centerY - 10*scale},
+                        {x: centerX - 15*scale, y: centerY - 5*scale},
+                        {x: centerX - 25*scale, y: centerY - 5*scale},
+                        {x: centerX - 30*scale, y: centerY - 10*scale}
+                    ], 15)
+                });
+                
+                paths.push({
+                    points: generateSmoothPath([
+                        {x: centerX + 20*scale, y: centerY - 15*scale},
+                        {x: centerX + 30*scale, y: centerY - 20*scale},
+                        {x: centerX + 40*scale, y: centerY - 15*scale},
+                        {x: centerX + 35*scale, y: centerY - 10*scale},
+                        {x: centerX + 25*scale, y: centerY - 10*scale},
+                        {x: centerX + 20*scale, y: centerY - 15*scale}
+                    ], 15)
+                });
+                
+                // Nose
+                paths.push({
+                    points: generateSmoothPath([
+                        {x: centerX, y: centerY},
+                        {x: centerX + 5*scale, y: centerY + 5*scale},
+                        {x: centerX, y: centerY + 10*scale},
+                        {x: centerX - 5*scale, y: centerY + 5*scale},
+                        {x: centerX, y: centerY}
+                    ], 10)
+                });
+                
+                // Mouth
+                paths.push({
+                    points: generateSmoothPath([
+                        {x: centerX, y: centerY + 10*scale},
+                        {x: centerX, y: centerY + 30*scale},
+                        {x: centerX - 10*scale, y: centerY + 40*scale},
+                        {x: centerX - 30*scale, y: centerY + 45*scale}
+                    ], 15)
+                });
+                
+                paths.push({
+                    points: generateSmoothPath([
+                        {x: centerX, y: centerY + 30*scale},
+                        {x: centerX + 15*scale, y: centerY + 35*scale},
+                        {x: centerX + 30*scale, y: centerY + 30*scale}
+                    ], 10)
+                });
+                
+                // Whiskers
+                for (let i = 0; i < 3; i++) {
+                    const offset = i * 5 * scale;
+                    paths.push({
+                        points: generateSmoothPath([
+                            {x: centerX - 10*scale, y: centerY + 5*scale + offset},
+                            {x: centerX - 40*scale, y: centerY + offset},
+                            {x: centerX - 60*scale, y: centerY - 10*scale + offset}
+                        ], 5)
+                    });
+                    
+                    paths.push({
+                        points: generateSmoothPath([
+                            {x: centerX - 10*scale, y: centerY + 5*scale + offset},
+                            {x: centerX - 40*scale, y: centerY + 10*scale + offset},
+                            {x: centerX - 60*scale, y: centerY + 20*scale + offset}
+                        ], 5)
+                    });
+                }
+                
+                // Jerry's facial features
+                // Eyes
+                paths.push({
+                    points: generateSmoothPath([
+                        {x: centerX + 50*scale, y: centerY - 50*scale},
+                        {x: centerX + 55*scale, y: centerY - 55*scale},
+                        {x: centerX + 60*scale, y: centerY - 50*scale},
+                        {x: centerX + 55*scale, y: centerY - 45*scale},
+                        {x: centerX + 50*scale, y: centerY - 50*scale}
+                    ], 10)
+                });
+                
+                paths.push({
+                    points: generateSmoothPath([
+                        {x: centerX + 70*scale, y: centerY - 50*scale},
+                        {x: centerX + 75*scale, y: centerY - 55*scale},
+                        {x: centerX + 80*scale, y: centerY - 50*scale},
+                        {x: centerX + 75*scale, y: centerY - 45*scale},
+                        {x: centerX + 70*scale, y: centerY - 50*scale}
+                    ], 10)
+                });
+                
+                // Nose
+                paths.push({
+                    points: generateSmoothPath([
+                        {x: centerX + 60*scale, y: centerY - 40*scale},
+                        {x: centerX + 65*scale, y: centerY - 35*scale},
+                        {x: centerX + 60*scale, y: centerY - 30*scale}
+                    ], 5)
+                });
+                
+                // Mouth
+                paths.push({
+                    points: generateSmoothPath([
+                        {x: centerX + 60*scale, y: centerY - 30*scale},
+                        {x: centerX + 60*scale, y: centerY - 20*scale},
+                        {x: centerX + 55*scale, y: centerY - 15*scale}
+                    ], 5)
+                });
+                
+                return paths;
+            }
+            
+            // Generate paths for coloring step
+            function generateColorPaths() {
+                const centerX = canvas.width / 2;
+                const centerY = canvas.height / 2;
+                const scale = 1.8;
+                
+                const paths = [];
+                
+                // Tom's body (gray)
+                paths.push({
+                    color: '#a0a0a0',
+                    outline: generateSmoothPath([
+                        {x: centerX - 50*scale, y: centerY - 20*scale},
+                        {x: centerX - 80*scale, y: centerY - 10*scale},
+                        {x: centerX - 90*scale, y: centerY + 20*scale},
+                        {x: centerX - 80*scale, y: centerY + 50*scale},
+                        {x: centerX - 60*scale, y: centerY + 70*scale},
+                        {x: centerX - 30*scale, y: centerY + 80*scale},
+                        {x: centerX + 10*scale, y: centerY + 70*scale},
+                        {x: centerX + 40*scale, y: centerY + 50*scale},
+                        {x: centerX + 60*scale, y: centerY + 20*scale},
+                        {x: centerX + 60*scale, y: centerY - 20*scale},
+                        {x: centerX + 40*scale, y: centerY - 40*scale},
+                        {x: centerX + 10*scale, y: centerY - 50*scale},
+                        {x: centerX - 30*scale, y: centerY - 40*scale},
+                        {x: centerX - 50*scale, y: centerY - 20*scale}
+                    ], 30).points,
+                    points: generateFillPoints(20)
+                });
+                
+                // Tom's ears (inner pink)
+                paths.push({
+                    color: '#ffb6c1',
+                    outline: generateSmoothPath([
+                        {x: centerX - 70*scale, y: centerY - 50*scale},
+                        {x: centerX - 80*scale, y: centerY - 40*scale},
+                        {x: centerX - 70*scale, y: centerY - 30*scale}
+                    ], 10).points,
+                    points: generateFillPoints(5)
+                });
+                
+                paths.push({
+                    color: '#ffb6c1',
+                    outline: generateSmoothPath([
+                        {x: centerX - 10*scale, y: centerY - 70*scale},
+                        {x: centerX + 10*scale, y: centerY - 80*scale},
+                        {x: centerX + 30*scale, y: centerY - 70*scale},
+                        {x: centerX + 30*scale, y: centerY - 50*scale}
+                    ], 12).points,
+                    points: generateFillPoints(5)
+                });
+                
+                // Jerry's body (brown)
+                paths.push({
+                    color: '#d2b48c',
+                    outline: generateSmoothPath([
+                        {x: centerX + 20*scale, y: centerY - 80*scale},
+                        {x: centerX + 40*scale, y: centerY - 90*scale},
+                        {x: centerX + 70*scale, y: centerY - 80*scale},
+                        {x: centerX + 90*scale, y: centerY - 60*scale},
+                        {x: centerX + 90*scale, y: centerY - 30*scale},
+                        {x: centerX + 70*scale, y: centerY - 10*scale},
+                        {x: centerX + 40*scale, y: centerY + 10*scale},
+                        {x: centerX + 10*scale, y: centerY + 10*scale},
+                        {x: centerX - 10*scale, y: centerY + 5*scale},
+                        {x: centerX - 20*scale, y: centerY - 10*scale},
+                        {x: centerX - 10*scale, y: centerY - 30*scale},
+                        {x: centerX + 10*scale, y: centerY - 50*scale},
+                        {x: centerX + 20*scale, y: centerY - 80*scale}
+                    ], 30).points,
+                    points: generateFillPoints(20)
+                });
+                
+                // Jerry's ears (inner pink)
+                paths.push({
+                    color: '#ffb6c1',
+                    outline: generateSmoothPath([
+                        {x: centerX + 20*scale, y: centerY - 110*scale},
+                        {x: centerX + 40*scale, y: centerY - 120*scale},
+                        {x: centerX + 60*scale, y: centerY - 110*scale},
+                        {x: centerX + 50*scale, y: centerY - 90*scale}
+                    ], 12).points,
+                    points: generateFillPoints(5)
+                });
+                
+                paths.push({
+                    color: '#ffb6c1',
+                    outline: generateSmoothPath([
+                        {x: centerX + 80*scale, y: centerY - 110*scale},
+                        {x: centerX + 100*scale, y: centerY - 100*scale},
+                        {x: centerX + 90*scale, y: centerY - 80*scale}
+                    ], 10).points,
+                    points: generateFillPoints(5)
+                });
+                
+                // Tom's nose (red)
+                paths.push({
+                    color: '#ff0000',
+                    outline: generateSmoothPath([
+                        {x: centerX, y: centerY},
+                        {x: centerX + 5*scale, y: centerY + 5*scale},
+                        {x: centerX, y: centerY + 10*scale},
+                        {x: centerX - 5*scale, y: centerY + 5*scale},
+                        {x: centerX, y: centerY}
+                    ], 10).points,
+                    points: generateFillPoints(3)
+                });
+                
+                // Jerry's nose (black)
+                paths.push({
+                    color: '#000000',
+                    outline: generateSmoothPath([
+                        {x: centerX + 60*scale, y: centerY - 40*scale},
+                        {x: centerX + 65*scale, y: centerY - 35*scale},
+                        {x: centerX + 60*scale, y: centerY - 30*scale}
+                    ], 5).points,
+                    points: generateFillPoints(2)
+                });
+                
+                return paths;
+            }
+            
+            // Generate paths for shading step
+            function generateShadingPaths() {
+                const centerX = canvas.width / 2;
+                const centerY = canvas.height / 2;
+                const scale = 1.8;
+                
+                const paths = [];
+                
+                // Tom's shading
+                paths.push({
+                    color: '#808080',
+                    alpha: 0.3,
+                    radius: 8,
+                    points: generateRandomPointsInArea([
+                        {x: centerX - 70*scale, y: centerY - 20*scale},
+                        {x: centerX - 80*scale, y: centerY + 10*scale},
+                        {x: centerX - 60*scale, y: centerY + 40*scale},
+                        {x: centerX - 30*scale, y: centerY + 50*scale}
+                    ], 30)
+                });
+                
+                paths.push({
+                    color: '#808080',
+                    alpha: 0.2,
+                    radius: 6,
+                    points: generateRandomPointsInArea([
+                        {x: centerX - 40*scale, y: centerY - 30*scale},
+                        {x: centerX - 20*scale, y: centerY - 20*scale},
+                        {x: centerX - 10*scale, y: centerY + 10*scale},
+                        {x: centerX - 30*scale, y: centerY + 30*scale}
+                    ], 20)
+                });
+                
+                // Jerry's shading
+                paths.push({
+                    color: '#a0522d',
+                    alpha: 0.3,
+                    radius: 6,
+                    points: generateRandomPointsInArea([
+                        {x: centerX + 60*scale, y: centerY - 70*scale},
+                        {x: centerX + 80*scale, y: centerY - 50*scale},
+                        {x: centerX + 70*scale, y: centerY - 20*scale},
+                        {x: centerX + 50*scale, y: centerY - 40*scale}
+                    ], 25)
+                });
+                
+                paths.push({
+                    color: '#a0522d',
+                    alpha: 0.2,
+                    radius: 5,
+                    points: generateRandomPointsInArea([
+                        {x: centerX + 30*scale, y: centerY - 60*scale},
+                        {x: centerX + 50*scale, y: centerY - 50*scale},
+                        {x: centerX + 40*scale, y: centerY - 30*scale},
+                        {x: centerX + 20*scale, y: centerY - 40*scale}
+                    ], 15)
+                });
+                
+                // Highlights
+                paths.push({
+                    color: '#ffffff',
+                    alpha: 0.4,
+                    radius: 4,
+                    points: [
+                        {x: centerX - 60*scale, y: centerY - 30*scale},
+                        {x: centerX - 20*scale, y: centerY - 20*scale},
+                        {x: centerX + 50*scale, y: centerY - 60*scale},
+                        {x: centerX + 70*scale, y: centerY - 60*scale}
+                    ]
+                });
+                
+                return paths;
+            }
+            
+            // Generate paths for final step
+            function generateFinalPaths() {
+                const centerX = canvas.width / 2;
+                const centerY = canvas.height / 2;
+                const scale = 1.8;
+                
+                const paths = [];
+                
+                // Final outline touches
+                paths.push({
+                    points: generateSmoothPath([
+                        {x: centerX - 50*scale, y: centerY - 20*scale},
+                        {x: centerX - 80*scale, y: centerY - 10*scale},
+                        {x: centerX - 90*scale, y: centerY + 20*scale}
+                    ], 10)
+                });
+                
+                paths.push({
+                    points: generateSmoothPath([
+                        {x: centerX + 60*scale, y: centerY + 20*scale},
+                        {x: centerX + 60*scale, y: centerY - 20*scale},
+                        {x: centerX + 40*scale, y: centerY - 40*scale}
+                    ], 10)
+                });
+                
+                paths.push({
+                    points: generateSmoothPath([
+                        {x: centerX + 20*scale, y: centerY - 80*scale},
+                        {x: centerX + 40*scale, y: centerY - 90*scale},
+                        {x: centerX + 70*scale, y: centerY - 80*scale}
+                    ], 10)
+                });
+                
+                paths.push({
+                    points: generateSmoothPath([
+                        {x: centerX + 90*scale, y: centerY - 30*scale},
+                        {x: centerX + 70*scale, y: centerY - 10*scale},
+                        {x: centerX + 40*scale, y: centerY + 10*scale}
+                    ], 10)
+                });
+                
+                return paths;
+            }
+            
+            // Helper function to generate a smooth path from points
+            function generateSmoothPath(points, segments) {
+                const result = [];
+                
+                for (let i = 0; i < points.length; i++) {
+                    const p0 = points[(i - 1 + points.length) % points.length];
+                    const p1 = points[i];
+                    const p2 = points[(i + 1) % points.length];
+                    const p3 = points[(i + 2) % points.length];
+                    
+                    for (let t = 0; t < segments; t++) {
+                        const tVal = t / segments;
+                        const x = catmullRom(tVal, p0.x, p1.x, p2.x, p3.x);
+                        const y = catmullRom(tVal, p0.y, p1.y, p2.y, p3.y);
+                        result.push({x, y});
+                    }
+                }
+                
+                return { points: result };
+            }
+            
+            // Catmull-Rom spline interpolation
+            function catmullRom(t, p0, p1, p2, p3) {
+                const v0 = (p2 - p0) * 0.5;
+                const v1 = (p3 - p1) * 0.5;
+                const t2 = t * t;
+                const t3 = t * t2;
+                return (2 * p1 - 2 * p2 + v0 + v1) * t3 + 
+                       (-3 * p1 + 3 * p2 - 2 * v0 - v1) * t2 + 
+                       v0 * t + p1;
+            }
+            
+            // Helper function to generate random points within an area
+            function generateRandomPointsInArea(area, count) {
+                const points = [];
+                const minX = Math.min(...area.map(p => p.x));
+                const maxX = Math.max(...area.map(p => p.x));
+                const minY = Math.min(...area.map(p => p.y));
+                const maxY = Math.max(...area.map(p => p.y));
+                
+                for (let i = 0; i < count; i++) {
+                    points.push({
+                        x: minX + Math.random() * (maxX - minX),
+                        y: minY + Math.random() * (maxY - minY)
+                    });
+                }
+                
+                return points;
+            }
+            
+            // Helper function to generate fill points
+            function generateFillPoints(count) {
+                const points = [];
+                for (let i = 0; i < count; i++) {
+                    points.push({x: 0, y: 0}); // Actual positions don't matter for fill
+                }
+                return points;
+            }
+            
+            // Start the animation
+            startAnimation();
+        });
     </script>
 </body>
 </html>
