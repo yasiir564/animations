@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drawing SpongeBob in 15 Seconds - Speed Art</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #000;
+            overflow: hidden;
+            font-family: 'Roboto', Arial, sans-serif;
+            height: 100vh;
+        }
+
+        .video-container {
+            width: 1920px;
+            height: 1080px;
+            position: relative;
+            background: linear-gradient(145deg, #1a1a1a 0%, #2d2d2d 100%);
+            transform: scale(0.5);
+            transform-origin: center;
+            margin: 0 auto;
+        }
+
+        @media (min-width: 1920px) {
+            .video-container {
+                transform: scale(1);
+            }
+        }
+
+        /* YouTube-style intro */
+        .intro-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #ff0000, #cc0000);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            animation: introSlide 2s ease-out forwards;
+        }
+
+        .channel-logo {
+            width: 200px;
+            height: 200px;
+            background: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+            font-weight: bold;
+            color: #ff0000;
+            margin-bottom: 30px;
+            animation: logoSpin 2s ease-out;
+        }
+
+        .intro-text {
+            color: white;
+            font-size: 48px;
+            font-weight: bold;
+            text-align: center;
+            opacity: 0;
+            animation: textFade 1s ease-in 0.5s forwards;
+        }
+
+        @keyframes introSlide {
+            0% { transform: translateX(0); }
+            80% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
+        }
+
+        @keyframes logoSpin {
+            0% { transform: rotate(0deg) scale(0); }
+            50% { transform: rotate(180deg) scale(1.2); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+
+        @keyframes textFade {
+            to { opacity: 1; }
+        }
+
+        /* Main drawing workspace */
+        .workspace {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23f8f8f8"/><path d="M0 100L100 0" stroke="%23ddd" stroke-width="0.5"/></svg>') repeat;
+        }
+
+        /* Realistic paper */
+        .paper {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-2deg);
+            width: 900px;
+            height: 700px;
+            background: #fefefe;
+            border-radius: 5px;
+            box-shadow: 
+                0 10px 30px rgba(0,0,0,0.3),
+                inset 0 1px 0 rgba(255,255,255,0.8);
+            animation: paperPlace 1s ease-out 2s forwards;
+            opacity: 0;
+        }
+
+        @keyframes paperPlace {
+            0% { opacity: 0; transform: translate(-50%, -60%) rotate(-10deg) scale(0.8); }
+            100% { opacity: 1; transform: translate(-50%, -50%) rotate(-2deg) scale(1); }
+        }
+
+        /* Hand and pencil */
+        .hand {
+            position: absolute;
+            width: 120px;
+            height: 80px;
+            background: linear-gradient(145deg, #d4a574, #c49660);
+            border-radius: 20px 20px 40px 40px;
+            top: 100px;
+            left: 200px;
+            transform: rotate(-25deg);
+            opacity: 0;
+            animation: handEntry 1s ease-out 3s forwards;
+            z-index: 10;
+        }
+
+        .pencil-in-hand {
+            position: absolute;
+            width: 180px;
+            height: 12px;
+            background: linear-gradient(90deg, #ffd700 0%, #ffed4e 70%, #8b4513 70%, #654321 100%);
+            border-radius: 6px;
+            top: 35px;
+            left: -80px;
+            transform: rotate(15deg);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .pencil-tip {
+            position: absolute;
+            right: -8px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
+            border-left: 12px solid #2d2d2d;
+            border-top: 6px solid transparent;
+            border-bottom: 6px solid transparent;
+        }
+
+        @keyframes handEntry {
+            0% { opacity: 0; transform: translate(-100px, -50px) rotate(-25deg); }
+            100% { opacity: 1; transform: translate(0, 0) rotate(-25deg); }
+        }
+
+        /* Smart drawing animation */
+        .drawing-area {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 800px;
+            height: 600px;
+        }
+
+        .drawing-svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Realistic drawing strokes */
+        .sketch-line {
+            fill: none;
+            stroke: #2d2d2d;
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            stroke-dasharray: 1500;
+            stroke-dashoffset: 1500;
+            opacity: 0.8;
+        }
+
+        /* Progressive drawing phases */
+        .phase-1 { animation: drawStroke 2s ease-in-out 4s forwards; }
+        .phase-2 { animation: drawStroke 1.5s ease-in-out 5.5s forwards; }
+        .phase-3 { animation: drawStroke 1.8s ease-in-out 6.5s forwards; }
+        .phase-4 { animation: drawStroke 1.2s ease-in-out 7.8s forwards; }
+        .phase-5 { animation: drawStroke 1.5s ease-in-out 8.5s forwards; }
+        .phase-6 { animation: drawStroke 2s ease-in-out 9.5s forwards; }
+
+        @keyframes drawStroke {
+            to { stroke-dashoffset: 0; }
+        }
+
+        /* Coloring with markers */
+        .color-layer {
+            opacity: 0;
+            animation: colorReveal 0.8s ease-out forwards;
+        }
+
+        .yellow-body { fill: #ffff00; animation-delay: 11.5s; }
+        .brown-pants { fill: #8b4513; animation-delay: 12s; }
+        .white-eyes { fill: #ffffff; animation-delay: 12.3s; }
+        .blue-pupils { fill: #0066cc; animation-delay: 12.6s; }
+        .red-mouth { fill: #ff4444; animation-delay: 13s; }
+        .pink-tongue { fill: #ff69b4; animation-delay: 13.2s; }
+
+        @keyframes colorReveal {
+            0% { opacity: 0; transform: scale(0.95); }
+            100% { opacity: 0.9; transform: scale(1); }
+        }
+
+        /* Hand movements for realistic drawing */
+        .hand-drawing {
+            animation: handDrawing 8s ease-in-out 4s forwards;
+        }
+
+        @keyframes handDrawing {
+            0% { top: 100px; left: 200px; transform: rotate(-25deg); }
+            15% { top: 80px; left: 350px; transform: rotate(-15deg); }
+            30% { top: 150px; left: 500px; transform: rotate(-35deg); }
+            45% { top: 250px; left: 400px; transform: rotate(-20deg); }
+            60% { top: 200px; left: 300px; transform: rotate(-30deg); }
+            75% { top: 180px; left: 450px; transform: rotate(-25deg); }
+            90% { top: 120px; left: 380px; transform: rotate(-20deg); }
+            100% { top: 100px; left: 200px; transform: rotate(-25deg); }
+        }
+
+        /* Pencil shavings and eraser dust */
+        .debris {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #ffed4e;
+            border-radius: 50%;
+            opacity: 0;
+        }
+
+        .debris:nth-child(1) { top: 300px; left: 400px; animation: debrisFall 1s ease-out 6s forwards; }
+        .debris:nth-child(2) { top: 250px; left: 450px; animation: debrisFall 1.2s ease-out 7s forwards; }
+        .debris:nth-child(3) { top: 350px; left: 380px; animation: debrisFall 0.9s ease-out 8s forwards; }
+
+        @keyframes debrisFall {
+            0% { opacity: 1; transform: translateY(0) rotate(0deg); }
+            100% { opacity: 0; transform: translateY(30px) rotate(180deg); }
+        }
+
+        /* Progress indicator */
+        .progress-bar {
+            position: absolute;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 8px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 4px;
+            overflow: hidden;
+            opacity: 0;
+            animation: progressShow 0.5s ease-out 4s forwards;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff0000, #ff4444);
+            border-radius: 4px;
+            width: 0;
+            animation: progressFill 11s linear 4s forwards;
+        }
+
+        @keyframes progressShow {
+            to { opacity: 1; }
+        }
+
+        @keyframes progressFill {
+            to { width: 100%; }
+        }
+
+        /* Speed indicators */
+        .speed-text {
+            position: absolute;
+            top: 100px;
+            right: 100px;
+            color: #ff0000;
+            font-size: 36px;
+            font-weight: bold;
+            opacity: 0;
+            animation: speedPulse 0.5s ease-in-out 4s infinite;
+        }
+
+        @keyframes speedPulse {
+            0%, 100% { opacity: 0.7; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.1); }
+        }
+
+        /* Final reveal effect */
+        .completion-effect {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, transparent 0%, rgba(255,255,255,0.2) 50%, transparent 100%);
+            opacity: 0;
+            animation: completionFlash 1s ease-out 14s forwards;
+        }
+
+        @keyframes completionFlash {
+            0% { opacity: 0; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2); }
+            100% { opacity: 0; transform: scale(1); }
+        }
+
+        /* Subscribe notification */
+        .subscribe-popup {
+            position: absolute;
+            bottom: 150px;
+            right: 100px;
+            background: #ff0000;
+            color: white;
+            padding: 20px 30px;
+            border-radius: 25px;
+            font-size: 24px;
+            font-weight: bold;
+            opacity: 0;
+            animation: subscribeSlide 2s ease-out 13s forwards;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(255,0,0,0.4);
+        }
+
+        @keyframes subscribeSlide {
+            0% { opacity: 0; transform: translateX(100px); }
+            20% { opacity: 1; transform: translateX(0); }
+            80% { opacity: 1; transform: translateX(0); }
+            100% { opacity: 0; transform: translateX(100px); }
+        }
+
+        /* Timer */
+        .timer {
+            position: absolute;
+            top: 100px;
+            left: 100px;
+            background: rgba(0,0,0,0.8);
+            color: #ff0000;
+            padding: 15px 25px;
+            border-radius: 10px;
+            font-size: 32px;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+            opacity: 0;
+            animation: timerShow 0.5s ease-out 4s forwards;
+        }
+
+        @keyframes timerShow {
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="video-container">
+        <!-- YouTube-style intro -->
+        <div class="intro-overlay">
+            <div class="channel-logo">ART</div>
+            <div class="intro-text">Speed Drawing<br>SpongeBob SquarePants</div>
+        </div>
+
+        <!-- Main workspace -->
+        <div class="workspace">
+            <!-- Realistic paper -->
+            <div class="paper">
+                <!-- Drawing area -->
+                <div class="drawing-area">
+                    <svg class="drawing-svg" viewBox="0 0 800 600">
+                        <!-- SpongeBob outline - Phase 1: Body -->
+                        <path class="sketch-line phase-1" d="M250 150 Q230 130 210 150 L210 400 Q210 420 230 420 L470 420 Q490 420 490 400 L490 150 Q470 130 450 150 Z"/>
+                        
+                        <!-- Phase 2: Face shape -->
+                        <path class="sketch-line phase-2" d="M240 170 Q220 150 220 190 L220 270 Q220 290 240 290 L460 290 Q480 290 480 270 L480 190 Q480 150 460 170 Z"/>
+                        
+                        <!-- Phase 3: Eyes -->
+                        <circle class="sketch-line phase-3" cx="300" cy="220" r="30"/>
+                        <circle class="sketch-line phase-3" cx="400" cy="220" r="30"/>
+                        <circle class="sketch-line phase-3" cx="298" cy="218" r="10"/>
+                        <circle class="sketch-line phase-3" cx="402" cy="218" r="10"/>
+                        
+                        <!-- Phase 4: Mouth and nose -->
+                        <path class="sketch-line phase-4" d="M330 250 Q350 270 370 250"/>
+                        <path class="sketch-line phase-4" d="M345 240 L355 245 L345 250"/>
+                        
+                        <!-- Phase 5: Pants and belt -->
+                        <rect class="sketch-line phase-5" x="210" y="380" width="280" height="40" rx="5"/>
+                        <circle class="sketch-line phase-5" cx="350" cy="400" r="8"/>
+                        
+                        <!-- Phase 6: Arms, legs, and details -->
+                        <rect class="sketch-line phase-6" x="190" y="300" width="60" height="12" rx="6"/>
+                        <rect class="sketch-line phase-6" x="450" y="300" width="60" height="12" rx="6"/>
+                        <rect class="sketch-line phase-6" x="270" y="420" width="12" height="70" rx="6"/>
+                        <rect class="sketch-line phase-6" x="418" y="420" width="12" height="70" rx="6"/>
+                        <ellipse class="sketch-line phase-6" cx="276" cy="500" rx="20" ry="10"/>
+                        <ellipse class="sketch-line phase-6" cx="424" cy="500" rx="20" ry="10"/>
+                        
+                        <!-- Sponge holes -->
+                        <circle class="sketch-line phase-6" cx="280" cy="200" r="6"/>
+                        <circle class="sketch-line phase-6" cx="350" cy="190" r="4"/>
+                        <circle class="sketch-line phase-6" cx="420" cy="200" r="5"/>
+                        <circle class="sketch-line phase-6" cx="300" cy="350" r="7"/>
+                        <circle class="sketch-line phase-6" cx="380" cy="330" r="4"/>
+                        <circle class="sketch-line phase-6" cx="430" cy="360" r="6"/>
+
+                        <!-- Color layers -->
+                        <path class="color-layer yellow-body" d="M250 150 Q230 130 210 150 L210 400 Q210 420 230 420 L470 420 Q490 420 490 400 L490 150 Q470 130 450 150 Z"/>
+                        <rect class="color-layer brown-pants" x="210" y="380" width="280" height="40" rx="5"/>
+                        <circle class="color-layer white-eyes" cx="300" cy="220" r="30"/>
+                        <circle class="color-layer white-eyes" cx="400" cy="220" r="30"/>
+                        <circle class="color-layer blue-pupils" cx="298" cy="218" r="10"/>
+                        <circle class="color-layer blue-pupils" cx="402" cy="218" r="10"/>
+                        <path class="color-layer red-mouth" d="M330 250 Q350 270 370 250 Q350 265 330 250"/>
+                        
+                        <!-- Arms and legs colored -->
+                        <rect class="color-layer yellow-body" x="190" y="300" width="60" height="12" rx="6"/>
+                        <rect class="color-layer yellow-body" x="450" y="300" width="60" height="12" rx="6"/>
+                        <rect class="color-layer yellow-body" x="270" y="420" width="12" height="70" rx="6"/>
+                        <rect class="color-layer yellow-body" x="418" y="420" width="12" height="70" rx="6"/>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Realistic hand with pencil -->
+            <div class="hand hand-drawing">
+                <div class="pencil-in-hand">
+                    <div class="pencil-tip"></div>
+                </div>
+            </div>
+
+            <!-- Pencil debris -->
+            <div class="debris"></div>
+            <div class="debris"></div>
+            <div class="debris"></div>
+
+            <!-- UI Elements -->
+            <div class="timer" id="timer">15:00</div>
+            <div class="speed-text">16x SPEED</div>
+            
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+
+            <div class="subscribe-popup">🔔 SUBSCRIBE</div>
+            
+            <div class="completion-effect"></div>
+        </div>
+    </div>
+
+    <script>
+        // Timer functionality
+        let timeLeft = 15;
+        const timerElement = document.getElementById('timer');
+        
+        setTimeout(() => {
+            const countdown = setInterval(() => {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                timeLeft--;
+                
+                if (timeLeft < 0) {
+                    clearInterval(countdown);
+                    timerElement.textContent = "00:00";
+                }
+            }, 1000);
+        }, 4000);
+
+        // Realistic drawing sounds simulation (visual feedback)
+        const hand = document.querySelector('.hand');
+        const paper = document.querySelector('.paper');
+        
+        // Drawing vibration effects
+        const drawingPhases = [4000, 5500, 6500, 7800, 8500, 9500];
+        
+        drawingPhases.forEach((time, index) => {
+            setTimeout(() => {
+                // Subtle paper shake during drawing
+                paper.style.transform = 'translate(-50%, -50%) rotate(-2.2deg)';
+                setTimeout(() => {
+                    paper.style.transform = 'translate(-50%, -50%) rotate(-1.8deg)';
+                }, 50);
+                setTimeout(() => {
+                    paper.style.transform = 'translate(-50%, -50%) rotate(-2deg)';
+                }, 100);
+                
+                // Hand pressure effect
+                hand.style.filter = 'brightness(0.95)';
+                setTimeout(() => {
+                    hand.style.filter = 'brightness(1)';
+                }, 200);
+            }, time);
+        });
+
+        // Coloring phase effects
+        setTimeout(() => {
+            document.body.style.filter = 'saturate(1.2)';
+            setTimeout(() => {
+                document.body.style.filter = 'saturate(1)';
+            }, 3000);
+        }, 11500);
+
+        // Final completion celebration
+        setTimeout(() => {
+            const workspace = document.querySelector('.workspace');
+            workspace.style.filter = 'brightness(1.1) contrast(1.1)';
+            setTimeout(() => {
+                workspace.style.filter = 'brightness(1) contrast(1)';
+            }, 1000);
+        }, 14000);
+
+        // Auto-restart (typical of speed drawing videos)
+        setTimeout(() => {
+            location.reload();
+        }, 17000);
+
+        // Interactive subscribe button
+        document.querySelector('.subscribe-popup').addEventListener('click', function() {
+            this.style.background = '#cc0000';
+            this.textContent = '✓ SUBSCRIBED';
+            setTimeout(() => {
+                this.style.background = '#ff0000';
+                this.textContent = '🔔 SUBSCRIBE';
+            }, 2000);
+        });
+    </script>
+</body>
+</html>
