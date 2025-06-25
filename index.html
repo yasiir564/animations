@@ -3,25 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tom & Jerry Drawing Animation</title>
+    <title>Tom & Jerry Drawing Short</title>
     <style>
-        :root {
-            --paper-color: hsl(40, 20%, 95%);
-            --sketch-color: hsl(0, 0%, 70%);
-            --outline-color: hsl(0, 0%, 20%);
-
-            --tom-body: hsl(210, 30%, 40%);
-            --tom-belly-mouth: hsl(0, 0%, 95%);
-            --tom-nose-ears: hsl(350, 60%, 70%);
-
-            --jerry-body: hsl(30, 40%, 40%);
-            --jerry-belly-face: hsl(40, 60%, 80%);
-            --jerry-nose-ears: hsl(350, 60%, 70%); /* Same pink as Tom */
-
-            --hand-color: hsl(30, 50%, 60%); /* Skin tone */
-            --pencil-color: hsl(200, 10%, 30%);
-        }
-
         body {
             margin: 0;
             overflow: hidden;
@@ -29,395 +12,343 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background-color: #333;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: white;
+            background-color: #f0f0f0; /* Light background for drawing effect */
+            font-family: sans-serif;
+            flex-direction: column;
+            color: #333;
         }
 
-        .phone-screen {
+        .short-container {
             width: 100vw;
-            max-width: calc(100vh * 9 / 16); /* Maintain 9:16 aspect ratio based on height */
+            height: 177.78vw; /* 16:9 ratio for width, so 9/16 * 100vw = 56.25vw for height, wait, it's 9:16 portrait. So 9vw width, 16vw height? No, it's 1080x1920. */
+            /* For 1080x1920 on a typical phone, we want height to be 100vh, and width to be proportional */
             height: 100vh;
-            max-height: calc(100vw * 16 / 9); /* Maintain 9:16 aspect ratio based on width */
-            background-color: var(--paper-color);
+            width: calc(100vh * (1080 / 1920)); /* Calculate width based on 100vh and 1080/1920 ratio */
+            max-width: 100vw; /* Ensure it doesn't exceed screen width */
+            max-height: calc(100vw * (1920 / 1080)); /* Ensure it doesn't exceed screen height if width is maxed out */
+
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
             position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             overflow: hidden;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            box-sizing: border-box;
         }
 
-        .drawing-area {
-            position: absolute;
-            width: 90%;
+        .drawing-canvas {
+            width: 90%; /* Scale SVG within the container */
             height: 90%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            top: 5%;
-            left: 5%;
-        }
-
-        /* Drawing layers - initially hidden */
-        .drawing-layer {
+            display: block;
             position: absolute;
-            opacity: 0;
-            transition: opacity 0.5s ease-in-out;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            /* Ensure the SVG scales properly */
+            max-width: 100%;
+            max-height: 100%;
         }
 
-        /* Animation classes for revealing */
-        .show-layer {
+        .drawing-canvas path, .drawing-canvas polygon, .drawing-canvas circle {
+            fill: none;
+            stroke: #333; /* Default sketch color */
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            opacity: 0; /* Hidden by default */
+            transition: stroke-dashoffset 1s ease-out, opacity 0.5s ease-in, fill 1s ease-in-out; /* Smooth transitions */
+            /* Initial state for drawing effect */
+            stroke-dasharray: var(--length); /* Set by JS */
+            stroke-dashoffset: var(--length); /* Set by JS */
+        }
+
+        /* Classes to trigger drawing and coloring */
+        .draw-stroke {
             opacity: 1;
+            stroke-dashoffset: 0 !important;
+            transition: stroke-dashoffset var(--draw-speed) ease-out, opacity 0.3s ease-in;
         }
 
-        /* Sketch elements */
-        .sketch {
-            border: 1px dashed var(--sketch-color);
-            position: absolute;
-            border-radius: 50%;
-            box-sizing: border-box;
+        .fade-in {
+            opacity: 1 !important;
+            transition: opacity 0.8s ease-in;
         }
 
-        /* Outline elements */
-        .outline {
-            border: 2px solid var(--outline-color);
-            position: absolute;
-            border-radius: 50%;
-            box-sizing: border-box;
-            background-color: transparent; /* Ensure transparent background for outlines */
+        .fill-color {
+            fill: var(--fill-color, black) !important;
+            transition: fill 0.8s ease-in, opacity 0.8s ease-in;
+            opacity: 1 !important; /* Ensure visibility for fill */
+            stroke-width: 0; /* Hide stroke for filled shapes */
+            stroke: none; /* No stroke for filled shapes */
         }
 
-        /* Color fill elements */
-        .color-fill {
+        /* Specific colors for Tom & Jerry */
+        .tom-grey { fill: #8b9dc3; } /* Slightly desaturated blue-grey */
+        .tom-pink { fill: #f2a8b9; } /* Nose, inner ear, paw pads */
+        .tom-white { fill: #ffffff; } /* Muzzle, chest, paws */
+        .tom-yellow-eye { fill: #f0e68c; } /* Yellowish eye */
+        .tom-green-eye { fill: #8cc46d; } /* Green pupil */
+
+        .jerry-brown { fill: #cc9966; } /* Main body brown */
+        .jerry-peach { fill: #f0c39a; } /* Belly, muzzle, inner ear */
+        .jerry-pink { fill: #f2a8b9; } /* Nose, inner ear */
+        .jerry-white-eye { fill: #ffffff; } /* White eye */
+        .jerry-black-eye { fill: #333333; } /* Black pupil */
+
+        /* Overlay for "pencil" effect */
+        .hand-overlay {
             position: absolute;
-            border-radius: 50%;
-            background-color: transparent;
-            box-sizing: border-box;
-        }
-
-        /* Specific Tom & Jerry parts styling */
-
-        /* Tom Sketch */
-        .tom-sketch-head { width: 40%; height: 35%; top: 20%; left: 30%; border-radius: 50% 50% 30% 30% / 50% 50% 70% 70%; }
-        .tom-sketch-body { width: 50%; height: 45%; top: 45%; left: 25%; border-radius: 50% 50% 60% 60% / 60% 60% 40% 40%; }
-        .tom-sketch-ear-l { width: 8%; height: 8%; top: 18%; left: 30%; transform: rotate(-20deg); }
-        .tom-sketch-ear-r { width: 8%; height: 8%; top: 18%; left: 62%; transform: rotate(20deg); }
-
-        /* Jerry Sketch */
-        .jerry-sketch-head { width: 20%; height: 18%; top: 40%; left: 10%; border-radius: 50%; }
-        .jerry-sketch-body { width: 25%; height: 20%; top: 50%; left: 15%; border-radius: 50% 50% 40% 40% / 40% 40% 60% 60%; transform: rotate(10deg); }
-        .jerry-sketch-ear { width: 5%; height: 5%; top: 38%; left: 9%; border-radius: 50%; }
-
-        /* Tom Outline */
-        .tom-outline-head { width: 40%; height: 35%; top: 20%; left: 30%; border-radius: 50% 50% 30% 30% / 50% 50% 70% 70%; }
-        .tom-outline-body { width: 50%; height: 45%; top: 45%; left: 25%; border-radius: 50% 50% 60% 60% / 60% 60% 40% 40%; }
-        .tom-outline-ear-l { width: 8%; height: 8%; top: 18%; left: 30%; transform: rotate(-20deg); }
-        .tom-outline-ear-r { width: 8%; height: 8%; top: 18%; left: 62%; transform: rotate(20deg); }
-        .tom-outline-snout { width: 20%; height: 10%; top: 38%; left: 40%; border-radius: 50%; }
-        .tom-outline-eye-l, .tom-outline-eye-r { width: 5%; height: 5%; top: 30%; background-color: var(--outline-color); border-radius: 50%; }
-        .tom-outline-eye-l { left: 42%; }
-        .tom-outline-eye-r { left: 53%; }
-        .tom-outline-nose { width: 4%; height: 2%; top: 40%; left: 48%; background-color: var(--outline-color); border-radius: 50%; }
-
-        /* Jerry Outline */
-        .jerry-outline-head { width: 20%; height: 18%; top: 40%; left: 10%; border-radius: 50%; }
-        .jerry-outline-body { width: 25%; height: 20%; top: 50%; left: 15%; border-radius: 50% 50% 40% 40% / 40% 40% 60% 60%; transform: rotate(10deg); }
-        .jerry-outline-ear { width: 5%; height: 5%; top: 38%; left: 9%; border-radius: 50%; }
-        .jerry-outline-nose { width: 3%; height: 1.5%; top: 47%; left: 15%; background-color: var(--outline-color); border-radius: 50%; }
-        .jerry-outline-eye { width: 3%; height: 3%; top: 43%; left: 13%; background-color: var(--outline-color); border-radius: 50%; }
-
-        /* Tom Colors */
-        .tom-color-body { width: 40%; height: 35%; top: 20%; left: 30%; border-radius: 50% 50% 30% 30% / 50% 50% 70% 70%; background-color: var(--tom-body); }
-        .tom-color-belly-mouth { width: 25%; height: 15%; top: 35%; left: 37.5%; border-radius: 50%; background-color: var(--tom-belly-mouth); }
-        .tom-color-ear-l, .tom-color-ear-r { width: 8%; height: 8%; top: 18%; background-color: var(--tom-body); border-radius: 50%; }
-        .tom-color-ear-l { left: 30%; transform: rotate(-20deg); }
-        .tom-color-ear-r { left: 62%; transform: rotate(20deg); }
-        .tom-color-inner-ear-l, .tom-color-inner-ear-r { width: 4%; height: 4%; top: 20%; background-color: var(--tom-nose-ears); border-radius: 50%; }
-        .tom-color-inner-ear-l { left: 32%; transform: rotate(-20deg); }
-        .tom-color-inner-ear-r { left: 63%; transform: rotate(20deg); }
-        .tom-color-nose { width: 4%; height: 2%; top: 40%; left: 48%; background-color: var(--tom-nose-ears); border-radius: 50%; }
-
-        /* Jerry Colors */
-        .jerry-color-body { width: 20%; height: 18%; top: 40%; left: 10%; border-radius: 50%; background-color: var(--jerry-body); }
-        .jerry-color-belly-face { width: 12%; height: 10%; top: 45%; left: 13%; border-radius: 50%; background-color: var(--jerry-belly-face); }
-        .jerry-color-ear { width: 5%; height: 5%; top: 38%; left: 9%; border-radius: 50%; background-color: var(--jerry-body); }
-        .jerry-color-inner-ear { width: 2.5%; height: 2.5%; top: 39%; left: 10%; border-radius: 50%; background-color: var(--jerry-nose-ears); }
-        .jerry-color-nose { width: 3%; height: 1.5%; top: 47%; left: 15%; background-color: var(--jerry-nose-ears); border-radius: 50%; }
-
-        /* Drawing Hand */
-        .drawing-hand {
-            position: absolute;
-            width: 80px;
-            height: 150px;
-            background-color: var(--hand-color);
-            border-radius: 60px 20px 20px 60px;
-            box-shadow: -5px 5px 10px rgba(0, 0, 0, 0.3);
-            transform: rotate(-30deg);
+            width: 100px; /* Size of the hand image */
+            height: 100px;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="%23555" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pencil"><path d="M12.1 19.1L12 22 14.5 21.9 14.6 19.4 12.1 19.1Z"/><path d="M14.4 17.6l2.1-.3 2.9-2.9-2.1-2.1c-.8-.8-2-.8-2.8 0L14.4 17.6Z"/><path d="M5.1 19.1L3 22 5.5 21.9 5.6 19.4 5.1 19.1Z"/><path d="M7.4 17.6l2.1-.3 2.9-2.9-2.1-2.1c-.8-.8-2-.8-2.8 0L7.4 17.6Z"/><path d="M2 19L19 2l3 3L5 22Z"/></svg>');
+            background-size: contain;
+            background-repeat: no-repeat;
+            pointer-events: none; /* Allows clicks to pass through */
             opacity: 0;
-            transition: opacity 0.5s ease-in-out;
-            z-index: 100;
+            transform: translate(-50%, -50%); /* Center the hand on its cursor point */
+            animation: handMove 30s linear forwards; /* Controlled by JS for precise movement */
+            z-index: 10;
         }
 
-        .drawing-hand.active {
-            opacity: 1;
-        }
-
-        .pencil {
-            position: absolute;
-            width: 10px;
-            height: 80px;
-            background-color: var(--pencil-color);
-            top: -70px; /* Position above the hand */
-            left: 35px;
-            transform-origin: bottom center;
-            transform: rotate(20deg);
-            border-radius: 2px;
-        }
-
-        .pencil::before {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: -2px;
-            width: 14px;
-            height: 15px;
-            background-color: rgb(185, 185, 185); /* Eraser metal part */
-            border-radius: 2px;
-        }
-
-        .pencil::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: -2px;
-            width: 14px;
-            height: 10px;
-            background-color: rgb(255, 99, 99); /* Eraser */
-            border-radius: 2px;
-        }
-
-        /* Hand movement keyframes (example, will be updated by JS) */
+        /* Simplified hand movement (will be overridden by JS) */
         @keyframes handMove {
-            from { transform: translate(-50%, -50%) rotate(-30deg); }
-            to { transform: translate(-50%, -50%) rotate(-30deg); }
+            0% { transform: translate(-50%, -50%) translate(0%, 0%); opacity: 0; }
+            5% { opacity: 1; }
+            95% { opacity: 1; }
+            100% { opacity: 0; }
         }
 
-        .hand-anim-1 { animation: handMove 1s forwards ease-in-out; }
-
-        /* Text overlay for steps */
-        .step-text {
+        /* Keyframe for "paper texture" (optional but adds realism) */
+        .short-container::before {
+            content: '';
             position: absolute;
-            top: 5%;
+            top: 0;
+            left: 0;
             width: 100%;
-            text-align: center;
-            font-size: 1.8vmin; /* Responsive font size */
-            font-weight: bold;
-            color: var(--outline-color);
-            opacity: 0;
-            transition: opacity 1s ease-in-out;
-            z-index: 101;
-        }
-
-        .step-text.show {
-            opacity: 1;
-        }
-
-        .step-text.hide {
-            opacity: 0;
+            height: 100%;
+            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAC5SURBVHgB7djBCcAgDANBL/70nU4Qo83d5lAQD5/xJ6S0hF9F+F+Q3W9I6QkXN/8vSNW/m2+8C8iCfwHIAnyAJPCbgCTAPcAEqA9wgAHABGgDg2HGDGkAgwEAAwGGfRgzJoCBMQCDbgyL9mHAGfAGgGGgP+s21gA0pP0d+7QnAGg+R+Y3+A8iBPwBIAnyAJPCbgCTAPcAEqA9wgAHABGgDg2HGDGkAgwEAAwGGfRgzJoCBMQCDbgyL9mHAGfAGgGGgP+s21gD/QAB538fCg/j1AAAAAElFTkSuQmCC'); /* Tiny tileable noise */
+            background-size: 25px 25px; /* Adjust size for subtle texture */
+            opacity: 0.05; /* Very subtle */
+            pointer-events: none;
+            z-index: 1;
         }
 
     </style>
 </head>
 <body>
+    <div class="short-container">
+        <svg class="drawing-canvas" viewBox="0 0 400 400">
+            <g id="tom-group">
+                <path id="tom-head-outline" d="M190 100 C250 50, 300 100, 310 170 C320 250, 270 300, 200 300 C130 300, 80 250, 90 170 C100 100, 150 50, 190 100Z" class="outline-stroke"></path>
+                <path id="tom-ear-left-outline" d="M130 100 Q110 50, 150 70 Q160 80, 130 100Z" class="outline-stroke"></path>
+                <path id="tom-ear-right-outline" d="M270 100 Q290 50, 250 70 Q240 80, 270 100Z" class="outline-stroke"></path>
+                <path id="tom-muzzle-outline" d="M160 210 C180 200, 220 200, 240 210 C250 220, 230 240, 200 240 C170 240, 150 220, 160 210Z" class="outline-stroke"></path>
+                <path id="tom-body-outline" d="M180 290 C150 350, 100 390, 100 390 C100 390, 180 390, 200 390 C220 390, 300 390, 300 390 C300 390, 250 350, 220 290 Z" class="outline-stroke"></path>
 
-    <div class="phone-screen">
-        <div class="drawing-area">
-            <div class="drawing-layer sketch-group" id="sketchLayer">
-                <div class="sketch tom-sketch-head"></div>
-                <div class="sketch tom-sketch-body"></div>
-                <div class="sketch tom-sketch-ear-l"></div>
-                <div class="sketch tom-sketch-ear-r"></div>
-                <div class="sketch jerry-sketch-head"></div>
-                <div class="sketch jerry-sketch-body"></div>
-                <div class="sketch jerry-sketch-ear"></div>
-            </div>
+                <path id="tom-nose" d="M200 215 Q195 220, 200 225 Q205 220, 200 215Z" class="detail-stroke"></path>
+                <path id="tom-mouth" d="M180 235 C190 245, 210 245, 220 235" class="detail-stroke"></path>
+                <path id="tom-whisker-l1" d="M140 215 L100 210" class="detail-stroke"></path>
+                <path id="tom-whisker-l2" d="M145 225 L105 230" class="detail-stroke"></path>
+                <path id="tom-whisker-r1" d="M260 215 L300 210" class="detail-stroke"></path>
+                <path id="tom-whisker-r2" d="M255 225 L295 230" class="detail-stroke"></path>
+                <path id="tom-eye-l-outline" d="M165 170 C170 160, 180 160, 185 170 C180 180, 170 180, 165 170Z" class="detail-stroke"></path>
+                <path id="tom-eye-r-outline" d="M215 170 C220 160, 230 160, 235 170 C230 180, 220 180, 215 170Z" class="detail-stroke"></path>
+                <path id="tom-inner-ear-l" d="M140 85 Q130 70, 145 75 Z" class="detail-stroke"></path>
+                <path id="tom-inner-ear-r" d="M260 85 Q270 70, 255 75 Z" class="detail-stroke"></path>
 
-            <div class="drawing-layer outline-group" id="outlineLayer">
-                <div class="outline tom-outline-head"></div>
-                <div class="outline tom-outline-body"></div>
-                <div class="outline tom-outline-ear-l"></div>
-                <div class="outline tom-outline-ear-r"></div>
-                <div class="outline tom-outline-snout"></div>
-                <div class="outline tom-outline-eye-l"></div>
-                <div class="outline tom-outline-eye-r"></div>
-                <div class="outline tom-outline-nose"></div>
+                <path id="tom-head-fill" d="M190 100 C250 50, 300 100, 310 170 C320 250, 270 300, 200 300 C130 300, 80 250, 90 170 C100 100, 150 50, 190 100Z" class="fill-color tom-grey"></path>
+                <path id="tom-body-fill" d="M180 290 C150 350, 100 390, 100 390 C100 390, 180 390, 200 390 C220 390, 300 390, 300 390 C300 390, 250 350, 220 290 Z" class="fill-color tom-grey"></path>
+                <path id="tom-muzzle-fill" d="M160 210 C180 200, 220 200, 240 210 C250 220, 230 240, 200 240 C170 240, 150 220, 160 210Z" class="fill-color tom-white"></path>
+                <path id="tom-inner-ear-l-fill" d="M140 85 Q130 70, 145 75 Z" class="fill-color tom-pink"></path>
+                <path id="tom-inner-ear-r-fill" d="M260 85 Q270 70, 255 75 Z" class="fill-color tom-pink"></path>
+                <path id="tom-nose-fill" d="M200 215 Q195 220, 200 225 Q205 220, 200 215Z" class="fill-color tom-pink"></path>
+                <path id="tom-eye-l-white-fill" d="M165 170 C170 160, 180 160, 185 170 C180 180, 170 180, 165 170Z" class="fill-color tom-yellow-eye"></path>
+                <path id="tom-eye-r-white-fill" d="M215 170 C220 160, 230 160, 235 170 C230 180, 220 180, 215 170Z" class="fill-color tom-yellow-eye"></path>
+                <circle id="tom-eye-l-pupil" cx="175" cy="170" r="3" class="fill-color tom-green-eye"></circle>
+                <circle id="tom-eye-r-pupil" cx="225" cy="170" r="3" class="fill-color tom-green-eye"></circle>
+            </g>
 
-                <div class="outline jerry-outline-head"></div>
-                <div class="outline jerry-outline-body"></div>
-                <div class="outline jerry-outline-ear"></div>
-                <div class="outline jerry-outline-nose"></div>
-                <div class="outline jerry-outline-eye"></div>
-            </div>
+            <g id="jerry-group" transform="translate(150 150)">
+                <path id="jerry-body-outline" d="M50 100 C70 50, 120 50, 140 100 C160 150, 130 190, 90 190 C50 190, 20 150, 50 100Z" class="outline-stroke"></path>
+                <path id="jerry-ear-outline" d="M60 80 Q50 50, 80 60 Q90 70, 60 80Z" class="outline-stroke"></path>
+                <path id="jerry-tail-outline" d="M130 140 Q145 150, 150 160 Q155 170, 140 175" class="outline-stroke"></path>
 
-            <div class="drawing-layer color-group" id="colorLayer">
-                <div class="color-fill tom-color-body"></div>
-                <div class="color-fill tom-color-belly-mouth"></div>
-                <div class="color-fill tom-color-ear-l"></div>
-                <div class="color-fill tom-color-ear-r"></div>
-                <div class="color-fill tom-color-inner-ear-l"></div>
-                <div class="color-fill tom-color-inner-ear-r"></div>
-                <div class="color-fill tom-color-nose"></div>
+                <path id="jerry-muzzle-outline" d="M75 130 C85 125, 105 125, 115 130 C120 135, 110 145, 95 145 C80 145, 70 135, 75 130Z" class="detail-stroke"></path>
+                <path id="jerry-nose" d="M95 132 Q93 135, 95 138 Q97 135, 95 132Z" class="detail-stroke"></path>
+                <path id="jerry-mouth" d="M85 142 C90 148, 100 148, 105 142" class="detail-stroke"></path>
+                <path id="jerry-eye-l-outline" d="M80 110 C83 105, 90 105, 93 110 C90 115, 83 115, 80 110Z" class="detail-stroke"></path>
+                <path id="jerry-eye-r-outline" d="M100 110 C103 105, 110 105, 113 110 C110 115, 103 115, 100 110Z" class="detail-stroke"></path>
 
-                <div class="color-fill jerry-color-body"></div>
-                <div class="color-fill jerry-color-belly-face"></div>
-                <div class="color-fill jerry-color-ear"></div>
-                <div class="color-fill jerry-color-inner-ear"></div>
-                <div class="color-fill jerry-color-nose"></div>
-            </div>
-
-            <div class="drawing-layer polish-group" id="polishLayer">
-                <div style="position: absolute; width: 60%; height: 10%; top: 80%; left: 20%; background-color: rgba(0,0,0,0.1); border-radius: 50%; filter: blur(5px);"></div>
-            </div>
-
-        </div>
-
-        <div class="drawing-hand" id="drawingHand">
-            <div class="pencil"></div>
-        </div>
-
-        <div class="step-text" id="stepText"></div>
+                <path id="jerry-body-fill" d="M50 100 C70 50, 120 50, 140 100 C160 150, 130 190, 90 190 C50 190, 20 150, 50 100Z" class="fill-color jerry-brown"></path>
+                <path id="jerry-ear-fill" d="M60 80 Q50 50, 80 60 Q90 70, 60 80Z" class="fill-color jerry-peach"></path>
+                <path id="jerry-muzzle-fill" d="M75 130 C85 125, 105 125, 115 130 C120 135, 110 145, 95 145 C80 145, 70 135, 75 130Z" class="fill-color jerry-peach"></path>
+                <path id="jerry-nose-fill" d="M95 132 Q93 135, 95 138 Q97 135, 95 132Z" class="fill-color jerry-pink"></path>
+                <path id="jerry-eye-l-white-fill" d="M80 110 C83 105, 90 105, 93 110 C90 115, 83 115, 80 110Z" class="fill-color jerry-white-eye"></path>
+                <path id="jerry-eye-r-white-fill" d="M100 110 C103 105, 110 105, 113 110 C110 115, 103 115, 100 110Z" class="fill-color jerry-white-eye"></path>
+                <circle id="jerry-eye-l-pupil" cx="87" cy="110" r="2" class="fill-color jerry-black-eye"></circle>
+                <circle id="jerry-eye-r-pupil" cx="107" cy="110" r="2" class="fill-color jerry-black-eye"></circle>
+            </g>
+        </svg>
+        <div class="hand-overlay" id="handOverlay"></div>
     </div>
 
     <script>
-        const sketchLayer = document.getElementById('sketchLayer');
-        const outlineLayer = document.getElementById('outlineLayer');
-        const colorLayer = document.getElementById('colorLayer');
-        const polishLayer = document.getElementById('polishLayer');
-        const drawingHand = document.getElementById('drawingHand');
-        const stepText = document.getElementById('stepText');
-        const drawingArea = document.querySelector('.drawing-area');
+        const svg = document.querySelector('.drawing-canvas');
+        const hand = document.getElementById('handOverlay');
 
-        // Helper to get relative coordinates within drawingArea
-        const getRelativeCoords = (targetElement) => {
-            const areaRect = drawingArea.getBoundingClientRect();
-            const targetRect = targetElement.getBoundingClientRect();
-            const x = (targetRect.left + targetRect.width / 2 - areaRect.left) / areaRect.width * 100;
-            const y = (targetRect.top + targetRect.height / 2 - areaRect.top) / areaRect.height * 100;
-            return { x, y };
-        };
-
-        const setHandPosition = (x, y, rotation = -30) => {
-            drawingHand.style.left = `${x}%`;
-            drawingHand.style.top = `${y}%`;
-            drawingHand.style.transform = `translate(-50%, -50%) rotate(${rotation}deg)`;
-        };
-
-        const showText = (text, duration = 3000) => {
-            stepText.textContent = text;
-            stepText.classList.add('show');
-            return new Promise(resolve => {
-                setTimeout(() => {
-                    stepText.classList.remove('show');
-                    stepText.classList.add('hide');
-                    setTimeout(() => {
-                        stepText.classList.remove('hide');
-                        resolve();
-                    }, 500); // Wait for fade out
-                }, duration);
+        // Function to set initial stroke-dasharray and offset
+        function initializePaths(selector) {
+            document.querySelectorAll(selector).forEach(path => {
+                const length = path.getTotalLength();
+                path.style.setProperty('--length', length);
+                path.style.setProperty('--draw-speed', `${length / 200}s`); // Speed based on length
             });
-        };
+        }
 
-        const animateDrawing = async () => {
-            drawingHand.classList.add('active');
+        // Delay function
+        function delay(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
 
-            // Initial position of hand (off-screen)
-            setHandPosition(-20, 50);
-            await new Promise(r => setTimeout(r, 500)); // Brief pause
+        // Simple hand movement simulation (more complex would be an array of XY coordinates)
+        async function moveHand(targetElement, durationMs, offset = {x: 0, y: 0}) {
+            if (!targetElement) return;
 
-            // Step 1: Hand enters
-            setHandPosition(30, 20, -10); // Move to sketch start
-            await showText('Sketching the outline...', 2000);
-            await new Promise(r => setTimeout(r, 1000));
+            const targetRect = targetElement.getBoundingClientRect();
+            const svgRect = svg.getBoundingClientRect();
 
-            // Step 2: Outline Sketch
-            // Simulate drawing by revealing sketch layer
-            sketchLayer.classList.add('show-layer');
-            await new Promise(r => setTimeout(r, 200)); // Quick reveal
+            // Calculate SVG coordinates for the center of the target element
+            // Adjust for viewBox and current SVG scaling
+            const svgX = (targetRect.left + targetRect.width / 2 - svgRect.left) / svgRect.width * svg.viewBox.baseVal.width;
+            const svgY = (targetRect.top + targetRect.height / 2 - svgRect.top) / svgRect.height * svg.viewBox.baseVal.height;
 
-            // Move hand around sketch parts
-            setHandPosition(50, 25, -20); // Tom Head
-            await new Promise(r => setTimeout(r, 700));
-            setHandPosition(40, 55, -40); // Tom Body
-            await new Promise(r => setTimeout(r, 700));
-            setHandPosition(15, 45, -10); // Jerry Head
-            await new Promise(r => setTimeout(r, 700));
-            setHandPosition(25, 60, -25); // Jerry Body
-            await new Promise(r => setTimeout(r, 700));
+            // Convert SVG coordinates back to screen coordinates for the hand
+            const handX = svgRect.left + (svgX / svg.viewBox.baseVal.width) * svgRect.width + offset.x;
+            const handY = svgRect.top + (svgY / svg.viewBox.baseVal.height) * svgRect.height + offset.y;
 
-            await showText('Adding details and refining outlines...', 2000);
-            await new Promise(r => setTimeout(r, 500));
 
-            // Step 3: Details (Outline refinement)
-            // Fade out sketch, fade in outline
-            sketchLayer.style.transition = 'opacity 0.8s ease-in-out';
-            sketchLayer.classList.remove('show-layer');
-            outlineLayer.classList.add('show-layer');
-            outlineLayer.style.transition = 'opacity 0.8s ease-in-out';
-            await new Promise(r => setTimeout(r, 1000)); // Transition time
+            hand.style.transition = `transform ${durationMs / 1000}s ease-in-out, opacity 0.2s ease-in`;
+            hand.style.transform = `translate(${handX}px, ${handY}px) translate(-50%, -50%)`;
+            hand.style.opacity = 1;
 
-            // Move hand around details
-            setHandPosition(48, 30, -5); // Tom Eyes/Nose
-            await new Promise(r => setTimeout(r, 800));
-            setHandPosition(18, 45, 10); // Jerry Eyes/Nose
-            await new Promise(r => setTimeout(r, 800));
-            setHandPosition(70, 75, -50); // General refinement
-            await new Promise(r => setTimeout(r, 800));
+            await delay(durationMs);
+        }
 
-            await showText('Time to add some color!', 2000);
-            await new Promise(r => setTimeout(r, 1000));
+        async function hideHand(durationMs = 200) {
+            hand.style.transition = `opacity ${durationMs / 1000}s ease-out`;
+            hand.style.opacity = 0;
+            await delay(durationMs);
+        }
 
-            // Step 4: Coloring
-            // Fade in color layer
-            colorLayer.classList.add('show-layer');
-            colorLayer.style.transition = 'opacity 1s ease-in-out';
-            await new Promise(r => setTimeout(r, 1000)); // Transition time
 
-            // Simulate coloring motion (move hand over colored areas)
-            setHandPosition(50, 40, -15); // Tom body
-            await new Promise(r => setTimeout(r, 700));
-            setHandPosition(40, 40, -5); // Tom belly/mouth
-            await new Promise(r => setTimeout(r, 700));
-            setHandPosition(20, 55, 0); // Jerry body
-            await new Promise(r => setTimeout(r, 700));
-            setHandPosition(15, 50, 5); // Jerry face
-            await new Promise(r => setTimeout(r, 700));
+        // Animation sequence
+        async function animateDrawing() {
+            // Initialize all paths
+            initializePaths('.drawing-canvas path, .drawing-canvas polygon, .drawing-canvas circle');
 
-            await showText('Almost done... Final touches!', 2000);
-            await new Promise(r => setTimeout(r, 1000));
+            hand.style.opacity = 0; // Ensure hand is hidden initially
 
-            // Step 5: Final Polish
-            // Add subtle polish layer (e.g., shadows)
-            polishLayer.classList.add('show-layer');
-            polishLayer.style.transition = 'opacity 1s ease-in-out';
-            await new Promise(r => setTimeout(r, 1000));
+            const tomOutlinePaths = document.querySelectorAll('#tom-group .outline-stroke');
+            const tomDetailPaths = document.querySelectorAll('#tom-group .detail-stroke');
+            const tomFillPaths = document.querySelectorAll('#tom-group .fill-color');
 
-            // Move hand for polish
-            setHandPosition(60, 85, -45); // Shadow area
-            await new Promise(r => setTimeout(r, 700));
+            const jerryOutlinePaths = document.querySelectorAll('#jerry-group .outline-stroke');
+            const jerryDetailPaths = document.querySelectorAll('#jerry-group .detail-stroke');
+            const jerryFillPaths = document.querySelectorAll('#jerry-group .fill-color');
 
-            // Hand exits
-            setHandPosition(120, 70, -30); // Move hand off-screen
-            drawingHand.classList.remove('active'); // Hide hand
-            await new Promise(r => setTimeout(r, 1500)); // Let hand move off
+            const totalDuration = 30000; // 30 seconds in ms
+            let elapsed = 0;
 
-            await showText('Your Tom & Jerry drawing is complete!', 3000);
-        };
+            // Helper to draw a group of paths sequentially
+            async function drawElements(elements, startDelayMs = 0, elementDelayMs = 50, moveHandDuration = 300, hideHandDelay = 200) {
+                await delay(startDelayMs);
+                for (const element of elements) {
+                    await moveHand(element, moveHandDuration, {x: -20, y: -20}); // Move hand before drawing
+                    element.classList.add('draw-stroke');
+                    const drawTime = parseFloat(element.style.getPropertyValue('--draw-speed')) * 1000;
+                    await delay(drawTime + elementDelayMs);
+                    if (drawTime > 0) { // Only hide hand if actual drawing occurred
+                        await hideHand(hideHandDelay);
+                    }
+                }
+            }
 
-        // Start animation after a brief delay to ensure page renders
-        window.onload = () => {
-            setTimeout(animateDrawing, 1000);
-        };
+            // Helper to fill a group of paths
+            async function fillElements(elements, startDelayMs = 0, elementDelayMs = 50, moveHandDuration = 300, hideHandDelay = 200) {
+                await delay(startDelayMs);
+                for (const element of elements) {
+                    await moveHand(element, moveHandDuration, {x: 10, y: 10}); // Move hand before filling
+                    element.classList.add('fill-color');
+                    element.classList.add('fade-in'); // Ensure opacity is 1
+                    await delay(800 + elementDelayMs); // Fill transition is 0.8s
+                    await hideHand(hideHandDelay);
+                }
+            }
+
+            // --- Tom's Outline (approx 5s) ---
+            await drawElements(tomOutlinePaths, 500, 100);
+            elapsed += 5000; // Rough estimate
+
+            // --- Tom's Details (approx 5s) ---
+            await drawElements(tomDetailPaths, 500, 80);
+            elapsed += 5000;
+
+            // --- Jerry's Outline (approx 5s) ---
+            await drawElements(jerryOutlinePaths, 500, 100);
+            elapsed += 5000;
+
+            // --- Jerry's Details (approx 5s) ---
+            await drawElements(jerryDetailPaths, 500, 80);
+            elapsed += 5000;
+
+            // --- Tom's Coloring (approx 3.5s) ---
+            // Tom's Grey parts
+            await fillElements(document.querySelectorAll('#tom-head-fill, #tom-body-fill'), 500, 100);
+            // Tom's Muzzle & Inner Ears
+            await fillElements(document.querySelectorAll('#tom-muzzle-fill, #tom-inner-ear-l-fill, #tom-inner-ear-r-fill'), 100, 50);
+            // Tom's Nose & Eyes (whites/yellows)
+            await fillElements(document.querySelectorAll('#tom-nose-fill, #tom-eye-l-white-fill, #tom-eye-r-white-fill'), 100, 50);
+            // Tom's Pupils
+            await fillElements(document.querySelectorAll('#tom-eye-l-pupil, #tom-eye-r-pupil'), 100, 50);
+            elapsed += 3500;
+
+            // --- Jerry's Coloring + Final Polish (approx 3.5s) ---
+            // Jerry's Brown parts
+            await fillElements(document.querySelectorAll('#jerry-body-fill'), 500, 100);
+            // Jerry's Peach parts
+            await fillElements(document.querySelectorAll('#jerry-ear-fill, #jerry-muzzle-fill'), 100, 50);
+            // Jerry's Nose & Eyes (whites)
+            await fillElements(document.querySelectorAll('#jerry-nose-fill, #jerry-eye-l-white-fill, #jerry-eye-r-white-fill'), 100, 50);
+            // Jerry's Pupils
+            await fillElements(document.querySelectorAll('#jerry-eye-l-pupil, #jerry-eye-r-pupil'), 100, 50);
+            elapsed += 3500;
+
+
+            // Ensure hand is hidden at the very end
+            await hideHand(500);
+
+            // Final slight fade in for all outlines to make them pop
+            document.querySelectorAll('.outline-stroke, .detail-stroke').forEach(path => {
+                path.style.transition = 'stroke-width 0.5s ease-in, stroke 0.5s ease-in';
+                path.style.strokeWidth = '3'; /* Make lines slightly thicker */
+                path.style.stroke = '#222'; /* Darker final outline */
+            });
+
+            console.log(`Animation finished. Total estimated time: ${elapsed / 1000}s`);
+
+            // If there's remaining time to fill up to 30 seconds, just wait.
+            const remainingTime = totalDuration - elapsed;
+            if (remainingTime > 0) {
+                console.log(`Waiting for ${remainingTime / 1000}s to reach 30s total.`);
+                await delay(remainingTime);
+            }
+            console.log("30 second mark reached.");
+        }
+
+        // Start the animation when the DOM is fully loaded
+        document.addEventListener('DOMContentLoaded', animateDrawing);
     </script>
 </body>
 </html>
