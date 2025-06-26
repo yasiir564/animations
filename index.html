@@ -337,93 +337,161 @@ let animationStep = 0;
 let particles = [];
 let sparkles = [];
 let shakeOffset = { x: 0, y: 0 };
+let batmanComplete = false;
+let flyingPhase = false;
+let batmanPosition = { x: 0, y: 0, rotation: 0 };
+let capeAnimation = { offset: 0, intensity: 1 };
 
-// Enhanced Batman drawing coordinates with more detail
+// Complete Batman drawing coordinates - full body with detailed features
 const batmanPaths = [
-    // Head outline with more curves
+    // Head outline with detailed curves
     [{x: 180, y: 120}, {x: 185, y: 115}, {x: 195, y: 112}, {x: 205, y: 115}, {x: 215, y: 120}, {x: 225, y: 130}, {x: 230, y: 140}, {x: 228, y: 150}, {x: 225, y: 160}, {x: 220, y: 170}, {x: 210, y: 180}, {x: 195, y: 185}, {x: 180, y: 186}, {x: 165, y: 185}, {x: 150, y: 180}, {x: 140, y: 170}, {x: 135, y: 160}, {x: 132, y: 150}, {x: 130, y: 140}, {x: 135, y: 130}, {x: 145, y: 120}, {x: 155, y: 115}, {x: 165, y: 112}, {x: 175, y: 115}, {x: 180, y: 120}],
     
-    // Left bat ear with detail
-    [{x: 160, y: 110}, {x: 158, y: 105}, {x: 155, y: 95}, {x: 152, y: 85}, {x: 150, y: 75}, {x: 155, y: 70}, {x: 162, y: 75}, {x: 165, y: 82}, {x: 168, y: 90}, {x: 170, y: 100}, {x: 165, y: 108}],
+    // Left bat ear with sharp detail
+    [{x: 160, y: 110}, {x: 158, y: 105}, {x: 155, y: 95}, {x: 152, y: 85}, {x: 148, y: 70}, {x: 145, y: 60}, {x: 150, y: 65}, {x: 155, y: 72}, {x: 162, y: 80}, {x: 168, y: 90}, {x: 170, y: 100}, {x: 165, y: 108}],
     
-    // Right bat ear with detail
-    [{x: 200, y: 110}, {x: 202, y: 105}, {x: 205, y: 95}, {x: 208, y: 85}, {x: 210, y: 75}, {x: 205, y: 70}, {x: 198, y: 75}, {x: 195, y: 82}, {x: 192, y: 90}, {x: 190, y: 100}, {x: 195, y: 108}],
+    // Right bat ear with sharp detail
+    [{x: 200, y: 110}, {x: 202, y: 105}, {x: 205, y: 95}, {x: 208, y: 85}, {x: 212, y: 70}, {x: 215, y: 60}, {x: 210, y: 65}, {x: 205, y: 72}, {x: 198, y: 80}, {x: 192, y: 90}, {x: 190, y: 100}, {x: 195, y: 108}],
     
-    // Left eye with detail
-    [{x: 158, y: 135}, {x: 165, y: 132}, {x: 172, y: 135}, {x: 175, y: 142}, {x: 172, y: 148}, {x: 165, y: 150}, {x: 158, y: 148}, {x: 155, y: 142}, {x: 158, y: 135}],
-    // Left pupil
-    [{x: 162, y: 140}, {x: 168, y: 142}, {x: 165, y: 145}, {x: 162, y: 143}],
+    // Left eye socket - dramatic
+    [{x: 155, y: 135}, {x: 165, y: 130}, {x: 175, y: 135}, {x: 178, y: 145}, {x: 175, y: 155}, {x: 165, y: 158}, {x: 155, y: 155}, {x: 152, y: 145}, {x: 155, y: 135}],
     
-    // Right eye with detail
-    [{x: 188, y: 135}, {x: 195, y: 132}, {x: 202, y: 135}, {x: 205, y: 142}, {x: 202, y: 148}, {x: 195, y: 150}, {x: 188, y: 148}, {x: 185, y: 142}, {x: 188, y: 135}],
-    // Right pupil
-    [{x: 192, y: 140}, {x: 198, y: 142}, {x: 195, y: 145}, {x: 192, y: 143}],
+    // Right eye socket - dramatic
+    [{x: 185, y: 135}, {x: 195, y: 130}, {x: 205, y: 135}, {x: 208, y: 145}, {x: 205, y: 155}, {x: 195, y: 158}, {x: 185, y: 155}, {x: 182, y: 145}, {x: 185, y: 135}],
     
-    // Nose bridge
-    [{x: 180, y: 150}, {x: 182, y: 155}, {x: 180, y: 158}, {x: 178, y: 155}],
+    // Left eye white
+    [{x: 160, y: 142}, {x: 168, y: 140}, {x: 172, y: 145}, {x: 168, y: 150}, {x: 160, y: 148}, {x: 158, y: 145}],
     
-    // Mouth area
-    [{x: 175, y: 165}, {x: 180, y: 168}, {x: 185, y: 165}, {x: 182, y: 170}, {x: 180, y: 172}, {x: 178, y: 170}],
+    // Right eye white
+    [{x: 190, y: 142}, {x: 198, y: 140}, {x: 202, y: 145}, {x: 198, y: 150}, {x: 190, y: 148}, {x: 188, y: 145}],
     
-    // Jawline definition
-    [{x: 145, y: 175}, {x: 155, y: 180}, {x: 170, y: 182}, {x: 180, y: 183}, {x: 190, y: 182}, {x: 205, y: 180}, {x: 215, y: 175}],
+    // Nose bridge and definition
+    [{x: 178, y: 150}, {x: 180, y: 152}, {x: 182, y: 155}, {x: 180, y: 158}, {x: 178, y: 155}],
     
-    // Cape collar
-    [{x: 120, y: 200}, {x: 130, y: 195}, {x: 140, y: 190}, {x: 160, y: 188}, {x: 180, y: 185}, {x: 200, y: 188}, {x: 220, y: 190}, {x: 230, y: 195}, {x: 240, y: 200}],
+    // Mouth line - stern
+    [{x: 175, y: 165}, {x: 180, y: 167}, {x: 185, y: 165}],
     
-    // Shoulder structure
+    // Jawline - strong and defined
+    [{x: 145, y: 175}, {x: 155, y: 180}, {x: 170, y: 183}, {x: 180, y: 185}, {x: 190, y: 183}, {x: 205, y: 180}, {x: 215, y: 175}],
+    
+    // Neck
+    [{x: 170, y: 185}, {x: 172, y: 195}, {x: 175, y: 205}],
+    [{x: 190, y: 185}, {x: 188, y: 195}, {x: 185, y: 205}],
+    
+    // Cape collar - dramatic
+    [{x: 120, y: 200}, {x: 130, y: 195}, {x: 140, y: 190}, {x: 155, y: 188}, {x: 175, y: 185}, {x: 185, y: 185}, {x: 205, y: 188}, {x: 220, y: 190}, {x: 230, y: 195}, {x: 240, y: 200}],
+    
+    // Shoulder structure - broad and powerful
     [{x: 140, y: 210}, {x: 150, y: 205}, {x: 160, y: 200}, {x: 170, y: 202}, {x: 180, y: 205}, {x: 190, y: 202}, {x: 200, y: 200}, {x: 210, y: 205}, {x: 220, y: 210}],
     
-    // Chest definition
-    [{x: 150, y: 230}, {x: 160, y: 225}, {x: 170, y: 220}, {x: 180, y: 225}, {x: 190, y: 220}, {x: 200, y: 225}, {x: 210, y: 230}],
+    // Chest muscles - detailed pectorals
+    [{x: 150, y: 220}, {x: 165, y: 215}, {x: 180, y: 220}, {x: 195, y: 215}, {x: 210, y: 220}],
+    [{x: 155, y: 230}, {x: 170, y: 225}, {x: 180, y: 230}, {x: 190, y: 225}, {x: 205, y: 230}],
     
-    // Enhanced bat symbol
-    [{x: 180, y: 240}, {x: 175, y: 242}, {x: 170, y: 245}, {x: 165, y: 250}, {x: 168, y: 252}, {x: 172, y: 254}, {x: 175, y: 255}, {x: 180, y: 250}, {x: 185, y: 255}, {x: 188, y: 254}, {x: 192, y: 252}, {x: 195, y: 250}, {x: 190, y: 245}, {x: 185, y: 242}, {x: 180, y: 240}],
+    // Bat symbol - iconic and detailed
+    [{x: 180, y: 245}, {x: 170, y: 248}, {x: 160, y: 252}, {x: 155, y: 258}, {x: 160, y: 262}, {x: 170, y: 265}, {x: 180, y: 260}, {x: 190, y: 265}, {x: 200, y: 262}, {x: 205, y: 258}, {x: 200, y: 252}, {x: 190, y: 248}, {x: 180, y: 245}],
     
-    // Bat symbol wings
-    [{x: 165, y: 250}, {x: 160, y: 248}, {x: 155, y: 252}, {x: 158, y: 255}, {x: 165, y: 253}],
-    [{x: 195, y: 250}, {x: 200, y: 248}, {x: 205, y: 252}, {x: 202, y: 255}, {x: 195, y: 253}],
+    // Bat symbol wings extension
+    [{x: 155, y: 258}, {x: 145, y: 255}, {x: 140, y: 260}, {x: 148, y: 265}, {x: 160, y: 262}],
+    [{x: 205, y: 258}, {x: 215, y: 255}, {x: 220, y: 260}, {x: 212, y: 265}, {x: 200, y: 262}],
     
-    // Left arm with muscle definition
-    [{x: 140, y: 210}, {x: 135, y: 220}, {x: 130, y: 235}, {x: 125, y: 250}, {x: 120, y: 265}, {x: 115, y: 280}, {x: 112, y: 295}, {x: 115, y: 300}],
-    [{x: 125, y: 240}, {x: 128, y: 245}, {x: 125, y: 250}, {x: 122, y: 255}],
+    // Left arm - muscular definition
+    [{x: 140, y: 210}, {x: 135, y: 225}, {x: 128, y: 245}, {x: 120, y: 270}, {x: 115, y: 295}, {x: 110, y: 320}, {x: 108, y: 345}, {x: 110, y: 365}],
     
-    // Right arm with muscle definition
-    [{x: 220, y: 210}, {x: 225, y: 220}, {x: 230, y: 235}, {x: 235, y: 250}, {x: 240, y: 265}, {x: 245, y: 280}, {x: 248, y: 295}, {x: 245, y: 300}],
-    [{x: 235, y: 240}, {x: 232, y: 245}, {x: 235, y: 250}, {x: 238, y: 255}],
+    // Left forearm
+    [{x: 110, y: 365}, {x: 105, y: 385}, {x: 100, y: 405}, {x: 98, y: 425}, {x: 100, y: 445}, {x: 105, y: 460}],
     
-    // Torso left side with ab definition
-    [{x: 150, y: 280}, {x: 155, y: 300}, {x: 160, y: 320}, {x: 165, y: 340}, {x: 170, y: 360}, {x: 175, y: 380}, {x: 180, y: 400}],
-    [{x: 155, y: 290}, {x: 158, y: 295}, {x: 155, y: 300}],
-    [{x: 160, y: 310}, {x: 163, y: 315}, {x: 160, y: 320}],
+    // Left hand/glove
+    [{x: 105, y: 460}, {x: 108, y: 470}, {x: 112, y: 475}, {x: 118, y: 478}, {x: 115, y: 485}, {x: 110, y: 488}, {x: 105, y: 485}, {x: 100, y: 480}, {x: 98, y: 475}],
     
-    // Torso right side with ab definition
-    [{x: 210, y: 280}, {x: 205, y: 300}, {x: 200, y: 320}, {x: 195, y: 340}, {x: 190, y: 360}, {x: 185, y: 380}, {x: 180, y: 400}],
-    [{x: 205, y: 290}, {x: 202, y: 295}, {x: 205, y: 300}],
-    [{x: 200, y: 310}, {x: 197, y: 315}, {x: 200, y: 320}],
+    // Left bicep definition
+    [{x: 125, y: 250}, {x: 130, y: 255}, {x: 128, y: 265}, {x: 122, y: 270}],
     
-    // Belt
-    [{x: 150, y: 350}, {x: 165, y: 348}, {x: 180, y: 350}, {x: 195, y: 348}, {x: 210, y: 350}],
-    [{x: 175, y: 350}, {x: 180, y: 355}, {x: 185, y: 350}],
+    // Right arm - muscular definition
+    [{x: 220, y: 210}, {x: 225, y: 225}, {x: 232, y: 245}, {x: 240, y: 270}, {x: 245, y: 295}, {x: 250, y: 320}, {x: 252, y: 345}, {x: 250, y: 365}],
     
-    // Cape left side with flowing curves
-    [{x: 120, y: 200}, {x: 110, y: 220}, {x: 105, y: 240}, {x: 100, y: 265}, {x: 95, y: 290}, {x: 90, y: 320}, {x: 88, y: 350}, {x: 90, y: 380}, {x: 95, y: 410}, {x: 105, y: 440}, {x: 110, y: 470}, {x: 120, y: 500}, {x: 130, y: 520}],
+    // Right forearm
+    [{x: 250, y: 365}, {x: 255, y: 385}, {x: 260, y: 405}, {x: 262, y: 425}, {x: 260, y: 445}, {x: 255, y: 460}],
     
-    // Cape right side with flowing curves
-    [{x: 240, y: 200}, {x: 250, y: 220}, {x: 255, y: 240}, {x: 260, y: 265}, {x: 265, y: 290}, {x: 270, y: 320}, {x: 272, y: 350}, {x: 270, y: 380}, {x: 265, y: 410}, {x: 255, y: 440}, {x: 250, y: 470}, {x: 240, y: 500}, {x: 230, y: 520}],
+    // Right hand/glove
+    [{x: 255, y: 460}, {x: 252, y: 470}, {x: 248, y: 475}, {x: 242, y: 478}, {x: 245, y: 485}, {x: 250, y: 488}, {x: 255, y: 485}, {x: 260, y: 480}, {x: 262, y: 475}],
     
-    // Cape bottom with dramatic curves
-    [{x: 130, y: 520}, {x: 140, y: 535}, {x: 150, y: 545}, {x: 165, y: 540}, {x: 180, y: 530}, {x: 195, y: 540}, {x: 210, y: 545}, {x: 220, y: 535}, {x: 230, y: 520}],
+    // Right bicep definition
+    [{x: 235, y: 250}, {x: 230, y: 255}, {x: 232, y: 265}, {x: 238, y: 270}],
+    
+    // Torso left side - detailed abs
+    [{x: 150, y: 280}, {x: 155, y: 310}, {x: 160, y: 340}, {x: 165, y: 370}, {x: 170, y: 400}, {x: 175, y: 430}],
+    
+    // Torso right side - detailed abs
+    [{x: 210, y: 280}, {x: 205, y: 310}, {x: 200, y: 340}, {x: 195, y: 370}, {x: 190, y: 400}, {x: 185, y: 430}],
+    
+    // Ab definition lines
+    [{x: 160, y: 300}, {x: 175, y: 295}, {x: 185, y: 295}, {x: 200, y: 300}],
+    [{x: 162, y: 320}, {x: 175, y: 315}, {x: 185, y: 315}, {x: 198, y: 320}],
+    [{x: 165, y: 340}, {x: 175, y: 335}, {x: 185, y: 335}, {x: 195, y: 340}],
+    
+    // Utility belt - detailed
+    [{x: 150, y: 360}, {x: 165, y: 355}, {x: 180, y: 358}, {x: 195, y: 355}, {x: 210, y: 360}],
+    [{x: 150, y: 360}, {x: 152, y: 370}, {x: 158, y: 372}, {x: 160, y: 365}],
+    [{x: 210, y: 360}, {x: 208, y: 370}, {x: 202, y: 372}, {x: 200, y: 365}],
+    
+    // Belt buckle
+    [{x: 175, y: 358}, {x: 185, y: 360}, {x: 185, y: 368}, {x: 175, y: 366}, {x: 175, y: 358}],
+    
+    // Left leg - thigh
+    [{x: 165, y: 430}, {x: 160, y: 460}, {x: 155, y: 490}, {x: 152, y: 520}, {x: 150, y: 550}],
+    
+    // Left leg - shin
+    [{x: 150, y: 550}, {x: 148, y: 580}, {x: 145, y: 610}, {x: 142, y: 640}, {x: 140, y: 670}],
+    
+    // Left boot
+    [{x: 140, y: 670}, {x: 138, y: 685}, {x: 135, y: 695}, {x: 145, y: 700}, {x: 160, y: 698}, {x: 165, y: 692}, {x: 162, y: 685}, {x: 155, y: 680}, {x: 148, y: 675}],
+    
+    // Right leg - thigh
+    [{x: 185, y: 430}, {x: 190, y: 460}, {x: 195, y: 490}, {x: 198, y: 520}, {x: 200, y: 550}],
+    
+    // Right leg - shin
+    [{x: 200, y: 550}, {x: 202, y: 580}, {x: 205, y: 610}, {x: 208, y: 640}, {x: 210, y: 670}],
+    
+    // Right boot
+    [{x: 210, y: 670}, {x: 212, y: 685}, {x: 215, y: 695}, {x: 205, y: 700}, {x: 190, y: 698}, {x: 185, y: 692}, {x: 188, y: 685}, {x: 195, y: 680}, {x: 202, y: 675}],
+    
+    // Thigh muscle definition
+    [{x: 160, y: 450}, {x: 165, y: 455}, {x: 162, y: 465}],
+    [{x: 190, y: 450}, {x: 185, y: 455}, {x: 188, y: 465}],
+    
+    // Cape - left side with dramatic flow
+    [{x: 120, y: 200}, {x: 110, y: 220}, {x: 100, y: 250}, {x: 85, y: 290}, {x: 75, y: 330}, {x: 70, y: 370}, {x: 68, y: 410}, {x: 70, y: 450}, {x: 75, y: 490}, {x: 85, y: 530}, {x: 100, y: 570}, {x: 120, y: 600}, {x: 140, y: 620}],
+    
+    // Cape - right side with dramatic flow
+    [{x: 240, y: 200}, {x: 250, y: 220}, {x: 260, y: 250}, {x: 275, y: 290}, {x: 285, y: 330}, {x: 290, y: 370}, {x: 292, y: 410}, {x: 290, y: 450}, {x: 285, y: 490}, {x: 275, y: 530}, {x: 260, y: 570}, {x: 240, y: 600}, {x: 220, y: 620}],
+    
+    // Cape bottom - flowing
+    [{x: 140, y: 620}, {x: 150, y: 635}, {x: 165, y: 645}, {x: 180, y: 640}, {x: 195, y: 645}, {x: 210, y: 635}, {x: 220, y: 620}],
     
     // Cape interior folds
-    [{x: 120, y: 250}, {x: 125, y: 280}, {x: 130, y: 320}, {x: 128, y: 360}, {x: 135, y: 400}],
-    [{x: 240, y: 250}, {x: 235, y: 280}, {x: 230, y: 320}, {x: 232, y: 360}, {x: 225, y: 400}],
+    [{x: 110, y: 280}, {x: 115, y: 320}, {x: 120, y: 360}, {x: 125, y: 400}, {x: 130, y: 440}, {x: 135, y: 480}],
+    [{x: 250, y: 280}, {x: 245, y: 320}, {x: 240, y: 360}, {x: 235, y: 400}, {x: 230, y: 440}, {x: 225, y: 480}],
     
-    // Utility belt details
-    [{x: 155, y: 355}, {x: 158, y: 358}, {x: 155, y: 361}, {x: 152, y: 358}],
-    [{x: 170, y: 357}, {x: 173, y: 360}, {x: 170, y: 363}, {x: 167, y: 360}],
-    [{x: 190, y: 357}, {x: 193, y: 360}, {x: 190, y: 363}, {x: 187, y: 360}],
-    [{x: 205, y: 355}, {x: 208, y: 358}, {x: 205, y: 361}, {x: 202, y: 358}]
+    // Additional cape depth
+    [{x: 95, y: 350}, {x: 100, y: 380}, {x: 105, y: 420}, {x: 110, y: 460}, {x: 118, y: 500}],
+    [{x: 265, y: 350}, {x: 260, y: 380}, {x: 255, y: 420}, {x: 250, y: 460}, {x: 242, y: 500}],
+    
+    // Gauntlet details
+    [{x: 105, y: 435}, {x: 110, y: 440}, {x: 108, y: 445}, {x: 103, y: 442}],
+    [{x: 255, y: 435}, {x: 250, y: 440}, {x: 252, y: 445}, {x: 257, y: 442}],
+    
+    // Boot details and treads
+    [{x: 145, y: 690}, {x: 155, y: 688}, {x: 158, y: 692}, {x: 150, y: 695}],
+    [{x: 205, y: 690}, {x: 195, y: 688}, {x: 192, y: 692}, {x: 200, y: 695}],
+    
+    // Additional facial shadows for depth
+    [{x: 145, y: 140}, {x: 150, y: 145}, {x: 148, y: 155}],
+    [{x: 215, y: 140}, {x: 210, y: 145}, {x: 212, y: 155}],
+    
+    // Final detail touches
+    [{x: 180, y: 200}, {x: 175, y: 205}, {x: 185, y: 205}], // Adam's apple
+    [{x: 170, y: 240}, {x: 175, y: 235}, {x: 180, y: 240}, {x: 185, y: 235}, {x: 190, y: 240}] // Chest definition
 ];
 
 // Particle system for drawing effects
@@ -431,27 +499,27 @@ class Particle {
     constructor(x, y, type = 'dust') {
         this.x = x;
         this.y = y;
-        this.vx = (Math.random() - 0.5) * 2;
-        this.vy = (Math.random() - 0.5) * 2;
+        this.vx = (Math.random() - 0.5) * 3;
+        this.vy = (Math.random() - 0.5) * 3;
         this.life = 1;
-        this.decay = 0.02 + Math.random() * 0.02;
-        this.size = Math.random() * 3 + 1;
+        this.decay = 0.015 + Math.random() * 0.02;
+        this.size = Math.random() * 4 + 1;
         this.type = type;
-        this.color = type === 'ink' ? '#000' : '#666';
+        this.color = type === 'ink' ? '#000' : type === 'color' ? '#333' : '#666';
     }
     
     update() {
         this.x += this.vx;
         this.y += this.vy;
         this.life -= this.decay;
-        this.vy += 0.1; // gravity
+        this.vy += 0.08; // gravity
         this.vx *= 0.98; // friction
         return this.life > 0;
     }
     
     draw() {
         ctx.save();
-        ctx.globalAlpha = this.life * 0.6;
+        ctx.globalAlpha = this.life * 0.7;
         ctx.fillStyle = this.color;
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.size * this.life, 0, Math.PI * 2);
@@ -460,22 +528,23 @@ class Particle {
     }
 }
 
-// Sparkle effect for magical touches
+// Enhanced sparkle effect
 class Sparkle {
-    constructor(x, y) {
+    constructor(x, y, color = '#ffd700') {
         this.x = x;
         this.y = y;
-        this.size = Math.random() * 4 + 2;
+        this.size = Math.random() * 5 + 2;
         this.life = 1;
-        this.decay = 0.015;
+        this.decay = 0.012;
         this.rotation = Math.random() * Math.PI * 2;
-        this.rotationSpeed = (Math.random() - 0.5) * 0.2;
+        this.rotationSpeed = (Math.random() - 0.5) * 0.3;
+        this.color = color;
     }
     
     update() {
         this.life -= this.decay;
         this.rotation += this.rotationSpeed;
-        this.size *= 0.995;
+        this.size *= 0.992;
         return this.life > 0;
     }
     
@@ -484,7 +553,7 @@ class Sparkle {
         ctx.translate(this.x, this.y);
         ctx.rotate(this.rotation);
         ctx.globalAlpha = this.life;
-        ctx.strokeStyle = '#ffd700';
+        ctx.strokeStyle = this.color;
         ctx.lineWidth = 2;
         ctx.lineCap = 'round';
         
@@ -514,20 +583,20 @@ function drawPath(path, progress, style = 'sketch') {
     ctx.shadowColor = 'transparent';
     
     if (style === 'sketch') {
-        ctx.strokeStyle = '#888';
-        ctx.lineWidth = 1.2 + Math.sin(Date.now() * 0.01) * 0.2; // Subtle width variation
-        ctx.globalAlpha = 0.6;
+        ctx.strokeStyle = '#999';
+        ctx.lineWidth = 1.5 + Math.sin(Date.now() * 0.01) * 0.3;
+        ctx.globalAlpha = 0.7;
         ctx.shadowBlur = 1;
         ctx.shadowColor = '#666';
     } else if (style === 'ink') {
-        ctx.strokeStyle = '#1a1a1a';
-        ctx.lineWidth = 2.8;
-        ctx.globalAlpha = 0.9;
+        ctx.strokeStyle = '#222';
+        ctx.lineWidth = 3.2;
+        ctx.globalAlpha = 0.95;
         ctx.shadowBlur = 2;
         ctx.shadowColor = '#000';
     } else if (style === 'color') {
         ctx.strokeStyle = '#000';
-        ctx.lineWidth = 3.2;
+        ctx.lineWidth = 3.8;
         ctx.globalAlpha = 1;
         ctx.shadowBlur = 3;
         ctx.shadowColor = '#333';
@@ -543,7 +612,7 @@ function drawPath(path, progress, style = 'sketch') {
     
     // Add slight hand tremor effect
     for (let i = 1; i < pointsToShow; i++) {
-        const tremor = style === 'sketch' ? (Math.random() - 0.5) * 0.8 : 0;
+        const tremor = style === 'sketch' ? (Math.random() - 0.5) * 1.2 : 0;
         ctx.lineTo(
             path[i].x + shakeOffset.x + tremor, 
             path[i].y + shakeOffset.y + tremor
@@ -562,7 +631,7 @@ function drawPath(path, progress, style = 'sketch') {
         ctx.lineTo(x + shakeOffset.x, y + shakeOffset.y);
         
         // Add particles while drawing
-        if (Math.random() < 0.3) {
+        if (Math.random() < 0.4) {
             particles.push(new Particle(x, y, style));
         }
     }
@@ -594,14 +663,14 @@ function updatePencilPosition(path, progress) {
         // Calculate angle for realistic pencil rotation
         const angle = Math.atan2(next.y - current.y, next.x - current.x);
         const degrees = angle * (180 / Math.PI);
-        pencil.style.transform = `rotate(${degrees + 45}deg) scale(1.1)`;
+        pencil.style.transform = `rotate(${degrees + 45}deg) scale(1.2)`;
         
         // Add subtle hand shake effect
-        shakeOffset.x = Math.sin(Date.now() * 0.02) * 0.5;
-        shakeOffset.y = Math.cos(Date.now() * 0.03) * 0.3;
+        shakeOffset.x = Math.sin(Date.now() * 0.025) * 0.8;
+        shakeOffset.y = Math.cos(Date.now() * 0.035) * 0.5;
         
         // Add sparkles occasionally
-        if (Math.random() < 0.1) {
+        if (Math.random() < 0.15) {
             sparkles.push(new Sparkle(x, y));
         }
     }
@@ -622,208 +691,364 @@ function updateAndDrawParticles() {
 }
 
 function addGradientBackground(phase) {
-    const gradient = ctx.createRadialGradient(180, 300, 0, 180, 300, 400);
+    const gradient = ctx.createRadialGradient(180, 350, 0, 180, 350, 500);
     
     if (phase === 0) { // Sketch phase
-        gradient.addColorStop(0, 'rgba(255, 255, 255, 0.05)');
-        gradient.addColorStop(1, 'rgba(200, 200, 200, 0.02)');
+        gradient.addColorStop(0, 'rgba(255, 255, 255, 0.08)');
+        gradient.addColorStop(1, 'rgba(200, 200, 200, 0.03)');
     } else if (phase === 1) { // Ink phase
-        gradient.addColorStop(0, 'rgba(50, 50, 50, 0.1)');
-        gradient.addColorStop(1, 'rgba(0, 0, 0, 0.05)');
+        gradient.addColorStop(0, 'rgba(50, 50, 50, 0.15)');
+        gradient.addColorStop(1, 'rgba(0, 0, 0, 0.08)');
     } else { // Color phase
-        gradient.addColorStop(0, 'rgba(25, 25, 46, 0.15)');
-        gradient.addColorStop(1, 'rgba(0, 0, 0, 0.1)');
+        gradient.addColorStop(0, 'rgba(25, 25, 46, 0.2)');
+        gradient.addColorStop(1, 'rgba(0, 0, 0, 0.12)');
     }
     
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
 
-function animate() {
-    const phases = [
-        { duration: 12000, style: 'sketch' },  // 12 seconds sketching
-        { duration: 8000, style: 'ink' },     // 8 seconds inking
-        { duration: 10000, style: 'color' }   // 10 seconds coloring
-    ];
+function drawCompleteBatman() {
+    ctx.save();
     
-    const totalDuration = phases.reduce((sum, phase) => sum + phase.duration, 0);
-    const startTime = Date.now();
-    
-    function frame() {
-        const elapsed = Date.now() - startTime;
-        const progress = Math.min(elapsed / totalDuration, 1);
-        
-        // Clear canvas with enhanced background
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
-        // Determine current phase
-        let currentPhase = 0;
-        let phaseProgress = 0;
-        let accumulatedTime = 0;
-        
-        for (let i = 0; i < phases.length; i++) {
-            if (elapsed <= accumulatedTime + phases[i].duration) {
-                currentPhase = i;
-                phaseProgress = (elapsed - accumulatedTime) / phases[i].duration;
-                break;
-            }
-            accumulatedTime += phases[i].duration;
-        }
-        
-        // Add atmospheric background
-        addGradientBackground(currentPhase);
-        
-        // Draw all previous phases completely
-        for (let phase = 0; phase < currentPhase; phase++) {
-            for (let i = 0; i < batmanPaths.length; i++) {
-                drawPath(batmanPaths[i], 1, phases[phase].style);
-            }
-        }
-        
-        // Draw current phase progressively
-        const pathsPerPhase = batmanPaths.length;
-        const pathProgress = phaseProgress * pathsPerPhase;
-        const currentPathIndex = Math.floor(pathProgress);
-        const currentPathProgress = pathProgress - currentPathIndex;
-        
-        // Draw completed paths in current phase
-        for (let i = 0; i < currentPathIndex && i < batmanPaths.length; i++) {
-            drawPath(batmanPaths[i], 1, phases[currentPhase].style);
-        }
-        
-        // Draw current path being drawn
-        if (currentPathIndex < batmanPaths.length) {
-            drawPath(batmanPaths[currentPathIndex], currentPathProgress, phases[currentPhase].style);
-            updatePencilPosition(batmanPaths[currentPathIndex], currentPathProgress);
-        }
-        
-        // Enhanced color fills in color phase
-        if (currentPhase === 2) {
-            ctx.globalAlpha = 0.85;
-            
-            // Cape with gradient
-            const capeGradient = ctx.createLinearGradient(90, 200, 270, 520);
-            capeGradient.addColorStop(0, '#1a1a2e');
-            capeGradient.addColorStop(0.5, '#16213e');
-            capeGradient.addColorStop(1, '#0f1419');
-            
-            ctx.fillStyle = capeGradient;
-            ctx.beginPath();
-            ctx.moveTo(120, 200);
-            ctx.lineTo(100, 250);
-            ctx.lineTo(90, 320);
-            ctx.lineTo(95, 400);
-            ctx.lineTo(110, 480);
-            ctx.lineTo(130, 520);
-            ctx.lineTo(180, 530);
-            ctx.lineTo(230, 520);
-            ctx.lineTo(250, 480);
-            ctx.lineTo(265, 400);
-            ctx.lineTo(270, 320);
-            ctx.lineTo(260, 250);
-            ctx.lineTo(240, 200);
-            ctx.lineTo(220, 190);
-            ctx.lineTo(180, 185);
-            ctx.lineTo(140, 190);
-            ctx.closePath();
-            ctx.fill();
-            
-            // Suit with gradient
-            const suitGradient = ctx.createLinearGradient(150, 230, 210, 400);
-            suitGradient.addColorStop(0, '#2c2c2c');
-            suitGradient.addColorStop(0.5, '#1a1a1a');
-            suitGradient.addColorStop(1, '#0a0a0a');
-            
-            ctx.fillStyle = suitGradient;
-            ctx.beginPath();
-            ctx.moveTo(150, 230);
-            ctx.lineTo(180, 225);
-            ctx.lineTo(210, 230);
-            ctx.lineTo(200, 320);
-            ctx.lineTo(180, 400);
-            ctx.lineTo(160, 320);
-            ctx.closePath();
-            ctx.fill();
-            
-            // Enhanced bat symbol with metallic effect
-            const batGradient = ctx.createRadialGradient(180, 247, 0, 180, 247, 15);
-            batGradient.addColorStop(0, '#333');
-            batGradient.addColorStop(0.7, '#000');
-            batGradient.addColorStop(1, '#111');
-            
-            ctx.fillStyle = batGradient;
-            ctx.beginPath();
-            ctx.moveTo(180, 240);
-            ctx.lineTo(170, 245);
-            ctx.lineTo(165, 250);
-            ctx.lineTo(175, 255);
-            ctx.lineTo(180, 250);
-            ctx.lineTo(185, 255);
-            ctx.lineTo(195, 250);
-            ctx.lineTo(190, 245);
-            ctx.closePath();
-            ctx.fill();
-            
-            // Add highlight to bat symbol
-            ctx.fillStyle = '#444';
-            ctx.beginPath();
-            ctx.arc(175, 245, 2, 0, Math.PI * 2);
-            ctx.arc(185, 245, 2, 0, Math.PI * 2);
-            ctx.fill();
-            
-            // Eyes with glow effect
-            ctx.shadowBlur = 8;
-            ctx.shadowColor = '#ffffff';
-            ctx.fillStyle = '#ffffff';
-            ctx.beginPath();
-            ctx.ellipse(165, 142, 3, 4, 0, 0, Math.PI * 2);
-            ctx.ellipse(195, 142, 3, 4, 0, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.shadowBlur = 0;
-            
-            ctx.globalAlpha = 1;
-        }
-        
-        // Update and draw particle effects
-        updateAndDrawParticles();
-        
-        if (progress < 1) {
-            requestAnimationFrame(frame);
-        } else {
-            // Epic finish with sparkle burst
-            for (let i = 0; i < 20; i++) {
-                sparkles.push(new Sparkle(
-                    150 + Math.random() * 60,
-                    200 + Math.random() * 200
-                ));
-            }
-            
-            // Hide pencil with smooth transition
-            pencil.style.transition = 'opacity 1s ease-out';
-            pencil.style.opacity = '0';
-            
-            // Restart animation after 3 seconds
-            setTimeout(() => {
-                pencil.style.transition = '';
-                animate();
-            }, 3000);
-        }
+    // Apply flying animation transforms
+    if (flyingPhase) {
+        ctx.translate(batmanPosition.x, batmanPosition.y);
+        ctx.rotate(batmanPosition.rotation);
+        ctx.translate(-180, -350); // Center around Batman's center
     }
     
-    requestAnimationFrame(frame);
+    // Cape with realistic gradient and animation
+    const capeGradient = ctx.createLinearGradient(70, 200, 290, 620);
+    capeGradient.addColorStop(0, '#1a1a2e');
+    capeGradient.addColorStop(0.3, '#16213e');
+    capeGradient.addColorStop(0.7, '#0f1419');
+    capeGradient.addColorStop(1, '#050508');
+    
+    ctx.fillStyle = capeGradient;
+    ctx.globalAlpha = 0.9;
+    ctx.beginPath();
+    
+    // Animated cape with flowing motion
+    const waveOffset = flyingPhase ? Math.sin(Date.now() * 0.008) * 15 : 0;
+    const waveOffset2 = flyingPhase ? Math.cos(Date.now() * 0.006) * 12 : 0;
+    
+    ctx.moveTo(120, 200);
+    ctx.quadraticCurveTo(100 + waveOffset, 250, 85 + waveOffset, 330);
+    ctx.quadraticCurveTo(70 + waveOffset2, 410, 75 + waveOffset, 490);
+    ctx.quadraticCurveTo(100 + waveOffset2, 570, 140 + waveOffset, 620);
+    ctx.quadraticCurveTo(160, 640, 180, 640);
+    ctx.quadraticCurveTo(200, 640, 220 - waveOffset, 620);
+    ctx.quadraticCurveTo(260 - waveOffset2, 570, 285 - waveOffset, 490);
+    ctx.quadraticCurveTo(290 - waveOffset2, 410, 275 - waveOffset, 330);
+    ctx.quadraticCurveTo(260 - waveOffset, 250, 240, 200);
+    ctx.lineTo(220, 190);
+    ctx.lineTo(180, 185);
+    ctx.lineTo(140, 190);
+    ctx.closePath();
+    ctx.fill();
+    
+    // Cape interior shadow
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+    ctx.beginPath();
+    ctx.moveTo(130, 220);
+    ctx.quadraticCurveTo(115 + waveOffset * 0.5, 300, 120 + waveOffset * 0.5, 400);
+    ctx.quadraticCurveTo(125 + waveOffset * 0.3, 500, 150 + waveOffset * 0.3, 600);
+    ctx.lineTo(180, 620);
+    ctx.lineTo(210 - waveOffset * 0.3, 600);
+    ctx.quadraticCurveTo(235 - waveOffset * 0.3, 500, 240 - waveOffset * 0.5, 400);
+    ctx.quadraticCurveTo(245 - waveOffset * 0.5, 300, 230, 220);
+    ctx.closePath();
+    ctx.fill();
+    
+    ctx.globalAlpha = 1;
+    
+    // Batman's body - main torso with gradient
+    const bodyGradient = ctx.createLinearGradient(150, 200, 210, 450);
+    bodyGradient.addColorStop(0, '#2c2c2c');
+    bodyGradient.addColorStop(0.5, '#1a1a1a');
+    bodyGradient.addColorStop(1, '#0a0a0a');
+    
+    ctx.fillStyle = bodyGradient;
+    ctx.beginPath();
+    ctx.moveTo(150, 210);
+    ctx.quadraticCurveTo(140, 250, 150, 280);
+    ctx.lineTo(160, 340);
+    ctx.lineTo(165, 370);
+    ctx.lineTo(170, 400);
+    ctx.lineTo(175, 430);
+    ctx.lineTo(185, 430);
+    ctx.lineTo(190, 400);
+    ctx.lineTo(195, 370);
+    ctx.lineTo(200, 340);
+    ctx.lineTo(210, 280);
+    ctx.quadraticCurveTo(220, 250, 210, 210);
+    ctx.lineTo(180, 205);
+    ctx.lineTo(150, 210);
+    ctx.closePath();
+    ctx.fill();
+    
+    // Batman's head with gradient
+    const headGradient = ctx.createRadialGradient(180, 150, 20, 180, 150, 50);
+    headGradient.addColorStop(0, '#3a3a3a');
+    headGradient.addColorStop(0.7, '#2a2a2a');
+    headGradient.addColorStop(1, '#1a1a1a');
+    
+    ctx.fillStyle = headGradient;
+    ctx.beginPath();
+    ctx.arc(180, 150, 45, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Bat ears
+    ctx.fillStyle = '#1a1a1a';
+    ctx.beginPath();
+    ctx.moveTo(160, 120);
+    ctx.lineTo(148, 60);
+    ctx.lineTo(170, 110);
+    ctx.closePath();
+    ctx.fill();
+    
+    ctx.beginPath();
+    ctx.moveTo(200, 120);
+    ctx.lineTo(212, 60);
+    ctx.lineTo(190, 110);
+    ctx.closePath();
+    ctx.fill();
+    
+    // Cowl/mask area
+    ctx.fillStyle = '#0a0a0a';
+    ctx.beginPath();
+    ctx.arc(180, 145, 35, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Eye holes - dramatic white
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.ellipse(165, 140, 8, 12, 0, 0, Math.PI * 2);
+    ctx.fill();
+    
+    ctx.beginPath();
+    ctx.ellipse(195, 140, 8, 12, 0, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Eye pupils
+    ctx.fillStyle = '#000';
+    ctx.beginPath();
+    ctx.arc(165, 142, 3, 0, Math.PI * 2);
+    ctx.fill();
+    
+    ctx.beginPath();
+    ctx.arc(195, 142, 3, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Bat symbol on chest
+    ctx.fillStyle = '#ffd700';
+    ctx.beginPath();
+    ctx.moveTo(180, 245);
+    ctx.lineTo(165, 250);
+    ctx.lineTo(155, 258);
+    ctx.lineTo(160, 265);
+    ctx.lineTo(170, 268);
+    ctx.lineTo(180, 263);
+    ctx.lineTo(190, 268);
+    ctx.lineTo(200, 265);
+    ctx.lineTo(205, 258);
+    ctx.lineTo(195, 250);
+    ctx.closePath();
+    ctx.fill();
+    
+    // Bat symbol wings
+    ctx.beginPath();
+    ctx.moveTo(155, 258);
+    ctx.lineTo(140, 255);
+    ctx.lineTo(148, 265);
+    ctx.lineTo(160, 265);
+    ctx.closePath();
+    ctx.fill();
+    
+    ctx.beginPath();
+    ctx.moveTo(205, 258);
+    ctx.lineTo(220, 255);
+    ctx.lineTo(212, 265);
+    ctx.lineTo(200, 265);
+    ctx.closePath();
+    ctx.fill();
+    
+    // Arms
+    ctx.fillStyle = bodyGradient;
+    ctx.beginPath();
+    ctx.moveTo(140, 210);
+    ctx.quadraticCurveTo(125, 250, 115, 300);
+    ctx.lineTo(110, 365);
+    ctx.lineTo(105, 460);
+    ctx.lineTo(115, 465);
+    ctx.lineTo(120, 365);
+    ctx.lineTo(125, 300);
+    ctx.quadraticCurveTo(135, 250, 150, 210);
+    ctx.closePath();
+    ctx.fill();
+    
+    ctx.beginPath();
+    ctx.moveTo(220, 210);
+    ctx.quadraticCurveTo(235, 250, 245, 300);
+    ctx.lineTo(250, 365);
+    ctx.lineTo(255, 460);
+    ctx.lineTo(245, 465);
+    ctx.lineTo(240, 365);
+    ctx.lineTo(235, 300);
+    ctx.quadraticCurveTo(225, 250, 210, 210);
+    ctx.closePath();
+    ctx.fill();
+    
+    // Gloves
+    ctx.fillStyle = '#1a1a1a';
+    ctx.beginPath();
+    ctx.arc(110, 470, 12, 0, Math.PI * 2);
+    ctx.fill();
+    
+    ctx.beginPath();
+    ctx.arc(250, 470, 12, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Utility belt
+    ctx.fillStyle = '#8b6914';
+    ctx.fillRect(150, 355, 60, 15);
+    
+    // Belt buckle
+    ctx.fillStyle = '#ffd700';
+    ctx.fillRect(175, 358, 10, 9);
+    
+    // Legs
+    ctx.fillStyle = bodyGradient;
+    ctx.beginPath();
+    ctx.moveTo(165, 430);
+    ctx.lineTo(160, 490);
+    ctx.lineTo(155, 550);
+    ctx.lineTo(150, 670);
+    ctx.lineTo(160, 675);
+    ctx.lineTo(165, 550);
+    ctx.lineTo(170, 490);
+    ctx.lineTo(175, 430);
+    ctx.closePath();
+    ctx.fill();
+    
+    ctx.beginPath();
+    ctx.moveTo(185, 430);
+    ctx.lineTo(190, 490);
+    ctx.lineTo(195, 550);
+    ctx.lineTo(200, 670);
+    ctx.lineTo(190, 675);
+    ctx.lineTo(185, 550);
+    ctx.lineTo(180, 490);
+    ctx.lineTo(175, 430);
+    ctx.closePath();
+    ctx.fill();
+    
+    // Boots
+    ctx.fillStyle = '#0a0a0a';
+    ctx.beginPath();
+    ctx.ellipse(155, 680, 15, 8, 0, 0, Math.PI * 2);
+    ctx.fill();
+    
+    ctx.beginPath();
+    ctx.ellipse(195, 680, 15, 8, 0, 0, Math.PI * 2);
+    ctx.fill();
+    
+    ctx.restore();
 }
 
-// Enhanced startup with delay for dramatic effect
-setTimeout(() => {
-    // Add subtle entry effect to pencil
-    pencil.style.transition = 'transform 0.5s ease-out';
-    pencil.style.transform = 'scale(1.2)';
-    setTimeout(() => {
-        pencil.style.transform = 'scale(1)';
-    }, 500);
+function animateBatmanFlying() {
+    if (!flyingPhase) return;
     
+    const time = Date.now() * 0.002;
+    
+    // Floating motion
+    batmanPosition.x = Math.sin(time * 0.5) * 30;
+    batmanPosition.y = Math.cos(time * 0.3) * 20 - 50;
+    batmanPosition.rotation = Math.sin(time * 0.4) * 0.1;
+    
+    // Cape animation intensity
+    capeAnimation.offset = time;
+    capeAnimation.intensity = 1 + Math.sin(time * 0.6) * 0.3;
+}
+
+function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Background effects
+    const currentPhase = Math.floor(animationStep / batmanPaths.length);
+    addGradientBackground(currentPhase);
+    
+    if (!batmanComplete) {
+        // Drawing phase
+        const pathIndex = Math.floor(animationStep);
+        const pathProgress = animationStep - pathIndex;
+        
+        if (pathIndex < batmanPaths.length) {
+            const currentPath = batmanPaths[pathIndex];
+            
+            // Draw previous paths
+            for (let i = 0; i < pathIndex; i++) {
+                let style = 'sketch';
+                if (i > batmanPaths.length * 0.33) style = 'ink';
+                if (i > batmanPaths.length * 0.66) style = 'color';
+                drawPath(batmanPaths[i], 1, style);
+            }
+            
+            // Draw current path
+            let currentStyle = 'sketch';
+            if (pathIndex > batmanPaths.length * 0.33) currentStyle = 'ink';
+            if (pathIndex > batmanPaths.length * 0.66) currentStyle = 'color';
+            
+            drawPath(currentPath, pathProgress, currentStyle);
+            updatePencilPosition(currentPath, pathProgress);
+            
+            animationStep += 0.008; // Drawing speed
+            
+            if (animationStep >= batmanPaths.length) {
+                batmanComplete = true;
+                flyingPhase = true;
+                pencil.style.opacity = '0';
+                
+                // Add completion sparkles
+                for (let i = 0; i < 20; i++) {
+                    setTimeout(() => {
+                        sparkles.push(new Sparkle(
+                            Math.random() * canvas.width,
+                            Math.random() * canvas.height,
+                            '#ffd700'
+                        ));
+                    }, i * 100);
+                }
+            }
+        }
+    } else {
+        // Flying Batman phase
+        animateBatmanFlying();
+        drawCompleteBatman();
+    }
+    
+    // Update and draw particles/sparkles
+    updateAndDrawParticles();
+    
+    requestAnimationFrame(animate);
+}
+
+// Initialize canvas
+function init() {
+    canvas.width = 360;
+    canvas.height = 720;
+    
+    // Start animation
     animate();
-}, 800);
+}
+
+// Start when DOM is loaded
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+} else {
+    init();
+}
     </script>
 </body>
 </html>
