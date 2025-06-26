@@ -12,36 +12,13 @@
         }
 
         body {
-            background: 
-                radial-gradient(circle at 25% 25%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
-                radial-gradient(circle at 75% 75%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
-                linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
             overflow: hidden;
-            position: relative;
-        }
-
-        body::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.1) 0%, transparent 50%);
-            animation: floatingOrbs 20s ease-in-out infinite;
-        }
-
-        @keyframes floatingOrbs {
-            0%, 100% { transform: translate(0, 0) rotate(0deg); }
-            33% { transform: translate(30px, -30px) rotate(120deg); }
-            66% { transform: translate(-20px, 20px) rotate(240deg); }
         }
 
         .container {
@@ -50,18 +27,18 @@
             position: relative;
             background: 
                 linear-gradient(145deg, 
-                    rgba(255, 255, 255, 0.95) 0%, 
-                    rgba(248, 250, 252, 0.95) 50%,
+                    rgba(255, 255, 255, 0.98) 0%, 
+                    rgba(248, 250, 252, 0.98) 50%,
                     rgba(241, 245, 249, 0.95) 100%);
             border-radius: 28px;
             box-shadow: 
                 0 32px 80px rgba(0, 0, 0, 0.25),
                 0 16px 40px rgba(0, 0, 0, 0.15),
-                inset 0 1px 0 rgba(255, 255, 255, 0.8),
+                inset 0 1px 0 rgba(255, 255, 255, 0.9),
                 inset 0 -1px 0 rgba(0, 0, 0, 0.05);
             overflow: hidden;
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
             transform: perspective(1000px) rotateX(2deg) rotateY(-2deg);
             transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
@@ -71,7 +48,7 @@
             box-shadow: 
                 0 40px 100px rgba(0, 0, 0, 0.3),
                 0 20px 50px rgba(0, 0, 0, 0.2),
-                inset 0 1px 0 rgba(255, 255, 255, 0.9),
+                inset 0 1px 0 rgba(255, 255, 255, 1),
                 inset 0 -1px 0 rgba(0, 0, 0, 0.05);
         }
 
@@ -79,30 +56,11 @@
             width: 100%;
             height: 100%;
             background: 
-                linear-gradient(90deg, 
-                    transparent 0%, 
-                    rgba(99, 102, 241, 0.03) 45%, 
-                    rgba(99, 102, 241, 0.06) 50%, 
-                    rgba(99, 102, 241, 0.03) 55%, 
-                    transparent 100%),
-                linear-gradient(0deg, 
-                    transparent 0%, 
-                    rgba(236, 72, 153, 0.02) 45%, 
-                    rgba(236, 72, 153, 0.04) 50%, 
-                    rgba(236, 72, 153, 0.02) 55%, 
-                    transparent 100%),
-                repeating-linear-gradient(45deg,
-                    transparent 0px,
-                    transparent 24px,
-                    rgba(99, 102, 241, 0.02) 24px,
-                    rgba(99, 102, 241, 0.02) 26px),
-                repeating-linear-gradient(-45deg,
-                    transparent 0px,
-                    transparent 24px,
-                    rgba(236, 72, 153, 0.02) 24px,
-                    rgba(236, 72, 153, 0.02) 26px),
-                #fefefe;
-            background-size: 100% 100%, 100% 100%, 32px 32px, 32px 32px, auto;
+                linear-gradient(45deg, transparent 24%, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.1) 26%, transparent 27%, transparent 74%, rgba(255,255,255,0.1) 75%, rgba(255,255,255,0.1) 76%, transparent 77%),
+                linear-gradient(-45deg, transparent 24%, rgba(0,0,0,0.02) 25%, rgba(0,0,0,0.02) 26%, transparent 27%, transparent 74%, rgba(0,0,0,0.02) 75%, rgba(0,0,0,0.02) 76%, transparent 77%),
+                linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.01) 50%, transparent 100%),
+                #ffffff;
+            background-size: 30px 30px, 30px 30px, 100% 100%, auto;
             position: relative;
             border-radius: 28px;
         }
@@ -115,9 +73,9 @@
             right: 0;
             bottom: 0;
             background: 
-                radial-gradient(circle at 25% 25%, rgba(99, 102, 241, 0.02) 0%, transparent 60%),
-                radial-gradient(circle at 75% 75%, rgba(236, 72, 153, 0.02) 0%, transparent 60%),
-                radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+                radial-gradient(circle at 20% 80%, rgba(0,0,0,0.015) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0,0,0,0.015) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(255,255,255,0.8) 0%, transparent 70%);
             border-radius: 28px;
             pointer-events: none;
         }
@@ -125,17 +83,50 @@
         .paper::after {
             content: '';
             position: absolute;
-            top: 20px;
-            left: 20px;
-            right: 20px;
-            bottom: 20px;
+            top: 15px;
+            left: 15px;
+            right: 15px;
+            bottom: 15px;
             border-radius: 20px;
             background: 
                 linear-gradient(135deg, 
-                    rgba(255, 255, 255, 0.1) 0%, 
-                    transparent 50%, 
-                    rgba(0, 0, 0, 0.02) 100%);
+                    rgba(255, 255, 255, 0.4) 0%, 
+                    transparent 30%, 
+                    rgba(0, 0, 0, 0.01) 100%);
             pointer-events: none;
+        }
+
+        .batman-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 48px;
+            font-weight: 900;
+            color: #1a1a1a;
+            text-shadow: 
+                2px 2px 4px rgba(0, 0, 0, 0.1),
+                0 0 20px rgba(0, 0, 0, 0.05);
+            letter-spacing: 2px;
+            font-family: 'Impact', 'Arial Black', sans-serif;
+            z-index: 5;
+            opacity: 0.9;
+            background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 50%, #000000 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: textGlow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes textGlow {
+            0% {
+                filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.2));
+                transform: translate(-50%, -50%) scale(1);
+            }
+            100% {
+                filter: drop-shadow(0 0 15px rgba(0, 0, 0, 0.3));
+                transform: translate(-50%, -50%) scale(1.02);
+            }
         }
 
         canvas {
@@ -150,28 +141,19 @@
         }
 
         canvas:hover {
-            filter: brightness(1.02);
+            filter: brightness(1.01);
         }
 
         .pencil {
             position: absolute;
-            width: 140px;
-            height: 10px;
-            background: 
-                linear-gradient(90deg, 
-                    #fbbf24 0%, 
-                    #f59e0b 25%, 
-                    #d97706 30%, 
-                    #92400e 35%, 
-                    #7c2d12 65%, 
-                    #dc2626 70%, 
-                    #ef4444 100%);
-            border-radius: 6px;
+            width: 120px;
+            height: 8px;
+            background: linear-gradient(90deg, #ffd700 0%, #ffed4e 30%, #8b4513 30%, #a0522d 70%, #ff69b4 70%, #ff1493 100%);
+            border-radius: 4px;
             box-shadow: 
-                0 4px 16px rgba(0, 0, 0, 0.2),
-                0 2px 8px rgba(0, 0, 0, 0.1),
-                inset 0 1px 2px rgba(255, 255, 255, 0.3),
-                inset 0 -1px 2px rgba(0, 0, 0, 0.2);
+                0 4px 12px rgba(0,0,0,0.25),
+                0 2px 6px rgba(0,0,0,0.15),
+                inset 0 1px 2px rgba(255,255,255,0.3);
             transform-origin: 100% 50%;
             opacity: 0;
             z-index: 10;
@@ -181,70 +163,39 @@
         .pencil::before {
             content: '';
             position: absolute;
-            right: -10px;
+            right: -8px;
             top: 50%;
             transform: translateY(-50%);
             width: 0;
             height: 0;
-            border-left: 10px solid #7c2d12;
-            border-top: 5px solid transparent;
-            border-bottom: 5px solid transparent;
-            filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.3));
+            border-left: 8px solid #8b4513;
+            border-top: 4px solid transparent;
+            border-bottom: 4px solid transparent;
+            filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.3));
         }
 
         .pencil::after {
             content: '';
             position: absolute;
-            right: -12px;
+            right: -10px;
             top: 50%;
             transform: translateY(-50%);
             width: 2px;
             height: 2px;
-            background: 
-                radial-gradient(circle, #1f2937 0%, #374151 100%);
+            background: #333;
             border-radius: 50%;
-            box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
-        }
-
-        .pencil-band {
-            position: absolute;
-            right: 30px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 8px;
-            height: 12px;
-            background: 
-                linear-gradient(180deg, 
-                    #10b981 0%, 
-                    #059669 50%, 
-                    #047857 100%);
-            border-radius: 1px;
-            box-shadow: 
-                inset 0 1px 2px rgba(255, 255, 255, 0.3),
-                inset 0 -1px 2px rgba(0, 0, 0, 0.3);
-        }
-
-        .pencil-text {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 6px;
-            font-weight: 600;
-            color: rgba(0, 0, 0, 0.6);
-            text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5);
-            letter-spacing: 0.5px;
+            box-shadow: 0 0 2px rgba(0,0,0,0.5);
         }
 
         @keyframes containerEntrance {
             0% { 
                 opacity: 0; 
-                transform: perspective(1000px) rotateX(45deg) rotateY(-45deg) scale(0.8) translateY(100px);
-                filter: blur(10px);
+                transform: perspective(1000px) rotateX(30deg) rotateY(-30deg) scale(0.8) translateY(50px);
+                filter: blur(8px);
             }
             50% {
-                opacity: 0.7;
-                transform: perspective(1000px) rotateX(15deg) rotateY(-15deg) scale(0.95) translateY(20px);
+                opacity: 0.8;
+                transform: perspective(1000px) rotateX(10deg) rotateY(-10deg) scale(0.95) translateY(10px);
                 filter: blur(2px);
             }
             100% { 
@@ -254,20 +205,12 @@
             }
         }
 
-        @keyframes paperGlow {
+        @keyframes paperTexture {
             0%, 100% { 
-                box-shadow: 
-                    0 32px 80px rgba(0, 0, 0, 0.25),
-                    0 16px 40px rgba(0, 0, 0, 0.15),
-                    inset 0 1px 0 rgba(255, 255, 255, 0.8),
-                    inset 0 -1px 0 rgba(0, 0, 0, 0.05);
+                background-size: 30px 30px, 30px 30px, 100% 100%, auto;
             }
             50% { 
-                box-shadow: 
-                    0 40px 100px rgba(99, 102, 241, 0.15),
-                    0 20px 60px rgba(236, 72, 153, 0.1),
-                    inset 0 1px 0 rgba(255, 255, 255, 0.9),
-                    inset 0 -1px 0 rgba(0, 0, 0, 0.05);
+                background-size: 32px 32px, 32px 32px, 100% 100%, auto;
             }
         }
 
@@ -277,25 +220,63 @@
                 opacity: 0;
             }
             20% {
-                opacity: 0.8;
+                opacity: 0.7;
             }
             50% { 
-                transform: translateY(-5px) rotate(2deg);
+                transform: translateY(-3px) rotate(1deg);
                 opacity: 1;
             }
             80% {
-                opacity: 0.8;
+                opacity: 0.7;
             }
         }
 
         .container {
             animation: 
-                containerEntrance 2s cubic-bezier(0.4, 0, 0.2, 1),
-                paperGlow 8s ease-in-out infinite 2s;
+                containerEntrance 1.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .paper {
+            animation: paperTexture 8s ease-in-out infinite 2s;
         }
 
         .pencil {
-            animation: pencilFloat 6s ease-in-out infinite 3s;
+            animation: pencilFloat 5s ease-in-out infinite 2.5s;
+        }
+
+        .batman-text {
+            animation: textGlow 3s ease-in-out infinite alternate 1s;
+        }
+
+        /* Enhanced paper lines for notebook feel */
+        .paper-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                repeating-linear-gradient(
+                    transparent,
+                    transparent 35px,
+                    rgba(0, 150, 255, 0.1) 35px,
+                    rgba(0, 150, 255, 0.1) 36px
+                );
+            border-radius: 28px;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Red margin line */
+        .paper-margin {
+            position: absolute;
+            top: 0;
+            left: 50px;
+            width: 1px;
+            height: 100%;
+            background: rgba(255, 0, 0, 0.2);
+            z-index: 2;
+            pointer-events: none;
         }
 
         /* Responsive design */
@@ -318,47 +299,16 @@
                 border-radius: 16px;
             }
             
+            .paper-lines {
+                border-radius: 24px;
+            }
+            
             canvas {
                 border-radius: 24px;
             }
-        }
-
-        /* Dark mode support */
-        @media (prefers-color-scheme: dark) {
-            .container {
-                background: 
-                    linear-gradient(145deg, 
-                        rgba(17, 24, 39, 0.95) 0%, 
-                        rgba(31, 41, 55, 0.95) 50%,
-                        rgba(55, 65, 81, 0.95) 100%);
-                border: 1px solid rgba(255, 255, 255, 0.1);
-            }
             
-            .paper {
-                background: 
-                    linear-gradient(90deg, 
-                        transparent 0%, 
-                        rgba(99, 102, 241, 0.05) 45%, 
-                        rgba(99, 102, 241, 0.08) 50%, 
-                        rgba(99, 102, 241, 0.05) 55%, 
-                        transparent 100%),
-                    linear-gradient(0deg, 
-                        transparent 0%, 
-                        rgba(236, 72, 153, 0.03) 45%, 
-                        rgba(236, 72, 153, 0.06) 50%, 
-                        rgba(236, 72, 153, 0.03) 55%, 
-                        transparent 100%),
-                    repeating-linear-gradient(45deg,
-                        transparent 0px,
-                        transparent 24px,
-                        rgba(99, 102, 241, 0.03) 24px,
-                        rgba(99, 102, 241, 0.03) 26px),
-                    repeating-linear-gradient(-45deg,
-                        transparent 0px,
-                        transparent 24px,
-                        rgba(236, 72, 153, 0.03) 24px,
-                        rgba(236, 72, 153, 0.03) 26px),
-                    #1f2937;
+            .batman-text {
+                font-size: 36px;
             }
         }
     </style>
