@@ -322,119 +322,105 @@
     </div>
 
     <script>
-       const canvas = document.getElementById('drawingCanvas');
+const canvas = document.getElementById('drawingCanvas');
 const ctx = canvas.getContext('2d');
 const pencil = document.getElementById('pencil');
 
-// Set 4K canvas size for crisp rendering
-canvas.width = 1080;
-canvas.height = 1920;
-canvas.style.width = '540px';
-canvas.style.height = '960px';
+// Set 4K canvas size for ultra-crisp rendering
+canvas.width = 1440;
+canvas.height = 2560;
+canvas.style.width = '360px';
+canvas.style.height = '640px';
 
-// High DPI scaling for smooth rendering
-const dpr = window.devicePixelRatio || 1;
-canvas.width *= dpr;
-canvas.height *= dpr;
-ctx.scale(dpr, dpr);
+// Enable high-quality rendering
+ctx.imageSmoothingEnabled = true;
+ctx.imageSmoothingQuality = 'high';
 
-let currentPhase = 0;
 let animationProgress = 0;
+let drawnPoints = [];
 let isAnimating = false;
 
-// Accurate Batman outline points with proper proportions
-const batmanPath = [
-    // Head outline (more accurate proportions)
-    {x: 270, y: 180}, {x: 248, y: 172}, {x: 233, y: 188}, {x: 225, y: 210},
-    {x: 222, y: 233}, {x: 225, y: 255}, {x: 233, y: 270}, {x: 248, y: 278},
-    {x: 270, y: 282}, {x: 292, y: 278}, {x: 307, y: 270}, {x: 315, y: 255},
-    {x: 318, y: 233}, {x: 315, y: 210}, {x: 307, y: 188}, {x: 292, y: 172},
+// Highly accurate Batman silhouette path
+const batmanOutline = [
+    // Head top
+    {x: 720, y: 300}, {x: 680, y: 280}, {x: 650, y: 290}, {x: 620, y: 310},
+    {x: 600, y: 340}, {x: 590, y: 380}, {x: 595, y: 420}, {x: 610, y: 450},
+    {x: 635, y: 470}, {x: 665, y: 480}, {x: 700, y: 485}, {x: 720, y: 488},
+    {x: 740, y: 485}, {x: 775, y: 480}, {x: 805, y: 470}, {x: 830, y: 450},
+    {x: 845, y: 420}, {x: 850, y: 380}, {x: 840, y: 340}, {x: 820, y: 310},
+    {x: 790, y: 290}, {x: 760, y: 280},
     
-    // Iconic Batman ears (sharp and angular)
-    {x: 248, y: 172}, {x: 240, y: 135}, {x: 255, y: 150},
-    {x: 292, y: 172}, {x: 300, y: 135}, {x: 285, y: 150},
+    // Left ear
+    {x: 680, y: 280}, {x: 650, y: 220}, {x: 665, y: 240}, {x: 685, y: 250},
     
-    // Jaw line definition
-    {x: 233, y: 270}, {x: 238, y: 285}, {x: 252, y: 295}, {x: 270, y: 298},
-    {x: 288, y: 295}, {x: 302, y: 285}, {x: 307, y: 270},
+    // Right ear
+    {x: 760, y: 280}, {x: 790, y: 220}, {x: 775, y: 240}, {x: 755, y: 250},
     
-    // Cape flowing outline (dramatic curves)
-    {x: 225, y: 300}, {x: 180, y: 330}, {x: 150, y: 375}, {x: 128, y: 435},
-    {x: 120, y: 510}, {x: 128, y: 585}, {x: 143, y: 645}, {x: 165, y: 690},
-    {x: 195, y: 720}, {x: 230, y: 735}, {x: 270, y: 740}, {x: 310, y: 735},
-    {x: 345, y: 720}, {x: 375, y: 690}, {x: 397, y: 645}, {x: 412, y: 585},
-    {x: 420, y: 510}, {x: 412, y: 435}, {x: 390, y: 375}, {x: 360, y: 330},
-    {x: 315, y: 300},
+    // Neck and shoulders
+    {x: 635, y: 470}, {x: 620, y: 500}, {x: 600, y: 540}, {x: 580, y: 580},
+    {x: 805, y: 470}, {x: 820, y: 500}, {x: 840, y: 540}, {x: 860, y: 580},
     
-    // Torso and chest (muscular definition)
-    {x: 210, y: 330}, {x: 203, y: 360}, {x: 210, y: 420}, {x: 225, y: 480},
-    {x: 248, y: 525}, {x: 270, y: 570}, {x: 292, y: 525}, {x: 315, y: 480},
-    {x: 330, y: 420}, {x: 337, y: 360}, {x: 330, y: 330},
+    // Left cape outer edge
+    {x: 580, y: 580}, {x: 520, y: 620}, {x: 480, y: 680}, {x: 450, y: 750},
+    {x: 430, y: 830}, {x: 420, y: 920}, {x: 425, y: 1010}, {x: 440, y: 1100},
+    {x: 465, y: 1180}, {x: 500, y: 1250}, {x: 545, y: 1310}, {x: 600, y: 1360},
+    {x: 660, y: 1400}, {x: 720, y: 1420},
     
-    // Shoulders and arms
-    {x: 210, y: 360}, {x: 165, y: 390}, {x: 150, y: 420}, {x: 158, y: 450},
-    {x: 330, y: 360}, {x: 375, y: 390}, {x: 390, y: 420}, {x: 382, y: 450},
+    // Right cape outer edge
+    {x: 860, y: 580}, {x: 920, y: 620}, {x: 960, y: 680}, {x: 990, y: 750},
+    {x: 1010, y: 830}, {x: 1020, y: 920}, {x: 1015, y: 1010}, {x: 1000, y: 1100},
+    {x: 975, y: 1180}, {x: 940, y: 1250}, {x: 895, y: 1310}, {x: 840, y: 1360},
+    {x: 780, y: 1400}, {x: 720, y: 1420},
     
-    // Bat symbol outline (iconic chest emblem)
-    {x: 270, y: 390}, {x: 255, y: 405}, {x: 240, y: 413}, {x: 233, y: 428},
-    {x: 248, y: 435}, {x: 270, y: 428}, {x: 292, y: 435}, {x: 307, y: 428},
-    {x: 300, y: 413}, {x: 285, y: 405},
+    // Torso inner outline
+    {x: 620, y: 540}, {x: 610, y: 580}, {x: 605, y: 620}, {x: 600, y: 660},
+    {x: 605, y: 700}, {x: 620, y: 740}, {x: 645, y: 780}, {x: 675, y: 810},
+    {x: 710, y: 830}, {x: 720, y: 840}, {x: 730, y: 830}, {x: 765, y: 810},
+    {x: 795, y: 780}, {x: 820, y: 740}, {x: 835, y: 700}, {x: 840, y: 660},
+    {x: 835, y: 620}, {x: 830, y: 580}, {x: 820, y: 540},
     
-    // Utility belt outline
-    {x: 225, y: 480}, {x: 315, y: 480}, {x: 315, y: 495}, {x: 225, y: 495}
+    // Arms
+    {x: 600, y: 580}, {x: 560, y: 600}, {x: 530, y: 630}, {x: 520, y: 670},
+    {x: 525, y: 710}, {x: 540, y: 740},
+    {x: 840, y: 580}, {x: 880, y: 600}, {x: 910, y: 630}, {x: 920, y: 670},
+    {x: 915, y: 710}, {x: 900, y: 740},
+    
+    // Bat symbol center
+    {x: 720, y: 720}, {x: 700, y: 740}, {x: 680, y: 750}, {x: 665, y: 770},
+    {x: 680, y: 780}, {x: 700, y: 775}, {x: 720, y: 780}, {x: 740, y: 775},
+    {x: 760, y: 780}, {x: 775, y: 770}, {x: 760, y: 750}, {x: 740, y: 740}
 ];
 
-// Additional detail paths for features
-const eyePaths = [
-    // Left eye outline
-    [{x: 255, y: 225}, {x: 248, y: 233}, {x: 255, y: 240}, {x: 262, y: 233}],
-    // Right eye outline
-    [{x: 285, y: 225}, {x: 278, y: 233}, {x: 285, y: 240}, {x: 292, y: 233}]
+// Facial features paths
+const eyeOutlines = [
+    // Left eye
+    [{x: 680, y: 380}, {x: 670, y: 390}, {x: 680, y: 400}, {x: 690, y: 390}],
+    // Right eye  
+    [{x: 760, y: 380}, {x: 750, y: 390}, {x: 760, y: 400}, {x: 770, y: 390}]
 ];
 
-const mouthPath = [
-    {x: 262, y: 248}, {x: 270, y: 255}, {x: 278, y: 248}
+const mouthOutline = [
+    {x: 705, y: 420}, {x: 720, y: 430}, {x: 735, y: 420}
 ];
 
-let drawnPoints = [];
-let currentPointIndex = 0;
-let currentDetailPhase = 0;
-
-function smoothPath(points, tension = 0.3) {
-    if (points.length < 3) return points;
+function drawPencilPhase(progress) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     
-    const smoothed = [];
-    smoothed.push(points[0]);
-    
-    for (let i = 1; i < points.length - 1; i++) {
-        const prev = points[i - 1];
-        const curr = points[i];
-        const next = points[i + 1];
-        
-        const cp1x = curr.x + (next.x - prev.x) * tension;
-        const cp1y = curr.y + (next.y - prev.y) * tension;
-        
-        smoothed.push({x: cp1x, y: cp1y, control: true});
-        smoothed.push(curr);
-    }
-    
-    smoothed.push(points[points.length - 1]);
-    return smoothed;
-}
-
-function drawPencilStroke(progress) {
-    ctx.strokeStyle = '#888';
-    ctx.lineWidth = 2;
+    // Pencil stroke style
+    ctx.strokeStyle = '#666';
+    ctx.lineWidth = 3;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     ctx.shadowColor = 'rgba(0,0,0,0.2)';
-    ctx.shadowBlur = 1;
+    ctx.shadowBlur = 2;
+    ctx.shadowOffsetX = 1;
+    ctx.shadowOffsetY = 1;
     
-    const totalPoints = Math.floor(progress * batmanPath.length);
+    const totalPoints = Math.floor(progress * batmanOutline.length);
     
     if (totalPoints > drawnPoints.length) {
-        for (let i = drawnPoints.length; i < totalPoints && i < batmanPath.length; i++) {
-            drawnPoints.push(batmanPath[i]);
+        for (let i = drawnPoints.length; i < totalPoints && i < batmanOutline.length; i++) {
+            drawnPoints.push(batmanOutline[i]);
         }
     }
     
@@ -443,23 +429,19 @@ function drawPencilStroke(progress) {
         ctx.moveTo(drawnPoints[0].x, drawnPoints[0].y);
         
         for (let i = 1; i < drawnPoints.length; i++) {
-            const curr = drawnPoints[i];
-            const prev = drawnPoints[i - 1];
-            
-            // Add slight randomness for pencil texture
-            const jitterX = (Math.random() - 0.5) * 0.5;
-            const jitterY = (Math.random() - 0.5) * 0.5;
-            
-            ctx.lineTo(curr.x + jitterX, curr.y + jitterY);
+            // Add slight pencil texture variation
+            const jitterX = (Math.random() - 0.5) * 2;
+            const jitterY = (Math.random() - 0.5) * 2;
+            ctx.lineTo(drawnPoints[i].x + jitterX, drawnPoints[i].y + jitterY);
         }
         ctx.stroke();
     }
     
-    // Update pencil position (if pencil element exists)
+    // Position pencil
     if (pencil && drawnPoints.length > 0) {
         const lastPoint = drawnPoints[drawnPoints.length - 1];
-        pencil.style.left = (lastPoint.x / 2 - 30) + 'px';
-        pencil.style.top = (lastPoint.y / 2 - 10) + 'px';
+        pencil.style.left = (lastPoint.x / 4 - 15) + 'px';
+        pencil.style.top = (lastPoint.y / 4 - 10) + 'px';
         pencil.style.opacity = '1';
         
         if (drawnPoints.length > 1) {
@@ -470,247 +452,270 @@ function drawPencilStroke(progress) {
     }
 }
 
-function drawInkedVersion() {
+function drawInkPhase() {
+    if (pencil) pencil.style.opacity = '0';
+    
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.shadowColor = 'transparent';
+    
+    // Clean ink outline
     ctx.strokeStyle = '#000';
-    ctx.lineWidth = 3;
+    ctx.lineWidth = 4;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     
-    // Main outline
     ctx.beginPath();
-    ctx.moveTo(batmanPath[0].x, batmanPath[0].y);
-    for (let i = 1; i < batmanPath.length; i++) {
-        ctx.lineTo(batmanPath[i].x, batmanPath[i].y);
+    ctx.moveTo(batmanOutline[0].x, batmanOutline[0].y);
+    for (let i = 1; i < batmanOutline.length; i++) {
+        ctx.lineTo(batmanOutline[i].x, batmanOutline[i].y);
     }
     ctx.stroke();
     
     // Add facial features
-    ctx.fillStyle = '#000';
-    ctx.lineWidth = 2;
-    
-    // Eyes (white sections for dramatic effect)
     ctx.fillStyle = '#fff';
+    
+    // Eyes (white base)
     ctx.beginPath();
-    ctx.ellipse(255, 233, 6, 8, -0.1, 0, Math.PI * 2);
+    ctx.ellipse(680, 390, 12, 16, -0.1, 0, Math.PI * 2);
     ctx.fill();
     
     ctx.beginPath();
-    ctx.ellipse(285, 233, 6, 8, 0.1, 0, Math.PI * 2);
+    ctx.ellipse(760, 390, 12, 16, 0.1, 0, Math.PI * 2);
     ctx.fill();
     
     // Eye pupils
     ctx.fillStyle = '#000';
     ctx.beginPath();
-    ctx.ellipse(255, 235, 3, 4, 0, 0, Math.PI * 2);
+    ctx.ellipse(680, 395, 6, 8, 0, 0, Math.PI * 2);
     ctx.fill();
     
     ctx.beginPath();
-    ctx.ellipse(285, 235, 3, 4, 0, 0, Math.PI * 2);
+    ctx.ellipse(760, 395, 6, 8, 0, 0, Math.PI * 2);
     ctx.fill();
     
-    // Mouth (grim line)
+    // Mouth
     ctx.strokeStyle = '#000';
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 3;
     ctx.beginPath();
-    ctx.moveTo(262, 252);
-    ctx.quadraticCurveTo(270, 258, 278, 252);
+    ctx.moveTo(705, 425);
+    ctx.quadraticCurveTo(720, 435, 735, 425);
     ctx.stroke();
     
     // Nose definition
+    ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.moveTo(270, 238);
-    ctx.lineTo(268, 248);
-    ctx.moveTo(270, 238);
-    ctx.lineTo(272, 248);
+    ctx.moveTo(720, 400);
+    ctx.lineTo(715, 415);
+    ctx.moveTo(720, 400);
+    ctx.lineTo(725, 415);
     ctx.stroke();
 }
 
-function drawColoredVersion() {
+function drawColorPhase() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
-    // Cape (dark navy blue with gradient)
-    const capeGradient = ctx.createLinearGradient(180, 330, 360, 740);
-    capeGradient.addColorStop(0, '#0d1b2a');
-    capeGradient.addColorStop(0.5, '#1b263b');
-    capeGradient.addColorStop(1, '#0d1b2a');
+    // Cape gradient (deep blue-black)
+    const capeGradient = ctx.createLinearGradient(450, 600, 990, 1400);
+    capeGradient.addColorStop(0, '#0a0e1a');
+    capeGradient.addColorStop(0.3, '#1a1a2e');
+    capeGradient.addColorStop(0.7, '#16213e');
+    capeGradient.addColorStop(1, '#0a0e1a');
     
     ctx.fillStyle = capeGradient;
     ctx.beginPath();
-    ctx.moveTo(180, 330);
-    ctx.lineTo(150, 375);
-    ctx.lineTo(128, 435);
-    ctx.lineTo(120, 510);
-    ctx.lineTo(128, 585);
-    ctx.lineTo(143, 645);
-    ctx.lineTo(165, 690);
-    ctx.lineTo(195, 720);
-    ctx.lineTo(230, 735);
-    ctx.lineTo(270, 740);
-    ctx.lineTo(310, 735);
-    ctx.lineTo(345, 720);
-    ctx.lineTo(375, 690);
-    ctx.lineTo(397, 645);
-    ctx.lineTo(412, 585);
-    ctx.lineTo(420, 510);
-    ctx.lineTo(412, 435);
-    ctx.lineTo(390, 375);
-    ctx.lineTo(360, 330);
+    // Cape outline
+    ctx.moveTo(580, 580);
+    ctx.lineTo(520, 620);
+    ctx.lineTo(480, 680);
+    ctx.lineTo(450, 750);
+    ctx.lineTo(430, 830);
+    ctx.lineTo(420, 920);
+    ctx.lineTo(425, 1010);
+    ctx.lineTo(440, 1100);
+    ctx.lineTo(465, 1180);
+    ctx.lineTo(500, 1250);
+    ctx.lineTo(545, 1310);
+    ctx.lineTo(600, 1360);
+    ctx.lineTo(660, 1400);
+    ctx.lineTo(720, 1420);
+    ctx.lineTo(780, 1400);
+    ctx.lineTo(840, 1360);
+    ctx.lineTo(895, 1310);
+    ctx.lineTo(940, 1250);
+    ctx.lineTo(975, 1180);
+    ctx.lineTo(1000, 1100);
+    ctx.lineTo(1015, 1010);
+    ctx.lineTo(1020, 920);
+    ctx.lineTo(1010, 830);
+    ctx.lineTo(990, 750);
+    ctx.lineTo(960, 680);
+    ctx.lineTo(920, 620);
+    ctx.lineTo(860, 580);
     ctx.closePath();
     ctx.fill();
     
-    // Body suit (dark gray with muscle definition)
-    const suitGradient = ctx.createRadialGradient(270, 400, 0, 270, 400, 150);
-    suitGradient.addColorStop(0, '#2c3e50');
+    // Body suit (charcoal gray)
+    const suitGradient = ctx.createRadialGradient(720, 700, 0, 720, 700, 200);
+    suitGradient.addColorStop(0, '#34495e');
+    suitGradient.addColorStop(0.6, '#2c3e50');
     suitGradient.addColorStop(1, '#1a252f');
     
     ctx.fillStyle = suitGradient;
     ctx.beginPath();
-    ctx.moveTo(210, 330);
-    ctx.lineTo(203, 360);
-    ctx.lineTo(210, 420);
-    ctx.lineTo(225, 480);
-    ctx.lineTo(315, 480);
-    ctx.lineTo(330, 420);
-    ctx.lineTo(337, 360);
-    ctx.lineTo(330, 330);
+    ctx.moveTo(620, 540);
+    ctx.lineTo(610, 580);
+    ctx.lineTo(605, 620);
+    ctx.lineTo(600, 660);
+    ctx.lineTo(605, 700);
+    ctx.lineTo(620, 740);
+    ctx.lineTo(645, 780);
+    ctx.lineTo(675, 810);
+    ctx.lineTo(710, 830);
+    ctx.lineTo(720, 840);
+    ctx.lineTo(730, 830);
+    ctx.lineTo(765, 810);
+    ctx.lineTo(795, 780);
+    ctx.lineTo(820, 740);
+    ctx.lineTo(835, 700);
+    ctx.lineTo(840, 660);
+    ctx.lineTo(835, 620);
+    ctx.lineTo(830, 580);
+    ctx.lineTo(820, 540);
     ctx.closePath();
     ctx.fill();
     
-    // Cowl (matte black)
+    // Cowl (deep black)
     ctx.fillStyle = '#000';
     ctx.beginPath();
-    ctx.moveTo(270, 180);
-    ctx.lineTo(248, 172);
-    ctx.lineTo(233, 188);
-    ctx.lineTo(225, 210);
-    ctx.lineTo(222, 233);
-    ctx.lineTo(225, 255);
-    ctx.lineTo(233, 270);
-    ctx.lineTo(238, 285);
-    ctx.lineTo(252, 295);
-    ctx.lineTo(270, 298);
-    ctx.lineTo(288, 295);
-    ctx.lineTo(302, 285);
-    ctx.lineTo(307, 270);
-    ctx.lineTo(315, 255);
-    ctx.lineTo(318, 233);
-    ctx.lineTo(315, 210);
-    ctx.lineTo(307, 188);
-    ctx.lineTo(292, 172);
+    ctx.moveTo(720, 300);
+    ctx.lineTo(680, 280);
+    ctx.lineTo(650, 290);
+    ctx.lineTo(620, 310);
+    ctx.lineTo(600, 340);
+    ctx.lineTo(590, 380);
+    ctx.lineTo(595, 420);
+    ctx.lineTo(610, 450);
+    ctx.lineTo(635, 470);
+    ctx.lineTo(665, 480);
+    ctx.lineTo(700, 485);
+    ctx.lineTo(720, 488);
+    ctx.lineTo(740, 485);
+    ctx.lineTo(775, 480);
+    ctx.lineTo(805, 470);
+    ctx.lineTo(830, 450);
+    ctx.lineTo(845, 420);
+    ctx.lineTo(850, 380);
+    ctx.lineTo(840, 340);
+    ctx.lineTo(820, 310);
+    ctx.lineTo(790, 290);
+    ctx.lineTo(760, 280);
     ctx.closePath();
     ctx.fill();
     
-    // Ears (sharp and menacing)
+    // Ears
     ctx.beginPath();
-    ctx.moveTo(248, 172);
-    ctx.lineTo(240, 135);
-    ctx.lineTo(255, 150);
+    ctx.moveTo(680, 280);
+    ctx.lineTo(650, 220);
+    ctx.lineTo(685, 250);
     ctx.closePath();
     ctx.fill();
     
     ctx.beginPath();
-    ctx.moveTo(292, 172);
-    ctx.lineTo(300, 135);
-    ctx.lineTo(285, 150);
+    ctx.moveTo(760, 280);
+    ctx.lineTo(790, 220);
+    ctx.lineTo(755, 250);
     ctx.closePath();
     ctx.fill();
     
-    // Bat symbol (bright yellow/gold)
-    const batSymbolGradient = ctx.createRadialGradient(270, 410, 0, 270, 410, 30);
+    // Bat symbol (bright gold)
+    const batSymbolGradient = ctx.createRadialGradient(720, 750, 0, 720, 750, 60);
     batSymbolGradient.addColorStop(0, '#ffd700');
-    batSymbolGradient.addColorStop(1, '#ffb700');
+    batSymbolGradient.addColorStop(0.7, '#ffb700');
+    batSymbolGradient.addColorStop(1, '#cc9900');
     
     ctx.fillStyle = batSymbolGradient;
     ctx.beginPath();
-    ctx.moveTo(270, 390);
-    ctx.lineTo(255, 405);
-    ctx.lineTo(240, 413);
-    ctx.lineTo(233, 428);
-    ctx.lineTo(248, 435);
-    ctx.lineTo(270, 428);
-    ctx.lineTo(292, 435);
-    ctx.lineTo(307, 428);
-    ctx.lineTo(300, 413);
-    ctx.lineTo(285, 405);
+    ctx.moveTo(720, 720);
+    ctx.lineTo(700, 740);
+    ctx.lineTo(680, 750);
+    ctx.lineTo(665, 770);
+    ctx.lineTo(680, 780);
+    ctx.lineTo(700, 775);
+    ctx.lineTo(720, 780);
+    ctx.lineTo(740, 775);
+    ctx.lineTo(760, 780);
+    ctx.lineTo(775, 770);
+    ctx.lineTo(760, 750);
+    ctx.lineTo(740, 740);
     ctx.closePath();
     ctx.fill();
     
-    // Utility belt (golden brown)
+    // Utility belt
     ctx.fillStyle = '#8b4513';
-    ctx.fillRect(225, 480, 90, 15);
+    ctx.fillRect(600, 830, 240, 25);
     
-    // Belt buckle and pouches
+    // Belt buckle and accessories
     ctx.fillStyle = '#daa520';
-    ctx.fillRect(262, 482, 16, 11);
-    ctx.fillRect(235, 483, 8, 9);
-    ctx.fillRect(297, 483, 8, 9);
+    ctx.fillRect(705, 835, 30, 15);
+    ctx.fillRect(620, 837, 15, 11);
+    ctx.fillRect(805, 837, 15, 11);
     
     // Muscle definition highlights
     ctx.fillStyle = 'rgba(255,255,255,0.15)';
     ctx.beginPath();
-    ctx.ellipse(255, 380, 12, 20, -0.3, 0, Math.PI * 2);
+    ctx.ellipse(680, 720, 20, 35, -0.3, 0, Math.PI * 2);
     ctx.fill();
     
     ctx.beginPath();
-    ctx.ellipse(285, 380, 12, 20, 0.3, 0, Math.PI * 2);
+    ctx.ellipse(760, 720, 20, 35, 0.3, 0, Math.PI * 2);
     ctx.fill();
     
-    // Face highlights and shadows
+    // Face highlight
     ctx.fillStyle = 'rgba(255,255,255,0.2)';
     ctx.beginPath();
-    ctx.ellipse(262, 218, 8, 12, -0.2, 0, Math.PI * 2);
+    ctx.ellipse(700, 360, 15, 25, -0.2, 0, Math.PI * 2);
     ctx.fill();
     
     // Eyes (piercing white)
     ctx.fillStyle = '#fff';
     ctx.beginPath();
-    ctx.ellipse(255, 233, 5, 7, -0.1, 0, Math.PI * 2);
+    ctx.ellipse(680, 390, 10, 14, -0.1, 0, Math.PI * 2);
     ctx.fill();
     
     ctx.beginPath();
-    ctx.ellipse(285, 233, 5, 7, 0.1, 0, Math.PI * 2);
+    ctx.ellipse(760, 390, 10, 14, 0.1, 0, Math.PI * 2);
     ctx.fill();
     
-    // Eye pupils (small for intensity)
+    // Eye pupils
     ctx.fillStyle = '#000';
     ctx.beginPath();
-    ctx.ellipse(255, 235, 2, 3, 0, 0, Math.PI * 2);
+    ctx.ellipse(680, 395, 4, 6, 0, 0, Math.PI * 2);
     ctx.fill();
     
     ctx.beginPath();
-    ctx.ellipse(285, 235, 2, 3, 0, 0, Math.PI * 2);
+    ctx.ellipse(760, 395, 4, 6, 0, 0, Math.PI * 2);
     ctx.fill();
     
-    // Final clean outline
+    // Final outline
     ctx.strokeStyle = '#000';
-    ctx.lineWidth = 2.5;
+    ctx.lineWidth = 3;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     
-    // Outline the entire figure
     ctx.beginPath();
-    ctx.moveTo(batmanPath[0].x, batmanPath[0].y);
-    for (let i = 1; i < batmanPath.length; i++) {
-        ctx.lineTo(batmanPath[i].x, batmanPath[i].y);
+    ctx.moveTo(batmanOutline[0].x, batmanOutline[0].y);
+    for (let i = 1; i < batmanOutline.length; i++) {
+        ctx.lineTo(batmanOutline[i].x, batmanOutline[i].y);
     }
     ctx.stroke();
     
-    // Additional detail lines
-    ctx.lineWidth = 1.5;
-    
-    // Cape creases
+    // Cape detail lines
+    ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.moveTo(200, 400);
-    ctx.quadraticCurveTo(220, 500, 200, 600);
-    ctx.moveTo(340, 400);
-    ctx.quadraticCurveTo(320, 500, 340, 600);
-    ctx.stroke();
-    
-    // Cowl seam lines
-    ctx.beginPath();
-    ctx.moveTo(248, 185);
-    ctx.quadraticCurveTo(270, 175, 292, 185);
+    ctx.moveTo(550, 700);
+    ctx.quadraticCurveTo(580, 900, 560, 1100);
+    ctx.moveTo(890, 700);
+    ctx.quadraticCurveTo(860, 900, 880, 1100);
     ctx.stroke();
 }
 
@@ -719,56 +724,49 @@ function animate() {
     
     function frame() {
         const elapsed = Date.now() - startTime;
-        const totalDuration = 30000; // 30 seconds for smoother animation
+        const totalDuration = 35000; // 35 seconds
         const progress = Math.min(elapsed / totalDuration, 1);
         
-        // Phase 1: Pencil sketch (0-50%)
-        if (progress < 0.5) {
-            const phaseProgress = progress / 0.5;
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            drawPencilStroke(phaseProgress);
+        // Phase 1: Pencil sketch (0-45%)
+        if (progress < 0.45) {
+            const phaseProgress = progress / 0.45;
+            drawPencilPhase(phaseProgress);
         }
-        // Phase 2: Inking (50-75%)
-        else if (progress < 0.75) {
-            if (pencil) pencil.style.opacity = '0';
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            drawInkedVersion();
+        // Phase 2: Inking (45-70%)
+        else if (progress < 0.7) {
+            drawInkPhase();
         }
-        // Phase 3: Coloring (75-100%)
+        // Phase 3: Coloring (70-100%)
         else {
-            drawColoredVersion();
+            drawColorPhase();
         }
         
         if (progress < 1) {
             requestAnimationFrame(frame);
         } else {
-            // Restart animation after 3 seconds
+            // Restart after 4 seconds
             setTimeout(() => {
                 drawnPoints = [];
-                currentPointIndex = 0;
                 animate();
-            }, 3000);
+            }, 4000);
         }
     }
     
     requestAnimationFrame(frame);
 }
 
-// Enhanced initialization
-function initializeAnimation() {
-    // Reset canvas for crisp rendering
-    ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = 'high';
-    
-    // Start animation
-    setTimeout(animate, 1000);
+// Initialize
+function init() {
+    if (canvas && ctx) {
+        setTimeout(animate, 1000);
+    }
 }
 
-// Start animation when page loads
+// Start when ready
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initializeAnimation);
+    document.addEventListener('DOMContentLoaded', init);
 } else {
-    initializeAnimation();
+    init();
 }
     </script>
 </body>
