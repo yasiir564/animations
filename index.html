@@ -3,1052 +3,413 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Batman Drawing Animation - Enhanced</title>
+    <title>Batman Drawing Animation</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
-            background: 
-                radial-gradient(circle at 25% 25%, rgba(30, 30, 40, 0.8) 0%, transparent 50%),
-                radial-gradient(circle at 75% 75%, rgba(20, 20, 30, 0.6) 0%, transparent 50%),
-                linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
-            min-height: 100vh;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
             display: flex;
             justify-content: center;
             align-items: center;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            font-family: 'Arial', sans-serif;
             overflow: hidden;
-            position: relative;
         }
-        
-        /* Floating particles background */
-        body::before {
-            content: '';
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                radial-gradient(2px 2px at 20% 30%, #ffffff, transparent),
-                radual-gradient(2px 2px at 40% 70%, rgba(255,255,255,0.3), transparent),
-                radial-gradient(1px 1px at 90% 40%, rgba(255,255,255,0.5), transparent),
-                radial-gradient(1px 1px at 30% 80%, rgba(255,255,255,0.2), transparent);
-            background-repeat: repeat;
-            background-size: 550px 550px, 350px 350px, 250px 250px, 150px 150px;
-            animation: float 20s linear infinite;
-            opacity: 0.1;
-        }
-        
-        @keyframes float {
-            0% { transform: translateY(0px) rotate(0deg); }
-            100% { transform: translateY(-100vh) rotate(360deg); }
-        }
-        
+
         .container {
-            width: 380px;
-            height: 660px;
-            background: 
-                radial-gradient(circle at 30% 20%, rgba(255,255,255,0.15) 1px, transparent 1px),
-                radial-gradient(circle at 70% 80%, rgba(200,200,200,0.08) 1px, transparent 1px),
-                linear-gradient(145deg, #ffffff 0%, #f8f8f8 50%, #f0f0f0 100%);
-            border: 2px solid #e0e0e0;
-            border-radius: 16px;
-            box-shadow: 
-                0 30px 60px rgba(0,0,0,0.25),
-                0 10px 20px rgba(0,0,0,0.15),
-                inset 0 2px 4px rgba(255,255,255,0.9),
-                inset 0 -1px 2px rgba(0,0,0,0.05);
+            width: 360px;
+            height: 640px;
             position: relative;
+            background: linear-gradient(145deg, #f8f8f8 0%, #e8e8e8 100%);
+            border-radius: 20px;
+            box-shadow: 
+                0 20px 60px rgba(0,0,0,0.3),
+                inset 0 1px 3px rgba(255,255,255,0.6);
             overflow: hidden;
-            backdrop-filter: blur(10px);
-            transform: perspective(1000px) rotateX(2deg);
-            transition: transform 0.3s ease;
         }
-        
-        .container:hover {
-            transform: perspective(1000px) rotateX(0deg) scale(1.02);
-        }
-        
-        /* Enhanced paper texture */
-        .paper-texture {
-            position: absolute;
+
+        .paper {
             width: 100%;
             height: 100%;
-            opacity: 0.4;
-            background-image: 
-                repeating-linear-gradient(
-                    0deg,
-                    transparent,
-                    transparent 24px,
-                    rgba(100,149,237,0.1) 25px,
-                    rgba(100,149,237,0.1) 26px
-                ),
-                repeating-linear-gradient(
-                    90deg,
-                    transparent,
-                    transparent 30px,
-                    rgba(255,192,203,0.05) 31px,
-                    rgba(255,192,203,0.05) 32px
-                ),
-                radial-gradient(circle at 20% 50%, rgba(0,0,0,0.02) 1px, transparent 1px),
-                radial-gradient(circle at 80% 20%, rgba(0,0,0,0.015) 1px, transparent 1px);
-            background-size: 100% 100%, 100% 100%, 40px 40px, 60px 60px;
-            pointer-events: none;
+            background: 
+                linear-gradient(45deg, transparent 24%, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.1) 26%, transparent 27%, transparent 74%, rgba(255,255,255,0.1) 75%, rgba(255,255,255,0.1) 76%, transparent 77%),
+                linear-gradient(-45deg, transparent 24%, rgba(0,0,0,0.05) 25%, rgba(0,0,0,0.05) 26%, transparent 27%, transparent 74%, rgba(0,0,0,0.05) 75%, rgba(0,0,0,0.05) 76%, transparent 77%),
+                #fafafa;
+            background-size: 30px 30px;
+            position: relative;
         }
-        
-        /* Margin lines like real notebook paper */
-        .paper-texture::before {
+
+        .paper::before {
             content: '';
             position: absolute;
-            left: 40px;
             top: 0;
-            width: 2px;
-            height: 100%;
-            background: linear-gradient(
-                to bottom,
-                rgba(255,182,193,0.6) 0%,
-                rgba(255,182,193,0.4) 50%,
-                rgba(255,182,193,0.6) 100%
-            );
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(0,0,0,0.02) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0,0,0,0.02) 0%, transparent 50%);
         }
-        
+
         canvas {
-            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            border-radius: 14px;
         }
-        
-        /* Enhanced pencil design */
+
         .pencil {
             position: absolute;
-            width: 140px;
-            height: 16px;
-            z-index: 10;
+            width: 120px;
+            height: 8px;
+            background: linear-gradient(90deg, #ffd700 0%, #ffed4e 30%, #8b4513 30%, #a0522d 70%, #ff69b4 70%, #ff1493 100%);
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            transform-origin: 100% 50%;
             opacity: 0;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
+            z-index: 10;
         }
-        
-        .pencil-body {
-            width: 110px;
-            height: 12px;
-            background: 
-                linear-gradient(135deg, #ffd700 0%, #ffed4e 25%, #ffd700 50%, #daa520 75%, #b8860b 100%);
-            border-radius: 6px;
-            position: relative;
-            box-shadow: 
-                inset 0 2px 4px rgba(255,255,255,0.7),
-                inset 0 -2px 4px rgba(0,0,0,0.2),
-                0 1px 2px rgba(0,0,0,0.1);
-        }
-        
-        /* Pencil brand text */
-        .pencil-body::before {
-            content: 'BATMAN';
-            position: absolute;
-            font-size: 6px;
-            font-weight: bold;
-            color: #8b4513;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            letter-spacing: 0.5px;
-            text-shadow: 0 0.5px 1px rgba(255,255,255,0.8);
-        }
-        
-        .pencil-tip {
-            width: 24px;
-            height: 12px;
-            background: 
-                linear-gradient(135deg, #d2691e 0%, #cd853f  50%, #8b4513 100%);
-            border-radius: 0 6px 6px 0;
-            position: absolute;
-            right: -24px;
-            top: 0;
-            box-shadow: 
-                inset 0 1px 2px rgba(255,255,255,0.4),
-                inset 0 -1px 2px rgba(0,0,0,0.3);
-        }
-        
-        .pencil-point {
-            width: 0;
-            height: 0;
-            border-left: 12px solid #2c2c2c;
-            border-top: 6px solid transparent;
-            border-bottom: 6px solid transparent;
-            position: absolute;
-            right: -36px;
-            top: 0;
-            filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.5));
-        }
-        
-        /* Pencil eraser */
-        .pencil::after {
-            content: '';
-            position: absolute;
-            left: -16px;
-            top: 1px;
-            width: 16px;
-            height: 10px;
-            background: 
-                radial-gradient(circle at center, #ff69b4 0%, #ff1493 70%, #dc143c 100%);
-            border-radius: 8px 2px 2px 8px;
-            box-shadow: 
-                inset 0 1px 2px rgba(255,255,255,0.6),
-                0 1px 2px rgba(0,0,0,0.2);
-        }
-        
-        /* Metal ferrule */
+
         .pencil::before {
             content: '';
             position: absolute;
-            left: -8px;
-            top: 2px;
-            width: 12px;
-            height: 8px;
-            background: 
-                linear-gradient(135deg, #c0c0c0 0%, #e6e6e6 50%, #a0a0a0 100%);
-            border-radius: 1px;
-            box-shadow: 
-                inset 0 1px 1px rgba(255,255,255,0.8),
-                inset 0 -1px 1px rgba(0,0,0,0.2);
+            right: -8px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
+            border-left: 8px solid #8b4513;
+            border-top: 4px solid transparent;
+            border-bottom: 4px solid transparent;
         }
-        
-        /* Title and branding */
-        .title {
-            position: absolute;
-            top: -60px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: #ffffff;
-            font-size: 24px;
-            font-weight: 300;
-            letter-spacing: 2px;
-            text-align: center;
-            opacity: 0.9;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-        }
-        
-        .subtitle {
-            position: absolute;
-            bottom: -40px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: rgba(255,255,255,0.7);
-            font-size: 12px;
-            letter-spacing: 1px;
-            text-align: center;
-        }
-        
-        /* Progress indicator */
-        .progress-container {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 200px;
-            height: 4px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 2px;
-            overflow: hidden;
-        }
-        
-        .progress-bar {
-            height: 100%;
-            width: 0%;
-            background: linear-gradient(90deg, #ffd700, #ff6b35, #f7931e);
-            border-radius: 2px;
-            transition: width 0.3s ease;
-            box-shadow: 0 0 10px rgba(255,215,0,0.5);
-        }
-        
-        /* Lighting effects */
-        .container::before {
+
+        .pencil::after {
             content: '';
             position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
-            background: linear-gradient(
-                45deg,
-                transparent 0%,
-                rgba(255,255,255,0.1) 50%,
-                transparent 100%
-            );
-            border-radius: 18px;
-            opacity: 0;
-            animation: shimmer 4s ease-in-out infinite;
-            pointer-events: none;
+            right: -10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 2px;
+            height: 2px;
+            background: #333;
+            border-radius: 50%;
         }
-        
-        @keyframes shimmer {
-            0%, 100% { opacity: 0; }
-            50% { opacity: 1; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        
-        /* Responsive design */
-        @media (max-width: 480px) {
-            .container {
-                width: 340px;
-                height: 580px;
-                margin: 20px;
-            }
-            
-            .title {
-                font-size: 20px;
-                top: -50px;
-            }
-        }
-        
-        @media (max-height: 700px) {
-            .container {
-                height: 500px;
-            }
+
+        .container {
+            animation: fadeIn 1s ease-out;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="title">BATMAN RISES</div>
-        <div class="paper-texture"></div>
-        <div class="pencil" id="pencil">
-            <div class="pencil-body"></div>
-            <div class="pencil-tip"></div>
-            <div class="pencil-point"></div>
+        <div class="paper">
+            <canvas id="drawingCanvas"></canvas>
+            <div class="pencil" id="pencil"></div>
         </div>
-        <canvas id="canvas" width="380" height="660"></canvas>
-        <div class="progress-container">
-            <div class="progress-bar" id="progressBar"></div>
-        </div>
-        <div class="subtitle">Animated Drawing Experience</div>
     </div>
 
     <script>
-const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d');
-const pencil = document.getElementById('pencil');
-
-let animationStep = 0;
-let particles = [];
-let sparkles = [];
-let shakeOffset = { x: 0, y: 0 };
-let batmanComplete = false;
-let flyingPhase = false;
-let batmanPosition = { x: 0, y: 0, rotation: 0 };
-let capeAnimation = { offset: 0, intensity: 1 };
-
-// Complete Batman drawing coordinates - full body with detailed features
-const batmanPaths = [
-    // Head outline with detailed curves
-    [{x: 180, y: 120}, {x: 185, y: 115}, {x: 195, y: 112}, {x: 205, y: 115}, {x: 215, y: 120}, {x: 225, y: 130}, {x: 230, y: 140}, {x: 228, y: 150}, {x: 225, y: 160}, {x: 220, y: 170}, {x: 210, y: 180}, {x: 195, y: 185}, {x: 180, y: 186}, {x: 165, y: 185}, {x: 150, y: 180}, {x: 140, y: 170}, {x: 135, y: 160}, {x: 132, y: 150}, {x: 130, y: 140}, {x: 135, y: 130}, {x: 145, y: 120}, {x: 155, y: 115}, {x: 165, y: 112}, {x: 175, y: 115}, {x: 180, y: 120}],
-    
-    // Left bat ear with sharp detail
-    [{x: 160, y: 110}, {x: 158, y: 105}, {x: 155, y: 95}, {x: 152, y: 85}, {x: 148, y: 70}, {x: 145, y: 60}, {x: 150, y: 65}, {x: 155, y: 72}, {x: 162, y: 80}, {x: 168, y: 90}, {x: 170, y: 100}, {x: 165, y: 108}],
-    
-    // Right bat ear with sharp detail
-    [{x: 200, y: 110}, {x: 202, y: 105}, {x: 205, y: 95}, {x: 208, y: 85}, {x: 212, y: 70}, {x: 215, y: 60}, {x: 210, y: 65}, {x: 205, y: 72}, {x: 198, y: 80}, {x: 192, y: 90}, {x: 190, y: 100}, {x: 195, y: 108}],
-    
-    // Left eye socket - dramatic
-    [{x: 155, y: 135}, {x: 165, y: 130}, {x: 175, y: 135}, {x: 178, y: 145}, {x: 175, y: 155}, {x: 165, y: 158}, {x: 155, y: 155}, {x: 152, y: 145}, {x: 155, y: 135}],
-    
-    // Right eye socket - dramatic
-    [{x: 185, y: 135}, {x: 195, y: 130}, {x: 205, y: 135}, {x: 208, y: 145}, {x: 205, y: 155}, {x: 195, y: 158}, {x: 185, y: 155}, {x: 182, y: 145}, {x: 185, y: 135}],
-    
-    // Left eye white
-    [{x: 160, y: 142}, {x: 168, y: 140}, {x: 172, y: 145}, {x: 168, y: 150}, {x: 160, y: 148}, {x: 158, y: 145}],
-    
-    // Right eye white
-    [{x: 190, y: 142}, {x: 198, y: 140}, {x: 202, y: 145}, {x: 198, y: 150}, {x: 190, y: 148}, {x: 188, y: 145}],
-    
-    // Nose bridge and definition
-    [{x: 178, y: 150}, {x: 180, y: 152}, {x: 182, y: 155}, {x: 180, y: 158}, {x: 178, y: 155}],
-    
-    // Mouth line - stern
-    [{x: 175, y: 165}, {x: 180, y: 167}, {x: 185, y: 165}],
-    
-    // Jawline - strong and defined
-    [{x: 145, y: 175}, {x: 155, y: 180}, {x: 170, y: 183}, {x: 180, y: 185}, {x: 190, y: 183}, {x: 205, y: 180}, {x: 215, y: 175}],
-    
-    // Neck
-    [{x: 170, y: 185}, {x: 172, y: 195}, {x: 175, y: 205}],
-    [{x: 190, y: 185}, {x: 188, y: 195}, {x: 185, y: 205}],
-    
-    // Cape collar - dramatic
-    [{x: 120, y: 200}, {x: 130, y: 195}, {x: 140, y: 190}, {x: 155, y: 188}, {x: 175, y: 185}, {x: 185, y: 185}, {x: 205, y: 188}, {x: 220, y: 190}, {x: 230, y: 195}, {x: 240, y: 200}],
-    
-    // Shoulder structure - broad and powerful
-    [{x: 140, y: 210}, {x: 150, y: 205}, {x: 160, y: 200}, {x: 170, y: 202}, {x: 180, y: 205}, {x: 190, y: 202}, {x: 200, y: 200}, {x: 210, y: 205}, {x: 220, y: 210}],
-    
-    // Chest muscles - detailed pectorals
-    [{x: 150, y: 220}, {x: 165, y: 215}, {x: 180, y: 220}, {x: 195, y: 215}, {x: 210, y: 220}],
-    [{x: 155, y: 230}, {x: 170, y: 225}, {x: 180, y: 230}, {x: 190, y: 225}, {x: 205, y: 230}],
-    
-    // Bat symbol - iconic and detailed
-    [{x: 180, y: 245}, {x: 170, y: 248}, {x: 160, y: 252}, {x: 155, y: 258}, {x: 160, y: 262}, {x: 170, y: 265}, {x: 180, y: 260}, {x: 190, y: 265}, {x: 200, y: 262}, {x: 205, y: 258}, {x: 200, y: 252}, {x: 190, y: 248}, {x: 180, y: 245}],
-    
-    // Bat symbol wings extension
-    [{x: 155, y: 258}, {x: 145, y: 255}, {x: 140, y: 260}, {x: 148, y: 265}, {x: 160, y: 262}],
-    [{x: 205, y: 258}, {x: 215, y: 255}, {x: 220, y: 260}, {x: 212, y: 265}, {x: 200, y: 262}],
-    
-    // Left arm - muscular definition
-    [{x: 140, y: 210}, {x: 135, y: 225}, {x: 128, y: 245}, {x: 120, y: 270}, {x: 115, y: 295}, {x: 110, y: 320}, {x: 108, y: 345}, {x: 110, y: 365}],
-    
-    // Left forearm
-    [{x: 110, y: 365}, {x: 105, y: 385}, {x: 100, y: 405}, {x: 98, y: 425}, {x: 100, y: 445}, {x: 105, y: 460}],
-    
-    // Left hand/glove
-    [{x: 105, y: 460}, {x: 108, y: 470}, {x: 112, y: 475}, {x: 118, y: 478}, {x: 115, y: 485}, {x: 110, y: 488}, {x: 105, y: 485}, {x: 100, y: 480}, {x: 98, y: 475}],
-    
-    // Left bicep definition
-    [{x: 125, y: 250}, {x: 130, y: 255}, {x: 128, y: 265}, {x: 122, y: 270}],
-    
-    // Right arm - muscular definition
-    [{x: 220, y: 210}, {x: 225, y: 225}, {x: 232, y: 245}, {x: 240, y: 270}, {x: 245, y: 295}, {x: 250, y: 320}, {x: 252, y: 345}, {x: 250, y: 365}],
-    
-    // Right forearm
-    [{x: 250, y: 365}, {x: 255, y: 385}, {x: 260, y: 405}, {x: 262, y: 425}, {x: 260, y: 445}, {x: 255, y: 460}],
-    
-    // Right hand/glove
-    [{x: 255, y: 460}, {x: 252, y: 470}, {x: 248, y: 475}, {x: 242, y: 478}, {x: 245, y: 485}, {x: 250, y: 488}, {x: 255, y: 485}, {x: 260, y: 480}, {x: 262, y: 475}],
-    
-    // Right bicep definition
-    [{x: 235, y: 250}, {x: 230, y: 255}, {x: 232, y: 265}, {x: 238, y: 270}],
-    
-    // Torso left side - detailed abs
-    [{x: 150, y: 280}, {x: 155, y: 310}, {x: 160, y: 340}, {x: 165, y: 370}, {x: 170, y: 400}, {x: 175, y: 430}],
-    
-    // Torso right side - detailed abs
-    [{x: 210, y: 280}, {x: 205, y: 310}, {x: 200, y: 340}, {x: 195, y: 370}, {x: 190, y: 400}, {x: 185, y: 430}],
-    
-    // Ab definition lines
-    [{x: 160, y: 300}, {x: 175, y: 295}, {x: 185, y: 295}, {x: 200, y: 300}],
-    [{x: 162, y: 320}, {x: 175, y: 315}, {x: 185, y: 315}, {x: 198, y: 320}],
-    [{x: 165, y: 340}, {x: 175, y: 335}, {x: 185, y: 335}, {x: 195, y: 340}],
-    
-    // Utility belt - detailed
-    [{x: 150, y: 360}, {x: 165, y: 355}, {x: 180, y: 358}, {x: 195, y: 355}, {x: 210, y: 360}],
-    [{x: 150, y: 360}, {x: 152, y: 370}, {x: 158, y: 372}, {x: 160, y: 365}],
-    [{x: 210, y: 360}, {x: 208, y: 370}, {x: 202, y: 372}, {x: 200, y: 365}],
-    
-    // Belt buckle
-    [{x: 175, y: 358}, {x: 185, y: 360}, {x: 185, y: 368}, {x: 175, y: 366}, {x: 175, y: 358}],
-    
-    // Left leg - thigh
-    [{x: 165, y: 430}, {x: 160, y: 460}, {x: 155, y: 490}, {x: 152, y: 520}, {x: 150, y: 550}],
-    
-    // Left leg - shin
-    [{x: 150, y: 550}, {x: 148, y: 580}, {x: 145, y: 610}, {x: 142, y: 640}, {x: 140, y: 670}],
-    
-    // Left boot
-    [{x: 140, y: 670}, {x: 138, y: 685}, {x: 135, y: 695}, {x: 145, y: 700}, {x: 160, y: 698}, {x: 165, y: 692}, {x: 162, y: 685}, {x: 155, y: 680}, {x: 148, y: 675}],
-    
-    // Right leg - thigh
-    [{x: 185, y: 430}, {x: 190, y: 460}, {x: 195, y: 490}, {x: 198, y: 520}, {x: 200, y: 550}],
-    
-    // Right leg - shin
-    [{x: 200, y: 550}, {x: 202, y: 580}, {x: 205, y: 610}, {x: 208, y: 640}, {x: 210, y: 670}],
-    
-    // Right boot
-    [{x: 210, y: 670}, {x: 212, y: 685}, {x: 215, y: 695}, {x: 205, y: 700}, {x: 190, y: 698}, {x: 185, y: 692}, {x: 188, y: 685}, {x: 195, y: 680}, {x: 202, y: 675}],
-    
-    // Thigh muscle definition
-    [{x: 160, y: 450}, {x: 165, y: 455}, {x: 162, y: 465}],
-    [{x: 190, y: 450}, {x: 185, y: 455}, {x: 188, y: 465}],
-    
-    // Cape - left side with dramatic flow
-    [{x: 120, y: 200}, {x: 110, y: 220}, {x: 100, y: 250}, {x: 85, y: 290}, {x: 75, y: 330}, {x: 70, y: 370}, {x: 68, y: 410}, {x: 70, y: 450}, {x: 75, y: 490}, {x: 85, y: 530}, {x: 100, y: 570}, {x: 120, y: 600}, {x: 140, y: 620}],
-    
-    // Cape - right side with dramatic flow
-    [{x: 240, y: 200}, {x: 250, y: 220}, {x: 260, y: 250}, {x: 275, y: 290}, {x: 285, y: 330}, {x: 290, y: 370}, {x: 292, y: 410}, {x: 290, y: 450}, {x: 285, y: 490}, {x: 275, y: 530}, {x: 260, y: 570}, {x: 240, y: 600}, {x: 220, y: 620}],
-    
-    // Cape bottom - flowing
-    [{x: 140, y: 620}, {x: 150, y: 635}, {x: 165, y: 645}, {x: 180, y: 640}, {x: 195, y: 645}, {x: 210, y: 635}, {x: 220, y: 620}],
-    
-    // Cape interior folds
-    [{x: 110, y: 280}, {x: 115, y: 320}, {x: 120, y: 360}, {x: 125, y: 400}, {x: 130, y: 440}, {x: 135, y: 480}],
-    [{x: 250, y: 280}, {x: 245, y: 320}, {x: 240, y: 360}, {x: 235, y: 400}, {x: 230, y: 440}, {x: 225, y: 480}],
-    
-    // Additional cape depth
-    [{x: 95, y: 350}, {x: 100, y: 380}, {x: 105, y: 420}, {x: 110, y: 460}, {x: 118, y: 500}],
-    [{x: 265, y: 350}, {x: 260, y: 380}, {x: 255, y: 420}, {x: 250, y: 460}, {x: 242, y: 500}],
-    
-    // Gauntlet details
-    [{x: 105, y: 435}, {x: 110, y: 440}, {x: 108, y: 445}, {x: 103, y: 442}],
-    [{x: 255, y: 435}, {x: 250, y: 440}, {x: 252, y: 445}, {x: 257, y: 442}],
-    
-    // Boot details and treads
-    [{x: 145, y: 690}, {x: 155, y: 688}, {x: 158, y: 692}, {x: 150, y: 695}],
-    [{x: 205, y: 690}, {x: 195, y: 688}, {x: 192, y: 692}, {x: 200, y: 695}],
-    
-    // Additional facial shadows for depth
-    [{x: 145, y: 140}, {x: 150, y: 145}, {x: 148, y: 155}],
-    [{x: 215, y: 140}, {x: 210, y: 145}, {x: 212, y: 155}],
-    
-    // Final detail touches
-    [{x: 180, y: 200}, {x: 175, y: 205}, {x: 185, y: 205}], // Adam's apple
-    [{x: 170, y: 240}, {x: 175, y: 235}, {x: 180, y: 240}, {x: 185, y: 235}, {x: 190, y: 240}] // Chest definition
-];
-
-// Particle system for drawing effects
-class Particle {
-    constructor(x, y, type = 'dust') {
-        this.x = x;
-        this.y = y;
-        this.vx = (Math.random() - 0.5) * 3;
-        this.vy = (Math.random() - 0.5) * 3;
-        this.life = 1;
-        this.decay = 0.015 + Math.random() * 0.02;
-        this.size = Math.random() * 4 + 1;
-        this.type = type;
-        this.color = type === 'ink' ? '#000' : type === 'color' ? '#333' : '#666';
-    }
-    
-    update() {
-        this.x += this.vx;
-        this.y += this.vy;
-        this.life -= this.decay;
-        this.vy += 0.08; // gravity
-        this.vx *= 0.98; // friction
-        return this.life > 0;
-    }
-    
-    draw() {
-        ctx.save();
-        ctx.globalAlpha = this.life * 0.7;
-        ctx.fillStyle = this.color;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size * this.life, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.restore();
-    }
-}
-
-// Enhanced sparkle effect
-class Sparkle {
-    constructor(x, y, color = '#ffd700') {
-        this.x = x;
-        this.y = y;
-        this.size = Math.random() * 5 + 2;
-        this.life = 1;
-        this.decay = 0.012;
-        this.rotation = Math.random() * Math.PI * 2;
-        this.rotationSpeed = (Math.random() - 0.5) * 0.3;
-        this.color = color;
-    }
-    
-    update() {
-        this.life -= this.decay;
-        this.rotation += this.rotationSpeed;
-        this.size *= 0.992;
-        return this.life > 0;
-    }
-    
-    draw() {
-        ctx.save();
-        ctx.translate(this.x, this.y);
-        ctx.rotate(this.rotation);
-        ctx.globalAlpha = this.life;
-        ctx.strokeStyle = this.color;
-        ctx.lineWidth = 2;
-        ctx.lineCap = 'round';
+        const canvas = document.getElementById('drawingCanvas');
+        const ctx = canvas.getContext('2d');
+        const pencil = document.getElementById('pencil');
         
-        const size = this.size * this.life;
-        ctx.beginPath();
-        ctx.moveTo(-size, 0);
-        ctx.lineTo(size, 0);
-        ctx.moveTo(0, -size);
-        ctx.lineTo(0, size);
-        ctx.moveTo(-size * 0.7, -size * 0.7);
-        ctx.lineTo(size * 0.7, size * 0.7);
-        ctx.moveTo(-size * 0.7, size * 0.7);
-        ctx.lineTo(size * 0.7, -size * 0.7);
-        ctx.stroke();
-        ctx.restore();
-    }
-}
-
-function drawPath(path, progress, style = 'sketch') {
-    if (path.length < 2) return;
-    
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
-    
-    // Enhanced styling with shadows
-    ctx.shadowBlur = 0;
-    ctx.shadowColor = 'transparent';
-    
-    if (style === 'sketch') {
-        ctx.strokeStyle = '#999';
-        ctx.lineWidth = 1.5 + Math.sin(Date.now() * 0.01) * 0.3;
-        ctx.globalAlpha = 0.7;
-        ctx.shadowBlur = 1;
-        ctx.shadowColor = '#666';
-    } else if (style === 'ink') {
-        ctx.strokeStyle = '#222';
-        ctx.lineWidth = 3.2;
-        ctx.globalAlpha = 0.95;
-        ctx.shadowBlur = 2;
-        ctx.shadowColor = '#000';
-    } else if (style === 'color') {
-        ctx.strokeStyle = '#000';
-        ctx.lineWidth = 3.8;
-        ctx.globalAlpha = 1;
-        ctx.shadowBlur = 3;
-        ctx.shadowColor = '#333';
-    }
-    
-    const totalPoints = path.length;
-    const pointsToShow = Math.floor(totalPoints * progress);
-    
-    if (pointsToShow < 2) return;
-    
-    ctx.beginPath();
-    ctx.moveTo(path[0].x + shakeOffset.x, path[0].y + shakeOffset.y);
-    
-    // Add slight hand tremor effect
-    for (let i = 1; i < pointsToShow; i++) {
-        const tremor = style === 'sketch' ? (Math.random() - 0.5) * 1.2 : 0;
-        ctx.lineTo(
-            path[i].x + shakeOffset.x + tremor, 
-            path[i].y + shakeOffset.y + tremor
-        );
-    }
-    
-    // Smooth transition to next point
-    if (pointsToShow < totalPoints) {
-        const lastPoint = path[pointsToShow - 1];
-        const nextPoint = path[pointsToShow];
-        const partialProgress = (totalPoints * progress) - pointsToShow;
+        // Set canvas size
+        canvas.width = 360;
+        canvas.height = 640;
         
-        const x = lastPoint.x + (nextPoint.x - lastPoint.x) * partialProgress;
-        const y = lastPoint.y + (nextPoint.y - lastPoint.y) * partialProgress;
+        let currentPhase = 0;
+        let animationProgress = 0;
+        let isAnimating = false;
         
-        ctx.lineTo(x + shakeOffset.x, y + shakeOffset.y);
-        
-        // Add particles while drawing
-        if (Math.random() < 0.4) {
-            particles.push(new Particle(x, y, style));
-        }
-    }
-    
-    ctx.stroke();
-    ctx.shadowBlur = 0;
-}
-
-function updatePencilPosition(path, progress) {
-    if (!path || path.length < 2) return;
-    
-    const totalPoints = path.length;
-    const currentIndex = Math.min(Math.floor(totalPoints * progress), totalPoints - 1);
-    const nextIndex = Math.min(currentIndex + 1, totalPoints - 1);
-    
-    const current = path[currentIndex];
-    const next = path[nextIndex];
-    
-    if (current && next) {
-        const partialProgress = (totalPoints * progress) - currentIndex;
-        const x = current.x + (next.x - current.x) * partialProgress;
-        const y = current.y + (next.y - current.y) * partialProgress;
-        
-        // Enhanced pencil movement with smoother positioning
-        pencil.style.left = (x - 60) + 'px';
-        pencil.style.top = (y - 20) + 'px';
-        pencil.style.opacity = '1';
-        
-        // Calculate angle for realistic pencil rotation
-        const angle = Math.atan2(next.y - current.y, next.x - current.x);
-        const degrees = angle * (180 / Math.PI);
-        pencil.style.transform = `rotate(${degrees + 45}deg) scale(1.2)`;
-        
-        // Add subtle hand shake effect
-        shakeOffset.x = Math.sin(Date.now() * 0.025) * 0.8;
-        shakeOffset.y = Math.cos(Date.now() * 0.035) * 0.5;
-        
-        // Add sparkles occasionally
-        if (Math.random() < 0.15) {
-            sparkles.push(new Sparkle(x, y));
-        }
-    }
-}
-
-function updateAndDrawParticles() {
-    particles = particles.filter(particle => {
-        particle.update();
-        particle.draw();
-        return particle.life > 0;
-    });
-    
-    sparkles = sparkles.filter(sparkle => {
-        sparkle.update();
-        sparkle.draw();
-        return sparkle.life > 0;
-    });
-}
-
-function addGradientBackground(phase) {
-    const gradient = ctx.createRadialGradient(180, 350, 0, 180, 350, 500);
-    
-    if (phase === 0) { // Sketch phase
-        gradient.addColorStop(0, 'rgba(255, 255, 255, 0.08)');
-        gradient.addColorStop(1, 'rgba(200, 200, 200, 0.03)');
-    } else if (phase === 1) { // Ink phase
-        gradient.addColorStop(0, 'rgba(50, 50, 50, 0.15)');
-        gradient.addColorStop(1, 'rgba(0, 0, 0, 0.08)');
-    } else { // Color phase
-        gradient.addColorStop(0, 'rgba(25, 25, 46, 0.2)');
-        gradient.addColorStop(1, 'rgba(0, 0, 0, 0.12)');
-    }
-    
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-}
-
-function drawCompleteBatman() {
-    ctx.save();
-    
-    // Apply flying animation transforms
-    if (flyingPhase) {
-        ctx.translate(batmanPosition.x, batmanPosition.y);
-        ctx.rotate(batmanPosition.rotation);
-        ctx.translate(-180, -350); // Center around Batman's center
-    }
-    
-    // Cape with realistic gradient and animation
-    const capeGradient = ctx.createLinearGradient(70, 200, 290, 620);
-    capeGradient.addColorStop(0, '#1a1a2e');
-    capeGradient.addColorStop(0.3, '#16213e');
-    capeGradient.addColorStop(0.7, '#0f1419');
-    capeGradient.addColorStop(1, '#050508');
-    
-    ctx.fillStyle = capeGradient;
-    ctx.globalAlpha = 0.9;
-    ctx.beginPath();
-    
-    // Animated cape with flowing motion
-    const waveOffset = flyingPhase ? Math.sin(Date.now() * 0.008) * 15 : 0;
-    const waveOffset2 = flyingPhase ? Math.cos(Date.now() * 0.006) * 12 : 0;
-    
-    ctx.moveTo(120, 200);
-    ctx.quadraticCurveTo(100 + waveOffset, 250, 85 + waveOffset, 330);
-    ctx.quadraticCurveTo(70 + waveOffset2, 410, 75 + waveOffset, 490);
-    ctx.quadraticCurveTo(100 + waveOffset2, 570, 140 + waveOffset, 620);
-    ctx.quadraticCurveTo(160, 640, 180, 640);
-    ctx.quadraticCurveTo(200, 640, 220 - waveOffset, 620);
-    ctx.quadraticCurveTo(260 - waveOffset2, 570, 285 - waveOffset, 490);
-    ctx.quadraticCurveTo(290 - waveOffset2, 410, 275 - waveOffset, 330);
-    ctx.quadraticCurveTo(260 - waveOffset, 250, 240, 200);
-    ctx.lineTo(220, 190);
-    ctx.lineTo(180, 185);
-    ctx.lineTo(140, 190);
-    ctx.closePath();
-    ctx.fill();
-    
-    // Cape interior shadow
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
-    ctx.beginPath();
-    ctx.moveTo(130, 220);
-    ctx.quadraticCurveTo(115 + waveOffset * 0.5, 300, 120 + waveOffset * 0.5, 400);
-    ctx.quadraticCurveTo(125 + waveOffset * 0.3, 500, 150 + waveOffset * 0.3, 600);
-    ctx.lineTo(180, 620);
-    ctx.lineTo(210 - waveOffset * 0.3, 600);
-    ctx.quadraticCurveTo(235 - waveOffset * 0.3, 500, 240 - waveOffset * 0.5, 400);
-    ctx.quadraticCurveTo(245 - waveOffset * 0.5, 300, 230, 220);
-    ctx.closePath();
-    ctx.fill();
-    
-    ctx.globalAlpha = 1;
-    
-    // Batman's body - main torso with gradient
-    const bodyGradient = ctx.createLinearGradient(150, 200, 210, 450);
-    bodyGradient.addColorStop(0, '#2c2c2c');
-    bodyGradient.addColorStop(0.5, '#1a1a1a');
-    bodyGradient.addColorStop(1, '#0a0a0a');
-    
-    ctx.fillStyle = bodyGradient;
-    ctx.beginPath();
-    ctx.moveTo(150, 210);
-    ctx.quadraticCurveTo(140, 250, 150, 280);
-    ctx.lineTo(160, 340);
-    ctx.lineTo(165, 370);
-    ctx.lineTo(170, 400);
-    ctx.lineTo(175, 430);
-    ctx.lineTo(185, 430);
-    ctx.lineTo(190, 400);
-    ctx.lineTo(195, 370);
-    ctx.lineTo(200, 340);
-    ctx.lineTo(210, 280);
-    ctx.quadraticCurveTo(220, 250, 210, 210);
-    ctx.lineTo(180, 205);
-    ctx.lineTo(150, 210);
-    ctx.closePath();
-    ctx.fill();
-    
-    // Batman's head with gradient
-    const headGradient = ctx.createRadialGradient(180, 150, 20, 180, 150, 50);
-    headGradient.addColorStop(0, '#3a3a3a');
-    headGradient.addColorStop(0.7, '#2a2a2a');
-    headGradient.addColorStop(1, '#1a1a1a');
-    
-    ctx.fillStyle = headGradient;
-    ctx.beginPath();
-    ctx.arc(180, 150, 45, 0, Math.PI * 2);
-    ctx.fill();
-    
-    // Bat ears
-    ctx.fillStyle = '#1a1a1a';
-    ctx.beginPath();
-    ctx.moveTo(160, 120);
-    ctx.lineTo(148, 60);
-    ctx.lineTo(170, 110);
-    ctx.closePath();
-    ctx.fill();
-    
-    ctx.beginPath();
-    ctx.moveTo(200, 120);
-    ctx.lineTo(212, 60);
-    ctx.lineTo(190, 110);
-    ctx.closePath();
-    ctx.fill();
-    
-    // Cowl/mask area
-    ctx.fillStyle = '#0a0a0a';
-    ctx.beginPath();
-    ctx.arc(180, 145, 35, 0, Math.PI * 2);
-    ctx.fill();
-    
-    // Eye holes - dramatic white
-    ctx.fillStyle = '#ffffff';
-    ctx.beginPath();
-    ctx.ellipse(165, 140, 8, 12, 0, 0, Math.PI * 2);
-    ctx.fill();
-    
-    ctx.beginPath();
-    ctx.ellipse(195, 140, 8, 12, 0, 0, Math.PI * 2);
-    ctx.fill();
-    
-    // Eye pupils
-    ctx.fillStyle = '#000';
-    ctx.beginPath();
-    ctx.arc(165, 142, 3, 0, Math.PI * 2);
-    ctx.fill();
-    
-    ctx.beginPath();
-    ctx.arc(195, 142, 3, 0, Math.PI * 2);
-    ctx.fill();
-    
-    // Bat symbol on chest
-    ctx.fillStyle = '#ffd700';
-    ctx.beginPath();
-    ctx.moveTo(180, 245);
-    ctx.lineTo(165, 250);
-    ctx.lineTo(155, 258);
-    ctx.lineTo(160, 265);
-    ctx.lineTo(170, 268);
-    ctx.lineTo(180, 263);
-    ctx.lineTo(190, 268);
-    ctx.lineTo(200, 265);
-    ctx.lineTo(205, 258);
-    ctx.lineTo(195, 250);
-    ctx.closePath();
-    ctx.fill();
-    
-    // Bat symbol wings
-    ctx.beginPath();
-    ctx.moveTo(155, 258);
-    ctx.lineTo(140, 255);
-    ctx.lineTo(148, 265);
-    ctx.lineTo(160, 265);
-    ctx.closePath();
-    ctx.fill();
-    
-    ctx.beginPath();
-    ctx.moveTo(205, 258);
-    ctx.lineTo(220, 255);
-    ctx.lineTo(212, 265);
-    ctx.lineTo(200, 265);
-    ctx.closePath();
-    ctx.fill();
-    
-    // Arms
-    ctx.fillStyle = bodyGradient;
-    ctx.beginPath();
-    ctx.moveTo(140, 210);
-    ctx.quadraticCurveTo(125, 250, 115, 300);
-    ctx.lineTo(110, 365);
-    ctx.lineTo(105, 460);
-    ctx.lineTo(115, 465);
-    ctx.lineTo(120, 365);
-    ctx.lineTo(125, 300);
-    ctx.quadraticCurveTo(135, 250, 150, 210);
-    ctx.closePath();
-    ctx.fill();
-    
-    ctx.beginPath();
-    ctx.moveTo(220, 210);
-    ctx.quadraticCurveTo(235, 250, 245, 300);
-    ctx.lineTo(250, 365);
-    ctx.lineTo(255, 460);
-    ctx.lineTo(245, 465);
-    ctx.lineTo(240, 365);
-    ctx.lineTo(235, 300);
-    ctx.quadraticCurveTo(225, 250, 210, 210);
-    ctx.closePath();
-    ctx.fill();
-    
-    // Gloves
-    ctx.fillStyle = '#1a1a1a';
-    ctx.beginPath();
-    ctx.arc(110, 470, 12, 0, Math.PI * 2);
-    ctx.fill();
-    
-    ctx.beginPath();
-    ctx.arc(250, 470, 12, 0, Math.PI * 2);
-    ctx.fill();
-    
-    // Utility belt
-    ctx.fillStyle = '#8b6914';
-    ctx.fillRect(150, 355, 60, 15);
-    
-    // Belt buckle
-    ctx.fillStyle = '#ffd700';
-    ctx.fillRect(175, 358, 10, 9);
-    
-    // Legs
-    ctx.fillStyle = bodyGradient;
-    ctx.beginPath();
-    ctx.moveTo(165, 430);
-    ctx.lineTo(160, 490);
-    ctx.lineTo(155, 550);
-    ctx.lineTo(150, 670);
-    ctx.lineTo(160, 675);
-    ctx.lineTo(165, 550);
-    ctx.lineTo(170, 490);
-    ctx.lineTo(175, 430);
-    ctx.closePath();
-    ctx.fill();
-    
-    ctx.beginPath();
-    ctx.moveTo(185, 430);
-    ctx.lineTo(190, 490);
-    ctx.lineTo(195, 550);
-    ctx.lineTo(200, 670);
-    ctx.lineTo(190, 675);
-    ctx.lineTo(185, 550);
-    ctx.lineTo(180, 490);
-    ctx.lineTo(175, 430);
-    ctx.closePath();
-    ctx.fill();
-    
-    // Boots
-    ctx.fillStyle = '#0a0a0a';
-    ctx.beginPath();
-    ctx.ellipse(155, 680, 15, 8, 0, 0, Math.PI * 2);
-    ctx.fill();
-    
-    ctx.beginPath();
-    ctx.ellipse(195, 680, 15, 8, 0, 0, Math.PI * 2);
-    ctx.fill();
-    
-    ctx.restore();
-}
-
-function animateBatmanFlying() {
-    if (!flyingPhase) return;
-    
-    const time = Date.now() * 0.002;
-    
-    // Floating motion
-    batmanPosition.x = Math.sin(time * 0.5) * 30;
-    batmanPosition.y = Math.cos(time * 0.3) * 20 - 50;
-    batmanPosition.rotation = Math.sin(time * 0.4) * 0.1;
-    
-    // Cape animation intensity
-    capeAnimation.offset = time;
-    capeAnimation.intensity = 1 + Math.sin(time * 0.6) * 0.3;
-}
-
-function animate() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-    // Background effects
-    const currentPhase = Math.floor(animationStep / batmanPaths.length);
-    addGradientBackground(currentPhase);
-    
-    if (!batmanComplete) {
-        // Drawing phase
-        const pathIndex = Math.floor(animationStep);
-        const pathProgress = animationStep - pathIndex;
-        
-        if (pathIndex < batmanPaths.length) {
-            const currentPath = batmanPaths[pathIndex];
+        // Batman outline points (simplified for smooth animation)
+        const batmanPath = [
+            // Head outline
+            {x: 180, y: 120}, {x: 165, y: 115}, {x: 155, y: 125}, {x: 150, y: 140},
+            {x: 148, y: 155}, {x: 150, y: 170}, {x: 155, y: 180}, {x: 165, y: 185},
+            {x: 180, y: 188}, {x: 195, y: 185}, {x: 205, y: 180}, {x: 210, y: 170},
+            {x: 212, y: 155}, {x: 210, y: 140}, {x: 205, y: 125}, {x: 195, y: 115},
             
-            // Draw previous paths
-            for (let i = 0; i < pathIndex; i++) {
-                let style = 'sketch';
-                if (i > batmanPaths.length * 0.33) style = 'ink';
-                if (i > batmanPaths.length * 0.66) style = 'color';
-                drawPath(batmanPaths[i], 1, style);
+            // Ears
+            {x: 165, y: 115}, {x: 160, y: 90}, {x: 170, y: 100},
+            {x: 195, y: 115}, {x: 200, y: 90}, {x: 190, y: 100},
+            
+            // Cape and shoulders
+            {x: 150, y: 200}, {x: 120, y: 220}, {x: 100, y: 250}, {x: 85, y: 290},
+            {x: 80, y: 340}, {x: 85, y: 390}, {x: 95, y: 430}, {x: 110, y: 460},
+            
+            // Torso
+            {x: 140, y: 220}, {x: 135, y: 240}, {x: 140, y: 280}, {x: 150, y: 320},
+            {x: 165, y: 350}, {x: 180, y: 380}, {x: 195, y: 350}, {x: 210, y: 320},
+            {x: 220, y: 280}, {x: 225, y: 240}, {x: 220, y: 220},
+            
+            // Right cape
+            {x: 210, y: 200}, {x: 240, y: 220}, {x: 260, y: 250}, {x: 275, y: 290},
+            {x: 280, y: 340}, {x: 275, y: 390}, {x: 265, y: 430}, {x: 250, y: 460},
+            
+            // Arms
+            {x: 140, y: 240}, {x: 110, y: 260}, {x: 100, y: 280}, {x: 105, y: 300},
+            {x: 220, y: 240}, {x: 250, y: 260}, {x: 260, y: 280}, {x: 255, y: 300},
+            
+            // Bat symbol points
+            {x: 180, y: 260}, {x: 170, y: 270}, {x: 160, y: 275}, {x: 155, y: 285},
+            {x: 165, y: 290}, {x: 180, y: 285}, {x: 195, y: 290}, {x: 205, y: 285},
+            {x: 200, y: 275}, {x: 190, y: 270}
+        ];
+        
+        let drawnPoints = [];
+        let currentPointIndex = 0;
+        
+        function drawPencilStroke(progress) {
+            ctx.strokeStyle = '#666';
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            
+            const totalPoints = Math.floor(progress * batmanPath.length);
+            
+            if (totalPoints > drawnPoints.length) {
+                for (let i = drawnPoints.length; i < totalPoints && i < batmanPath.length; i++) {
+                    drawnPoints.push(batmanPath[i]);
+                }
             }
             
-            // Draw current path
-            let currentStyle = 'sketch';
-            if (pathIndex > batmanPaths.length * 0.33) currentStyle = 'ink';
-            if (pathIndex > batmanPaths.length * 0.66) currentStyle = 'color';
+            if (drawnPoints.length > 1) {
+                ctx.beginPath();
+                ctx.moveTo(drawnPoints[0].x, drawnPoints[0].y);
+                for (let i = 1; i < drawnPoints.length; i++) {
+                    ctx.lineTo(drawnPoints[i].x, drawnPoints[i].y);
+                }
+                ctx.stroke();
+            }
             
-            drawPath(currentPath, pathProgress, currentStyle);
-            updatePencilPosition(currentPath, pathProgress);
-            
-            animationStep += 0.008; // Drawing speed
-            
-            if (animationStep >= batmanPaths.length) {
-                batmanComplete = true;
-                flyingPhase = true;
-                pencil.style.opacity = '0';
+            // Update pencil position
+            if (drawnPoints.length > 0) {
+                const lastPoint = drawnPoints[drawnPoints.length - 1];
+                pencil.style.left = (lastPoint.x - 60) + 'px';
+                pencil.style.top = (lastPoint.y - 20) + 'px';
+                pencil.style.opacity = '1';
                 
-                // Add completion sparkles
-                for (let i = 0; i < 20; i++) {
-                    setTimeout(() => {
-                        sparkles.push(new Sparkle(
-                            Math.random() * canvas.width,
-                            Math.random() * canvas.height,
-                            '#ffd700'
-                        ));
-                    }, i * 100);
+                // Calculate angle for pencil rotation
+                if (drawnPoints.length > 1) {
+                    const prevPoint = drawnPoints[drawnPoints.length - 2];
+                    const angle = Math.atan2(lastPoint.y - prevPoint.y, lastPoint.x - prevPoint.x);
+                    pencil.style.transform = `rotate(${angle}rad)`;
                 }
             }
         }
-    } else {
-        // Flying Batman phase
-        animateBatmanFlying();
-        drawCompleteBatman();
-    }
-    
-    // Update and draw particles/sparkles
-    updateAndDrawParticles();
-    
-    requestAnimationFrame(animate);
-}
-
-// Initialize canvas
-function init() {
-    canvas.width = 360;
-    canvas.height = 720;
-    
-    // Start animation
-    animate();
-}
-
-// Start when DOM is loaded
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-} else {
-    init();
-}
+        
+        function drawInkedVersion() {
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 3;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            
+            // Draw clean outline
+            ctx.beginPath();
+            ctx.moveTo(batmanPath[0].x, batmanPath[0].y);
+            for (let i = 1; i < batmanPath.length; i++) {
+                ctx.lineTo(batmanPath[i].x, batmanPath[i].y);
+            }
+            ctx.stroke();
+            
+            // Add facial features
+            ctx.fillStyle = '#000';
+            // Eyes
+            ctx.beginPath();
+            ctx.ellipse(170, 150, 4, 6, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.beginPath();
+            ctx.ellipse(190, 150, 4, 6, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Mouth
+            ctx.beginPath();
+            ctx.arc(180, 165, 8, 0.2, Math.PI - 0.2);
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+        
+        function drawColoredVersion() {
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw cape (dark blue/black)
+            ctx.fillStyle = '#1a1a2e';
+            ctx.beginPath();
+            ctx.moveTo(120, 220);
+            ctx.lineTo(100, 250);
+            ctx.lineTo(85, 290);
+            ctx.lineTo(80, 340);
+            ctx.lineTo(85, 390);
+            ctx.lineTo(95, 430);
+            ctx.lineTo(110, 460);
+            ctx.lineTo(250, 460);
+            ctx.lineTo(265, 430);
+            ctx.lineTo(275, 390);
+            ctx.lineTo(280, 340);
+            ctx.lineTo(275, 290);
+            ctx.lineTo(260, 250);
+            ctx.lineTo(240, 220);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Draw body suit (dark gray)
+            ctx.fillStyle = '#2d2d2d';
+            ctx.beginPath();
+            ctx.moveTo(140, 220);
+            ctx.lineTo(135, 240);
+            ctx.lineTo(140, 280);
+            ctx.lineTo(150, 320);
+            ctx.lineTo(165, 350);
+            ctx.lineTo(180, 380);
+            ctx.lineTo(195, 350);
+            ctx.lineTo(210, 320);
+            ctx.lineTo(220, 280);
+            ctx.lineTo(225, 240);
+            ctx.lineTo(220, 220);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Draw cowl (black)
+            ctx.fillStyle = '#000';
+            ctx.beginPath();
+            ctx.moveTo(180, 120);
+            ctx.lineTo(165, 115);
+            ctx.lineTo(155, 125);
+            ctx.lineTo(150, 140);
+            ctx.lineTo(148, 155);
+            ctx.lineTo(150, 170);
+            ctx.lineTo(155, 180);
+            ctx.lineTo(165, 185);
+            ctx.lineTo(180, 188);
+            ctx.lineTo(195, 185);
+            ctx.lineTo(205, 180);
+            ctx.lineTo(210, 170);
+            ctx.lineTo(212, 155);
+            ctx.lineTo(210, 140);
+            ctx.lineTo(205, 125);
+            ctx.lineTo(195, 115);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Draw ears
+            ctx.beginPath();
+            ctx.moveTo(165, 115);
+            ctx.lineTo(160, 90);
+            ctx.lineTo(170, 100);
+            ctx.closePath();
+            ctx.fill();
+            
+            ctx.beginPath();
+            ctx.moveTo(195, 115);
+            ctx.lineTo(200, 90);
+            ctx.lineTo(190, 100);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Draw bat symbol (yellow)
+            ctx.fillStyle = '#ffd700';
+            ctx.beginPath();
+            ctx.moveTo(180, 260);
+            ctx.lineTo(170, 270);
+            ctx.lineTo(160, 275);
+            ctx.lineTo(155, 285);
+            ctx.lineTo(165, 290);
+            ctx.lineTo(180, 285);
+            ctx.lineTo(195, 290);
+            ctx.lineTo(205, 285);
+            ctx.lineTo(200, 275);
+            ctx.lineTo(190, 270);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Add highlights and shadows
+            ctx.fillStyle = 'rgba(255,255,255,0.2)';
+            ctx.beginPath();
+            ctx.ellipse(175, 145, 8, 12, -0.2, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Eyes (white)
+            ctx.fillStyle = '#fff';
+            ctx.beginPath();
+            ctx.ellipse(170, 150, 3, 5, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.beginPath();
+            ctx.ellipse(190, 150, 3, 5, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Add final outline
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            
+            // Outline the entire figure
+            ctx.beginPath();
+            ctx.moveTo(batmanPath[0].x, batmanPath[0].y);
+            for (let i = 1; i < batmanPath.length; i++) {
+                ctx.lineTo(batmanPath[i].x, batmanPath[i].y);
+            }
+            ctx.stroke();
+        }
+        
+        function animate() {
+            const startTime = Date.now();
+            
+            function frame() {
+                const elapsed = Date.now() - startTime;
+                const totalDuration = 25000; // 25 seconds
+                const progress = Math.min(elapsed / totalDuration, 1);
+                
+                // Phase 1: Pencil sketch (0-40%)
+                if (progress < 0.4) {
+                    const phaseProgress = progress / 0.4;
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    drawPencilStroke(phaseProgress);
+                }
+                // Phase 2: Inking (40-70%)
+                else if (progress < 0.7) {
+                    pencil.style.opacity = '0';
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    drawInkedVersion();
+                }
+                // Phase 3: Coloring (70-100%)
+                else {
+                    drawColoredVersion();
+                }
+                
+                if (progress < 1) {
+                    requestAnimationFrame(frame);
+                } else {
+                    // Restart animation after 2 seconds
+                    setTimeout(() => {
+                        drawnPoints = [];
+                        currentPointIndex = 0;
+                        animate();
+                    }, 2000);
+                }
+            }
+            
+            requestAnimationFrame(frame);
+        }
+        
+        // Start animation when page loads
+        window.addEventListener('load', () => {
+            setTimeout(animate, 1000);
+        });
     </script>
 </body>
 </html>
