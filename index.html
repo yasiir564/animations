@@ -322,296 +322,454 @@
     </div>
 
     <script>
-        const canvas = document.getElementById('drawingCanvas');
-        const ctx = canvas.getContext('2d');
-        const pencil = document.getElementById('pencil');
+       const canvas = document.getElementById('drawingCanvas');
+const ctx = canvas.getContext('2d');
+const pencil = document.getElementById('pencil');
+
+// Set 4K canvas size for crisp rendering
+canvas.width = 1080;
+canvas.height = 1920;
+canvas.style.width = '540px';
+canvas.style.height = '960px';
+
+// High DPI scaling for smooth rendering
+const dpr = window.devicePixelRatio || 1;
+canvas.width *= dpr;
+canvas.height *= dpr;
+ctx.scale(dpr, dpr);
+
+let currentPhase = 0;
+let animationProgress = 0;
+let isAnimating = false;
+
+// Accurate Batman outline points with proper proportions
+const batmanPath = [
+    // Head outline (more accurate proportions)
+    {x: 270, y: 180}, {x: 248, y: 172}, {x: 233, y: 188}, {x: 225, y: 210},
+    {x: 222, y: 233}, {x: 225, y: 255}, {x: 233, y: 270}, {x: 248, y: 278},
+    {x: 270, y: 282}, {x: 292, y: 278}, {x: 307, y: 270}, {x: 315, y: 255},
+    {x: 318, y: 233}, {x: 315, y: 210}, {x: 307, y: 188}, {x: 292, y: 172},
+    
+    // Iconic Batman ears (sharp and angular)
+    {x: 248, y: 172}, {x: 240, y: 135}, {x: 255, y: 150},
+    {x: 292, y: 172}, {x: 300, y: 135}, {x: 285, y: 150},
+    
+    // Jaw line definition
+    {x: 233, y: 270}, {x: 238, y: 285}, {x: 252, y: 295}, {x: 270, y: 298},
+    {x: 288, y: 295}, {x: 302, y: 285}, {x: 307, y: 270},
+    
+    // Cape flowing outline (dramatic curves)
+    {x: 225, y: 300}, {x: 180, y: 330}, {x: 150, y: 375}, {x: 128, y: 435},
+    {x: 120, y: 510}, {x: 128, y: 585}, {x: 143, y: 645}, {x: 165, y: 690},
+    {x: 195, y: 720}, {x: 230, y: 735}, {x: 270, y: 740}, {x: 310, y: 735},
+    {x: 345, y: 720}, {x: 375, y: 690}, {x: 397, y: 645}, {x: 412, y: 585},
+    {x: 420, y: 510}, {x: 412, y: 435}, {x: 390, y: 375}, {x: 360, y: 330},
+    {x: 315, y: 300},
+    
+    // Torso and chest (muscular definition)
+    {x: 210, y: 330}, {x: 203, y: 360}, {x: 210, y: 420}, {x: 225, y: 480},
+    {x: 248, y: 525}, {x: 270, y: 570}, {x: 292, y: 525}, {x: 315, y: 480},
+    {x: 330, y: 420}, {x: 337, y: 360}, {x: 330, y: 330},
+    
+    // Shoulders and arms
+    {x: 210, y: 360}, {x: 165, y: 390}, {x: 150, y: 420}, {x: 158, y: 450},
+    {x: 330, y: 360}, {x: 375, y: 390}, {x: 390, y: 420}, {x: 382, y: 450},
+    
+    // Bat symbol outline (iconic chest emblem)
+    {x: 270, y: 390}, {x: 255, y: 405}, {x: 240, y: 413}, {x: 233, y: 428},
+    {x: 248, y: 435}, {x: 270, y: 428}, {x: 292, y: 435}, {x: 307, y: 428},
+    {x: 300, y: 413}, {x: 285, y: 405},
+    
+    // Utility belt outline
+    {x: 225, y: 480}, {x: 315, y: 480}, {x: 315, y: 495}, {x: 225, y: 495}
+];
+
+// Additional detail paths for features
+const eyePaths = [
+    // Left eye outline
+    [{x: 255, y: 225}, {x: 248, y: 233}, {x: 255, y: 240}, {x: 262, y: 233}],
+    // Right eye outline
+    [{x: 285, y: 225}, {x: 278, y: 233}, {x: 285, y: 240}, {x: 292, y: 233}]
+];
+
+const mouthPath = [
+    {x: 262, y: 248}, {x: 270, y: 255}, {x: 278, y: 248}
+];
+
+let drawnPoints = [];
+let currentPointIndex = 0;
+let currentDetailPhase = 0;
+
+function smoothPath(points, tension = 0.3) {
+    if (points.length < 3) return points;
+    
+    const smoothed = [];
+    smoothed.push(points[0]);
+    
+    for (let i = 1; i < points.length - 1; i++) {
+        const prev = points[i - 1];
+        const curr = points[i];
+        const next = points[i + 1];
         
-        // Set canvas size
-        canvas.width = 360;
-        canvas.height = 640;
+        const cp1x = curr.x + (next.x - prev.x) * tension;
+        const cp1y = curr.y + (next.y - prev.y) * tension;
         
-        let currentPhase = 0;
-        let animationProgress = 0;
-        let isAnimating = false;
-        
-        // Batman outline points (simplified for smooth animation)
-        const batmanPath = [
-            // Head outline
-            {x: 180, y: 120}, {x: 165, y: 115}, {x: 155, y: 125}, {x: 150, y: 140},
-            {x: 148, y: 155}, {x: 150, y: 170}, {x: 155, y: 180}, {x: 165, y: 185},
-            {x: 180, y: 188}, {x: 195, y: 185}, {x: 205, y: 180}, {x: 210, y: 170},
-            {x: 212, y: 155}, {x: 210, y: 140}, {x: 205, y: 125}, {x: 195, y: 115},
-            
-            // Ears
-            {x: 165, y: 115}, {x: 160, y: 90}, {x: 170, y: 100},
-            {x: 195, y: 115}, {x: 200, y: 90}, {x: 190, y: 100},
-            
-            // Cape and shoulders
-            {x: 150, y: 200}, {x: 120, y: 220}, {x: 100, y: 250}, {x: 85, y: 290},
-            {x: 80, y: 340}, {x: 85, y: 390}, {x: 95, y: 430}, {x: 110, y: 460},
-            
-            // Torso
-            {x: 140, y: 220}, {x: 135, y: 240}, {x: 140, y: 280}, {x: 150, y: 320},
-            {x: 165, y: 350}, {x: 180, y: 380}, {x: 195, y: 350}, {x: 210, y: 320},
-            {x: 220, y: 280}, {x: 225, y: 240}, {x: 220, y: 220},
-            
-            // Right cape
-            {x: 210, y: 200}, {x: 240, y: 220}, {x: 260, y: 250}, {x: 275, y: 290},
-            {x: 280, y: 340}, {x: 275, y: 390}, {x: 265, y: 430}, {x: 250, y: 460},
-            
-            // Arms
-            {x: 140, y: 240}, {x: 110, y: 260}, {x: 100, y: 280}, {x: 105, y: 300},
-            {x: 220, y: 240}, {x: 250, y: 260}, {x: 260, y: 280}, {x: 255, y: 300},
-            
-            // Bat symbol points
-            {x: 180, y: 260}, {x: 170, y: 270}, {x: 160, y: 275}, {x: 155, y: 285},
-            {x: 165, y: 290}, {x: 180, y: 285}, {x: 195, y: 290}, {x: 205, y: 285},
-            {x: 200, y: 275}, {x: 190, y: 270}
-        ];
-        
-        let drawnPoints = [];
-        let currentPointIndex = 0;
-        
-        function drawPencilStroke(progress) {
-            ctx.strokeStyle = '#666';
-            ctx.lineWidth = 2;
-            ctx.lineCap = 'round';
-            ctx.lineJoin = 'round';
-            
-            const totalPoints = Math.floor(progress * batmanPath.length);
-            
-            if (totalPoints > drawnPoints.length) {
-                for (let i = drawnPoints.length; i < totalPoints && i < batmanPath.length; i++) {
-                    drawnPoints.push(batmanPath[i]);
-                }
-            }
-            
-            if (drawnPoints.length > 1) {
-                ctx.beginPath();
-                ctx.moveTo(drawnPoints[0].x, drawnPoints[0].y);
-                for (let i = 1; i < drawnPoints.length; i++) {
-                    ctx.lineTo(drawnPoints[i].x, drawnPoints[i].y);
-                }
-                ctx.stroke();
-            }
-            
-            // Update pencil position
-            if (drawnPoints.length > 0) {
-                const lastPoint = drawnPoints[drawnPoints.length - 1];
-                pencil.style.left = (lastPoint.x - 60) + 'px';
-                pencil.style.top = (lastPoint.y - 20) + 'px';
-                pencil.style.opacity = '1';
-                
-                // Calculate angle for pencil rotation
-                if (drawnPoints.length > 1) {
-                    const prevPoint = drawnPoints[drawnPoints.length - 2];
-                    const angle = Math.atan2(lastPoint.y - prevPoint.y, lastPoint.x - prevPoint.x);
-                    pencil.style.transform = `rotate(${angle}rad)`;
-                }
-            }
+        smoothed.push({x: cp1x, y: cp1y, control: true});
+        smoothed.push(curr);
+    }
+    
+    smoothed.push(points[points.length - 1]);
+    return smoothed;
+}
+
+function drawPencilStroke(progress) {
+    ctx.strokeStyle = '#888';
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.shadowColor = 'rgba(0,0,0,0.2)';
+    ctx.shadowBlur = 1;
+    
+    const totalPoints = Math.floor(progress * batmanPath.length);
+    
+    if (totalPoints > drawnPoints.length) {
+        for (let i = drawnPoints.length; i < totalPoints && i < batmanPath.length; i++) {
+            drawnPoints.push(batmanPath[i]);
         }
+    }
+    
+    if (drawnPoints.length > 1) {
+        ctx.beginPath();
+        ctx.moveTo(drawnPoints[0].x, drawnPoints[0].y);
         
-        function drawInkedVersion() {
-            ctx.strokeStyle = '#000';
-            ctx.lineWidth = 3;
-            ctx.lineCap = 'round';
-            ctx.lineJoin = 'round';
+        for (let i = 1; i < drawnPoints.length; i++) {
+            const curr = drawnPoints[i];
+            const prev = drawnPoints[i - 1];
             
-            // Draw clean outline
-            ctx.beginPath();
-            ctx.moveTo(batmanPath[0].x, batmanPath[0].y);
-            for (let i = 1; i < batmanPath.length; i++) {
-                ctx.lineTo(batmanPath[i].x, batmanPath[i].y);
-            }
-            ctx.stroke();
+            // Add slight randomness for pencil texture
+            const jitterX = (Math.random() - 0.5) * 0.5;
+            const jitterY = (Math.random() - 0.5) * 0.5;
             
-            // Add facial features
-            ctx.fillStyle = '#000';
-            // Eyes
-            ctx.beginPath();
-            ctx.ellipse(170, 150, 4, 6, 0, 0, Math.PI * 2);
-            ctx.fill();
-            
-            ctx.beginPath();
-            ctx.ellipse(190, 150, 4, 6, 0, 0, Math.PI * 2);
-            ctx.fill();
-            
-            // Mouth
-            ctx.beginPath();
-            ctx.arc(180, 165, 8, 0.2, Math.PI - 0.2);
-            ctx.lineWidth = 2;
-            ctx.stroke();
+            ctx.lineTo(curr.x + jitterX, curr.y + jitterY);
         }
+        ctx.stroke();
+    }
+    
+    // Update pencil position (if pencil element exists)
+    if (pencil && drawnPoints.length > 0) {
+        const lastPoint = drawnPoints[drawnPoints.length - 1];
+        pencil.style.left = (lastPoint.x / 2 - 30) + 'px';
+        pencil.style.top = (lastPoint.y / 2 - 10) + 'px';
+        pencil.style.opacity = '1';
         
-        function drawColoredVersion() {
-            // Clear canvas
+        if (drawnPoints.length > 1) {
+            const prevPoint = drawnPoints[drawnPoints.length - 2];
+            const angle = Math.atan2(lastPoint.y - prevPoint.y, lastPoint.x - prevPoint.x);
+            pencil.style.transform = `rotate(${angle + Math.PI/4}rad)`;
+        }
+    }
+}
+
+function drawInkedVersion() {
+    ctx.shadowColor = 'transparent';
+    ctx.strokeStyle = '#000';
+    ctx.lineWidth = 3;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    
+    // Main outline
+    ctx.beginPath();
+    ctx.moveTo(batmanPath[0].x, batmanPath[0].y);
+    for (let i = 1; i < batmanPath.length; i++) {
+        ctx.lineTo(batmanPath[i].x, batmanPath[i].y);
+    }
+    ctx.stroke();
+    
+    // Add facial features
+    ctx.fillStyle = '#000';
+    ctx.lineWidth = 2;
+    
+    // Eyes (white sections for dramatic effect)
+    ctx.fillStyle = '#fff';
+    ctx.beginPath();
+    ctx.ellipse(255, 233, 6, 8, -0.1, 0, Math.PI * 2);
+    ctx.fill();
+    
+    ctx.beginPath();
+    ctx.ellipse(285, 233, 6, 8, 0.1, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Eye pupils
+    ctx.fillStyle = '#000';
+    ctx.beginPath();
+    ctx.ellipse(255, 235, 3, 4, 0, 0, Math.PI * 2);
+    ctx.fill();
+    
+    ctx.beginPath();
+    ctx.ellipse(285, 235, 3, 4, 0, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Mouth (grim line)
+    ctx.strokeStyle = '#000';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(262, 252);
+    ctx.quadraticCurveTo(270, 258, 278, 252);
+    ctx.stroke();
+    
+    // Nose definition
+    ctx.beginPath();
+    ctx.moveTo(270, 238);
+    ctx.lineTo(268, 248);
+    ctx.moveTo(270, 238);
+    ctx.lineTo(272, 248);
+    ctx.stroke();
+}
+
+function drawColoredVersion() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Cape (dark navy blue with gradient)
+    const capeGradient = ctx.createLinearGradient(180, 330, 360, 740);
+    capeGradient.addColorStop(0, '#0d1b2a');
+    capeGradient.addColorStop(0.5, '#1b263b');
+    capeGradient.addColorStop(1, '#0d1b2a');
+    
+    ctx.fillStyle = capeGradient;
+    ctx.beginPath();
+    ctx.moveTo(180, 330);
+    ctx.lineTo(150, 375);
+    ctx.lineTo(128, 435);
+    ctx.lineTo(120, 510);
+    ctx.lineTo(128, 585);
+    ctx.lineTo(143, 645);
+    ctx.lineTo(165, 690);
+    ctx.lineTo(195, 720);
+    ctx.lineTo(230, 735);
+    ctx.lineTo(270, 740);
+    ctx.lineTo(310, 735);
+    ctx.lineTo(345, 720);
+    ctx.lineTo(375, 690);
+    ctx.lineTo(397, 645);
+    ctx.lineTo(412, 585);
+    ctx.lineTo(420, 510);
+    ctx.lineTo(412, 435);
+    ctx.lineTo(390, 375);
+    ctx.lineTo(360, 330);
+    ctx.closePath();
+    ctx.fill();
+    
+    // Body suit (dark gray with muscle definition)
+    const suitGradient = ctx.createRadialGradient(270, 400, 0, 270, 400, 150);
+    suitGradient.addColorStop(0, '#2c3e50');
+    suitGradient.addColorStop(1, '#1a252f');
+    
+    ctx.fillStyle = suitGradient;
+    ctx.beginPath();
+    ctx.moveTo(210, 330);
+    ctx.lineTo(203, 360);
+    ctx.lineTo(210, 420);
+    ctx.lineTo(225, 480);
+    ctx.lineTo(315, 480);
+    ctx.lineTo(330, 420);
+    ctx.lineTo(337, 360);
+    ctx.lineTo(330, 330);
+    ctx.closePath();
+    ctx.fill();
+    
+    // Cowl (matte black)
+    ctx.fillStyle = '#000';
+    ctx.beginPath();
+    ctx.moveTo(270, 180);
+    ctx.lineTo(248, 172);
+    ctx.lineTo(233, 188);
+    ctx.lineTo(225, 210);
+    ctx.lineTo(222, 233);
+    ctx.lineTo(225, 255);
+    ctx.lineTo(233, 270);
+    ctx.lineTo(238, 285);
+    ctx.lineTo(252, 295);
+    ctx.lineTo(270, 298);
+    ctx.lineTo(288, 295);
+    ctx.lineTo(302, 285);
+    ctx.lineTo(307, 270);
+    ctx.lineTo(315, 255);
+    ctx.lineTo(318, 233);
+    ctx.lineTo(315, 210);
+    ctx.lineTo(307, 188);
+    ctx.lineTo(292, 172);
+    ctx.closePath();
+    ctx.fill();
+    
+    // Ears (sharp and menacing)
+    ctx.beginPath();
+    ctx.moveTo(248, 172);
+    ctx.lineTo(240, 135);
+    ctx.lineTo(255, 150);
+    ctx.closePath();
+    ctx.fill();
+    
+    ctx.beginPath();
+    ctx.moveTo(292, 172);
+    ctx.lineTo(300, 135);
+    ctx.lineTo(285, 150);
+    ctx.closePath();
+    ctx.fill();
+    
+    // Bat symbol (bright yellow/gold)
+    const batSymbolGradient = ctx.createRadialGradient(270, 410, 0, 270, 410, 30);
+    batSymbolGradient.addColorStop(0, '#ffd700');
+    batSymbolGradient.addColorStop(1, '#ffb700');
+    
+    ctx.fillStyle = batSymbolGradient;
+    ctx.beginPath();
+    ctx.moveTo(270, 390);
+    ctx.lineTo(255, 405);
+    ctx.lineTo(240, 413);
+    ctx.lineTo(233, 428);
+    ctx.lineTo(248, 435);
+    ctx.lineTo(270, 428);
+    ctx.lineTo(292, 435);
+    ctx.lineTo(307, 428);
+    ctx.lineTo(300, 413);
+    ctx.lineTo(285, 405);
+    ctx.closePath();
+    ctx.fill();
+    
+    // Utility belt (golden brown)
+    ctx.fillStyle = '#8b4513';
+    ctx.fillRect(225, 480, 90, 15);
+    
+    // Belt buckle and pouches
+    ctx.fillStyle = '#daa520';
+    ctx.fillRect(262, 482, 16, 11);
+    ctx.fillRect(235, 483, 8, 9);
+    ctx.fillRect(297, 483, 8, 9);
+    
+    // Muscle definition highlights
+    ctx.fillStyle = 'rgba(255,255,255,0.15)';
+    ctx.beginPath();
+    ctx.ellipse(255, 380, 12, 20, -0.3, 0, Math.PI * 2);
+    ctx.fill();
+    
+    ctx.beginPath();
+    ctx.ellipse(285, 380, 12, 20, 0.3, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Face highlights and shadows
+    ctx.fillStyle = 'rgba(255,255,255,0.2)';
+    ctx.beginPath();
+    ctx.ellipse(262, 218, 8, 12, -0.2, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Eyes (piercing white)
+    ctx.fillStyle = '#fff';
+    ctx.beginPath();
+    ctx.ellipse(255, 233, 5, 7, -0.1, 0, Math.PI * 2);
+    ctx.fill();
+    
+    ctx.beginPath();
+    ctx.ellipse(285, 233, 5, 7, 0.1, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Eye pupils (small for intensity)
+    ctx.fillStyle = '#000';
+    ctx.beginPath();
+    ctx.ellipse(255, 235, 2, 3, 0, 0, Math.PI * 2);
+    ctx.fill();
+    
+    ctx.beginPath();
+    ctx.ellipse(285, 235, 2, 3, 0, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Final clean outline
+    ctx.strokeStyle = '#000';
+    ctx.lineWidth = 2.5;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    
+    // Outline the entire figure
+    ctx.beginPath();
+    ctx.moveTo(batmanPath[0].x, batmanPath[0].y);
+    for (let i = 1; i < batmanPath.length; i++) {
+        ctx.lineTo(batmanPath[i].x, batmanPath[i].y);
+    }
+    ctx.stroke();
+    
+    // Additional detail lines
+    ctx.lineWidth = 1.5;
+    
+    // Cape creases
+    ctx.beginPath();
+    ctx.moveTo(200, 400);
+    ctx.quadraticCurveTo(220, 500, 200, 600);
+    ctx.moveTo(340, 400);
+    ctx.quadraticCurveTo(320, 500, 340, 600);
+    ctx.stroke();
+    
+    // Cowl seam lines
+    ctx.beginPath();
+    ctx.moveTo(248, 185);
+    ctx.quadraticCurveTo(270, 175, 292, 185);
+    ctx.stroke();
+}
+
+function animate() {
+    const startTime = Date.now();
+    
+    function frame() {
+        const elapsed = Date.now() - startTime;
+        const totalDuration = 30000; // 30 seconds for smoother animation
+        const progress = Math.min(elapsed / totalDuration, 1);
+        
+        // Phase 1: Pencil sketch (0-50%)
+        if (progress < 0.5) {
+            const phaseProgress = progress / 0.5;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            // Draw cape (dark blue/black)
-            ctx.fillStyle = '#1a1a2e';
-            ctx.beginPath();
-            ctx.moveTo(120, 220);
-            ctx.lineTo(100, 250);
-            ctx.lineTo(85, 290);
-            ctx.lineTo(80, 340);
-            ctx.lineTo(85, 390);
-            ctx.lineTo(95, 430);
-            ctx.lineTo(110, 460);
-            ctx.lineTo(250, 460);
-            ctx.lineTo(265, 430);
-            ctx.lineTo(275, 390);
-            ctx.lineTo(280, 340);
-            ctx.lineTo(275, 290);
-            ctx.lineTo(260, 250);
-            ctx.lineTo(240, 220);
-            ctx.closePath();
-            ctx.fill();
-            
-            // Draw body suit (dark gray)
-            ctx.fillStyle = '#2d2d2d';
-            ctx.beginPath();
-            ctx.moveTo(140, 220);
-            ctx.lineTo(135, 240);
-            ctx.lineTo(140, 280);
-            ctx.lineTo(150, 320);
-            ctx.lineTo(165, 350);
-            ctx.lineTo(180, 380);
-            ctx.lineTo(195, 350);
-            ctx.lineTo(210, 320);
-            ctx.lineTo(220, 280);
-            ctx.lineTo(225, 240);
-            ctx.lineTo(220, 220);
-            ctx.closePath();
-            ctx.fill();
-            
-            // Draw cowl (black)
-            ctx.fillStyle = '#000';
-            ctx.beginPath();
-            ctx.moveTo(180, 120);
-            ctx.lineTo(165, 115);
-            ctx.lineTo(155, 125);
-            ctx.lineTo(150, 140);
-            ctx.lineTo(148, 155);
-            ctx.lineTo(150, 170);
-            ctx.lineTo(155, 180);
-            ctx.lineTo(165, 185);
-            ctx.lineTo(180, 188);
-            ctx.lineTo(195, 185);
-            ctx.lineTo(205, 180);
-            ctx.lineTo(210, 170);
-            ctx.lineTo(212, 155);
-            ctx.lineTo(210, 140);
-            ctx.lineTo(205, 125);
-            ctx.lineTo(195, 115);
-            ctx.closePath();
-            ctx.fill();
-            
-            // Draw ears
-            ctx.beginPath();
-            ctx.moveTo(165, 115);
-            ctx.lineTo(160, 90);
-            ctx.lineTo(170, 100);
-            ctx.closePath();
-            ctx.fill();
-            
-            ctx.beginPath();
-            ctx.moveTo(195, 115);
-            ctx.lineTo(200, 90);
-            ctx.lineTo(190, 100);
-            ctx.closePath();
-            ctx.fill();
-            
-            // Draw bat symbol (yellow)
-            ctx.fillStyle = '#ffd700';
-            ctx.beginPath();
-            ctx.moveTo(180, 260);
-            ctx.lineTo(170, 270);
-            ctx.lineTo(160, 275);
-            ctx.lineTo(155, 285);
-            ctx.lineTo(165, 290);
-            ctx.lineTo(180, 285);
-            ctx.lineTo(195, 290);
-            ctx.lineTo(205, 285);
-            ctx.lineTo(200, 275);
-            ctx.lineTo(190, 270);
-            ctx.closePath();
-            ctx.fill();
-            
-            // Add highlights and shadows
-            ctx.fillStyle = 'rgba(255,255,255,0.2)';
-            ctx.beginPath();
-            ctx.ellipse(175, 145, 8, 12, -0.2, 0, Math.PI * 2);
-            ctx.fill();
-            
-            // Eyes (white)
-            ctx.fillStyle = '#fff';
-            ctx.beginPath();
-            ctx.ellipse(170, 150, 3, 5, 0, 0, Math.PI * 2);
-            ctx.fill();
-            
-            ctx.beginPath();
-            ctx.ellipse(190, 150, 3, 5, 0, 0, Math.PI * 2);
-            ctx.fill();
-            
-            // Add final outline
-            ctx.strokeStyle = '#000';
-            ctx.lineWidth = 2;
-            ctx.lineCap = 'round';
-            ctx.lineJoin = 'round';
-            
-            // Outline the entire figure
-            ctx.beginPath();
-            ctx.moveTo(batmanPath[0].x, batmanPath[0].y);
-            for (let i = 1; i < batmanPath.length; i++) {
-                ctx.lineTo(batmanPath[i].x, batmanPath[i].y);
-            }
-            ctx.stroke();
+            drawPencilStroke(phaseProgress);
+        }
+        // Phase 2: Inking (50-75%)
+        else if (progress < 0.75) {
+            if (pencil) pencil.style.opacity = '0';
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawInkedVersion();
+        }
+        // Phase 3: Coloring (75-100%)
+        else {
+            drawColoredVersion();
         }
         
-        function animate() {
-            const startTime = Date.now();
-            
-            function frame() {
-                const elapsed = Date.now() - startTime;
-                const totalDuration = 25000; // 25 seconds
-                const progress = Math.min(elapsed / totalDuration, 1);
-                
-                // Phase 1: Pencil sketch (0-40%)
-                if (progress < 0.4) {
-                    const phaseProgress = progress / 0.4;
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    drawPencilStroke(phaseProgress);
-                }
-                // Phase 2: Inking (40-70%)
-                else if (progress < 0.7) {
-                    pencil.style.opacity = '0';
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    drawInkedVersion();
-                }
-                // Phase 3: Coloring (70-100%)
-                else {
-                    drawColoredVersion();
-                }
-                
-                if (progress < 1) {
-                    requestAnimationFrame(frame);
-                } else {
-                    // Restart animation after 2 seconds
-                    setTimeout(() => {
-                        drawnPoints = [];
-                        currentPointIndex = 0;
-                        animate();
-                    }, 2000);
-                }
-            }
-            
+        if (progress < 1) {
             requestAnimationFrame(frame);
+        } else {
+            // Restart animation after 3 seconds
+            setTimeout(() => {
+                drawnPoints = [];
+                currentPointIndex = 0;
+                animate();
+            }, 3000);
         }
-        
-        // Start animation when page loads
-        window.addEventListener('load', () => {
-            setTimeout(animate, 1000);
-        });
+    }
+    
+    requestAnimationFrame(frame);
+}
+
+// Enhanced initialization
+function initializeAnimation() {
+    // Reset canvas for crisp rendering
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+    
+    // Start animation
+    setTimeout(animate, 1000);
+}
+
+// Start animation when page loads
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeAnimation);
+} else {
+    initializeAnimation();
+}
     </script>
 </body>
 </html>
