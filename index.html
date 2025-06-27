@@ -607,129 +607,441 @@ body {
     </div>
 
     <script>
-        const canvas = document.querySelector('.canvas-overlay');
-        const ctx = canvas.getContext('2d');
-        
-        const characters = [
-            { id: 'char5', delay: 2000 },
-            { id: 'char4', delay: 5000 },
-            { id: 'char3', delay: 8000 },
-            { id: 'char2', delay: 11000 },
-            { id: 'char1', delay: 14000 }
-        ];
+       const canvas = document.querySelector('.canvas-overlay');
+const ctx = canvas.getContext('2d');
 
-        function drawSketchLines(x, y, width, height) {
-            ctx.strokeStyle = '#2c3e50';
-            ctx.lineWidth = 2;
-            ctx.globalAlpha = 0.7;
+// Resize canvas to full container
+function resizeCanvas() {
+    const container = document.querySelector('.container');
+    canvas.width = container.offsetWidth;
+    canvas.height = container.offsetHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+const characters = [
+    { id: 'char5', delay: 1000, name: 'Fighter 5' },
+    { id: 'char4', delay: 2500, name: 'Fighter 4' },
+    { id: 'char3', delay: 4000, name: 'Fighter 3' },
+    { id: 'char2', delay: 5500, name: 'Fighter 2' },
+    { id: 'char1', delay: 7000, name: 'Champion', isChampion: true }
+];
+
+// Modern particle system
+class ParticleSystem {
+    constructor() {
+        this.particles = [];
+        this.colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#f9ca24', '#f0932b', '#eb4d4b'];
+    }
+    
+    createParticle(x, y, type = 'reveal') {
+        const particle = {
+            x: x,
+            y: y,
+            vx: (Math.random() - 0.5) * 8,
+            vy: (Math.random() - 0.5) * 8,
+            life: 1.0,
+            decay: type === 'champion' ? 0.005 : 0.02,
+            size: type === 'champion' ? Math.random() * 6 + 4 : Math.random() * 4 + 2,
+            color: this.colors[Math.floor(Math.random() * this.colors.length)],
+            type: type
+        };
+        this.particles.push(particle);
+    }
+    
+    update() {
+        this.particles = this.particles.filter(particle => {
+            particle.x += particle.vx;
+            particle.y += particle.vy;
+            particle.vx *= 0.98;
+            particle.vy *= 0.98;
+            particle.life -= particle.decay;
             
-            // Draw random sketch lines
-            for (let i = 0; i < 20; i++) {
-                ctx.beginPath();
-                const startX = x + Math.random() * width;
-                const startY = y + Math.random() * height;
-                const endX = startX + (Math.random() - 0.5) * 30;
-                const endY = startY + (Math.random() - 0.5) * 30;
-                
-                ctx.moveTo(startX, startY);
-                ctx.lineTo(endX, endY);
-                ctx.stroke();
+            if (particle.type === 'champion') {
+                particle.vy -= 0.1; // Float upward
             }
             
-            ctx.globalAlpha = 1;
-        }
-
-        function animateCharacter(characterId, isGoku = false) {
-            const container = document.getElementById(characterId);
-            const image = container.querySelector('.character-image');
-            const sketch = container.querySelector('.sketch-overlay');
+            return particle.life > 0;
+        });
+    }
+    
+    render() {
+        this.particles.forEach(particle => {
+            ctx.save();
+            ctx.globalAlpha = particle.life;
             
-            // Show container
-            container.style.animation = 'slideInLeft 1s ease-out forwards';
+            if (particle.type === 'champion') {
+                // Glowing effect for champion particles
+                ctx.shadowColor = particle.color;
+                ctx.shadowBlur = 15;
+                ctx.fillStyle = particle.color;
+            } else {
+                ctx.fillStyle = particle.color;
+            }
             
-            setTimeout(() => {
-                // Show sketch overlay
-                sketch.style.opacity = '1';
-                sketch.style.animation = 'pulse 0.5s ease-in-out';
-                
-                // Draw sketch lines on canvas
-                const rect = container.getBoundingClientRect();
-                const containerRect = document.querySelector('.container').getBoundingClientRect();
-                const relativeX = rect.left - containerRect.left + 80;
-                const relativeY = rect.top - containerRect.top + 10;
-                
-                drawSketchLines(relativeX, relativeY, 80, 80);
-                
-                setTimeout(() => {
-                    // Reveal character image
-                    image.style.opacity = '1';
-                    image.style.transform = 'scale(1)';
-                    
-                    // Hide sketch overlay
-                    sketch.style.opacity = '0';
-                    
-                    // Clear canvas area
-                    ctx.clearRect(relativeX - 10, relativeY - 10, 100, 100);
-                    
-                    if (isGoku) {
-                        // Dramatic reveal for Goku
-                        setTimeout(() => {
-                            container.classList.add('dramatic-reveal');
-                            container.classList.add('shake-effect');
-                            image.classList.add('glow-effect');
-                            
-                            // Show closing text
-                            setTimeout(() => {
-                                document.querySelector('.closing-text').style.animation = 'fadeIn 2s ease-in-out forwards';
-                                
-                                // Fade out all characters except showing them faintly
-                                setTimeout(() => {
-                                    characters.forEach(char => {
-                                        const charEl = document.getElementById(char.id);
-                                        charEl.style.opacity = '0.3';
-                                    });
-                                }, 2000);
-                            }, 1000);
-                        }, 500);
-                    }
-                }, 1000);
-            }, 500);
-        }
+            ctx.beginPath();
+            ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+        });
+    }
+}
 
-        // Start animation sequence
+const particleSystem = new ParticleSystem();
+
+// Modern sketch effect with geometric patterns
+function drawModernSketch(x, y, width, height) {
+    ctx.save();
+    ctx.strokeStyle = '#34495e';
+    ctx.lineWidth = 3;
+    ctx.lineCap = 'round';
+    ctx.globalAlpha = 0.8;
+    
+    // Draw animated geometric lines
+    const lines = [
+        { x1: x, y1: y, x2: x + width, y2: y },
+        { x1: x + width, y1: y, x2: x + width, y2: y + height },
+        { x1: x + width, y1: y + height, x2: x, y2: y + height },
+        { x1: x, y1: y + height, x2: x, y2: y },
+        { x1: x, y1: y, x2: x + width, y2: y + height },
+        { x1: x + width, y1: y, x2: x, y2: y + height }
+    ];
+    
+    lines.forEach((line, index) => {
         setTimeout(() => {
-            characters.forEach((char, index) => {
-                setTimeout(() => {
-                    animateCharacter(char.id, char.id === 'char1');
-                }, char.delay);
-            });
-        }, 1000);
-
-        // Add some dynamic background effects
-        function addBackgroundEffects() {
-            const container = document.querySelector('.container');
+            ctx.beginPath();
+            ctx.moveTo(line.x1, line.y1);
+            ctx.lineTo(line.x2, line.y2);
+            ctx.stroke();
             
-            setInterval(() => {
-                const sparkle = document.createElement('div');
-                sparkle.style.position = 'absolute';
-                sparkle.style.width = '3px';
-                sparkle.style.height = '3px';
-                sparkle.style.background = '#f39c12';
-                sparkle.style.borderRadius = '50%';
-                sparkle.style.left = Math.random() * 360 + 'px';
-                sparkle.style.top = Math.random() * 640 + 'px';
-                sparkle.style.animation = 'fadeIn 2s ease-in-out forwards';
-                sparkle.style.zIndex = '1';
-                
-                container.appendChild(sparkle);
-                
+            // Add particles along the line
+            for (let i = 0; i < 5; i++) {
+                const t = i / 4;
+                const px = line.x1 + (line.x2 - line.x1) * t;
+                const py = line.y1 + (line.y2 - line.y1) * t;
+                particleSystem.createParticle(px, py, 'reveal');
+            }
+        }, index * 100);
+    });
+    
+    ctx.restore();
+}
+
+// Modern character animation with morphing effects
+function animateCharacter(characterId, isChampion = false) {
+    const container = document.getElementById(characterId);
+    const image = container.querySelector('.character-image');
+    const sketch = container.querySelector('.sketch-overlay');
+    
+    // Modern slide-in with scale and rotation
+    container.style.opacity = '1';
+    container.style.transform = 'translateX(0) scale(1) rotate(0deg)';
+    container.style.transition = 'all 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+    
+    setTimeout(() => {
+        // Show sketch with modern overlay
+        sketch.style.opacity = '1';
+        sketch.style.background = 'linear-gradient(45deg, rgba(52,152,219,0.3), rgba(155,89,182,0.3))';
+        sketch.style.backdropFilter = 'blur(10px)';
+        sketch.style.border = '2px solid rgba(255,255,255,0.3)';
+        sketch.style.borderRadius = '15px';
+        sketch.style.transition = 'all 0.6s ease-out';
+        
+        // Get position for canvas drawing
+        const rect = container.getBoundingClientRect();
+        const containerRect = document.querySelector('.container').getBoundingClientRect();
+        const relativeX = rect.left - containerRect.left;
+        const relativeY = rect.top - containerRect.top;
+        
+        drawModernSketch(relativeX + 10, relativeY + 10, rect.width - 20, rect.height - 20);
+        
+        setTimeout(() => {
+            // Dramatic reveal with modern effects
+            image.style.opacity = '1';
+            image.style.transform = 'scale(1.1) rotate(5deg)';
+            image.style.filter = 'drop-shadow(0 20px 40px rgba(0,0,0,0.3)) brightness(1.2)';
+            image.style.transition = 'all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+            
+            // Hide sketch with fade
+            sketch.style.opacity = '0';
+            sketch.style.transform = 'scale(0.8)';
+            
+            // Clear canvas area with fade effect
+            setTimeout(() => {
+                ctx.clearRect(relativeX, relativeY, rect.width, rect.height);
+            }, 300);
+            
+            // Create reveal particles
+            for (let i = 0; i < 30; i++) {
+                particleSystem.createParticle(
+                    relativeX + Math.random() * rect.width,
+                    relativeY + Math.random() * rect.height,
+                    isChampion ? 'champion' : 'reveal'
+                );
+            }
+            
+            if (isChampion) {
+                // Champion reveal sequence
                 setTimeout(() => {
-                    sparkle.remove();
-                }, 2000);
-            }, 500);
+                    championReveal(container, image);
+                }, 1000);
+            } else {
+                // Regular character settle
+                setTimeout(() => {
+                    image.style.transform = 'scale(1) rotate(0deg)';
+                    image.style.filter = 'drop-shadow(0 10px 20px rgba(0,0,0,0.2))';
+                }, 500);
+            }
+        }, 1200);
+    }, 400);
+}
+
+// Champion reveal with full screen effect
+function championReveal(container, image) {
+    // Create champion title
+    const championTitle = document.createElement('div');
+    championTitle.innerHTML = 'CHAMPION';
+    championTitle.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 4rem;
+        font-weight: 900;
+        color: #f39c12;
+        text-shadow: 0 0 30px rgba(243, 156, 18, 0.8);
+        z-index: 1000;
+        opacity: 0;
+        animation: championTextReveal 2s ease-out forwards;
+        font-family: 'Arial Black', sans-serif;
+        letter-spacing: 0.2em;
+    `;
+    
+    // Add keyframes for champion text
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes championTextReveal {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.5) rotate(-10deg);
+            }
+            50% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1.2) rotate(5deg);
+            }
+            100% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1) rotate(0deg);
+            }
         }
         
-        setTimeout(addBackgroundEffects, 5000);
+        @keyframes championGlow {
+            0%, 100% {
+                box-shadow: 0 0 30px rgba(243, 156, 18, 0.8);
+            }
+            50% {
+                box-shadow: 0 0 60px rgba(243, 156, 18, 1);
+            }
+        }
+    `;
+    document.head.appendChild(style);
+    document.body.appendChild(championTitle);
+    
+    // Animate champion to center with glow
+    container.style.position = 'fixed';
+    container.style.top = '50%';
+    container.style.left = '50%';
+    container.style.transform = 'translate(-50%, -50%) scale(1.5)';
+    container.style.zIndex = '999';
+    container.style.transition = 'all 2s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+    
+    image.style.borderRadius = '20px';
+    image.style.animation = 'championGlow 2s ease-in-out infinite';
+    
+     // Create champion particles continuously
+    const championParticleInterval = setInterval(() => {
+        const rect = container.getBoundingClientRect();
+        for (let i = 0; i < 10; i++) {
+            particleSystem.createParticle(
+                rect.left + rect.width / 2 + (Math.random() - 0.5) * rect.width * 2,
+                rect.top + rect.height / 2 + (Math.random() - 0.5) * rect.height * 2,
+                'champion'
+            );
+        }
+    }, 200);
+    
+    // Arrange other characters beautifully
+    setTimeout(() => {
+        arrangeOtherCharacters();
+        
+        // Show final text
+        setTimeout(() => {
+            showFinalText();
+        }, 2000);
+        
+        // Stop champion particles after some time
+        setTimeout(() => {
+            clearInterval(championParticleInterval);
+        }, 10000);
+    }, 2500);
+}
+
+// Arrange other characters in a beautiful layout
+function arrangeOtherCharacters() {
+    const otherCharacters = characters.filter(char => !char.isChampion);
+    const positions = [
+        { top: '20%', left: '15%', scale: '0.8' },
+        { top: '20%', right: '15%', scale: '0.8' },
+        { bottom: '20%', left: '15%', scale: '0.8' },
+        { bottom: '20%', right: '15%', scale: '0.8' }
+    ];
+    
+    otherCharacters.forEach((char, index) => {
+        const container = document.getElementById(char.id);
+        const image = container.querySelector('.character-image');
+        const pos = positions[index];
+        
+        container.style.position = 'fixed';
+        container.style.top = pos.top || 'auto';
+        container.style.bottom = pos.bottom || 'auto';
+        container.style.left = pos.left || 'auto';
+        container.style.right = pos.right || 'auto';
+        container.style.transform = `scale(${pos.scale})`;
+        container.style.opacity = '0.7';
+        container.style.transition = 'all 1.5s ease-out';
+        container.style.zIndex = '100';
+        
+        image.style.filter = 'grayscale(0.3) brightness(0.8)';
+        image.style.borderRadius = '15px';
+        image.style.transition = 'all 1s ease-out';
+        
+        // Hover effect for other characters
+        container.addEventListener('mouseenter', () => {
+            container.style.opacity = '1';
+            container.style.transform = `scale(${parseFloat(pos.scale) + 0.1})`;
+            image.style.filter = 'grayscale(0) brightness(1.1)';
+        });
+        
+        container.addEventListener('mouseleave', () => {
+            container.style.opacity = '0.7';
+            container.style.transform = `scale(${pos.scale})`;
+            image.style.filter = 'grayscale(0.3) brightness(0.8)';
+        });
+    });
+}
+
+// Show final text with modern typography
+function showFinalText() {
+    const finalText = document.createElement('div');
+    finalText.innerHTML = 'THE ULTIMATE FIGHTER';
+    finalText.style.cssText = `
+        position: fixed;
+        bottom: 10%;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 2rem;
+        font-weight: 300;
+        color: #ecf0f1;
+        text-shadow: 0 0 20px rgba(236, 240, 241, 0.5);
+        z-index: 1000;
+        opacity: 0;
+        animation: finalTextReveal 3s ease-out forwards;
+        font-family: 'Arial', sans-serif;
+        letter-spacing: 0.1em;
+        text-align: center;
+    `;
+    
+    const finalStyle = document.createElement('style');
+    finalStyle.textContent = `
+        @keyframes finalTextReveal {
+            0% {
+                opacity: 0;
+                transform: translateX(-50%) translateY(50px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+    `;
+    document.head.appendChild(finalStyle);
+    document.body.appendChild(finalText);
+}
+
+// Modern background effects
+function addModernBackgroundEffects() {
+    const container = document.querySelector('.container');
+    
+    // Floating geometric shapes
+    setInterval(() => {
+        const shape = document.createElement('div');
+        const size = Math.random() * 20 + 10;
+        const shapes = ['circle', 'square', 'triangle'];
+        const selectedShape = shapes[Math.floor(Math.random() * shapes.length)];
+        
+        shape.style.cssText = `
+            position: absolute;
+            width: ${size}px;
+            height: ${size}px;
+            background: linear-gradient(45deg, #3498db, #9b59b6);
+            opacity: 0.1;
+            left: ${Math.random() * 100}%;
+            top: ${Math.random() * 100}%;
+            border-radius: ${selectedShape === 'circle' ? '50%' : '0'};
+            animation: floatUp 8s linear forwards;
+            z-index: 1;
+            pointer-events: none;
+        `;
+        
+        container.appendChild(shape);
+        
+        setTimeout(() => {
+            shape.remove();
+        }, 8000);
+    }, 1000);
+}
+
+// Add floating animation
+const floatStyle = document.createElement('style');
+floatStyle.textContent = `
+    @keyframes floatUp {
+        0% {
+            transform: translateY(0) rotate(0deg);
+            opacity: 0.1;
+        }
+        50% {
+            opacity: 0.3;
+        }
+        100% {
+            transform: translateY(-100vh) rotate(360deg);
+            opacity: 0;
+        }
+    }
+`;
+document.head.appendChild(floatStyle);
+
+// Animation loop for particles
+function animationLoop() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particleSystem.update();
+    particleSystem.render();
+    requestAnimationFrame(animationLoop);
+}
+
+// Start the animation sequence
+setTimeout(() => {
+    characters.forEach((char, index) => {
+        setTimeout(() => {
+            animateCharacter(char.id, char.isChampion);
+        }, char.delay);
+    });
+    
+    // Start background effects after first character
+    setTimeout(addModernBackgroundEffects, 2000);
+    
+    // Start animation loop
+    animationLoop();
+}, 500);
     </script>
 </body>
 </html>
