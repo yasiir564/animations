@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Top 5 Cartoon Fighters</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Anton&display=swap" rel="stylesheet">
+    <title>What If Cartoon Characters Were Real?</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -13,581 +13,431 @@
         }
 
         body {
-            font-family: 'Orbitron', sans-serif;
-            background: #000;
             overflow: hidden;
-            height: 100vh;
+            background: #000;
+            font-family: 'Bebas Neue', cursive;
             display: flex;
             justify-content: center;
             align-items: center;
+            height: 100vh;
         }
 
         .container {
-            width: 390px;
-            height: 844px;
-            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            width: 375px;
+            height: 667px;
             position: relative;
+            background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
             overflow: hidden;
-            border-radius: 20px;
-            box-shadow: 0 0 30px rgba(0,0,0,0.8);
+            border-radius: 8px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
         }
 
-        .paper-bg {
+        .paper-texture {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             background: 
-                radial-gradient(circle at 20% 50%, transparent 20%, rgba(255,255,255,0.03) 21%, rgba(255,255,255,0.03) 34%, transparent 35%, transparent),
-                linear-gradient(0deg, transparent 24%, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.05) 26%, transparent 27%, transparent 74%, rgba(255,255,255,0.05) 75%, rgba(255,255,255,0.05) 76%, transparent 77%, transparent),
-                linear-gradient(90deg, transparent 24%, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.05) 26%, transparent 27%, transparent 74%, rgba(255,255,255,0.05) 75%, rgba(255,255,255,0.05) 76%, transparent 77%, transparent);
-            background-color: #f5f5dc;
+                radial-gradient(circle at 20% 30%, rgba(200,200,200,0.1) 1px, transparent 1px),
+                radial-gradient(circle at 80% 70%, rgba(180,180,180,0.1) 1px, transparent 1px),
+                linear-gradient(45deg, rgba(220,220,220,0.1) 25%, transparent 25%),
+                linear-gradient(-45deg, rgba(210,210,210,0.1) 25%, transparent 25%);
+            background-size: 15px 15px, 20px 20px, 8px 8px, 8px 8px;
             opacity: 0;
-            transition: opacity 0.5s ease;
+            animation: paperFadeIn 1s ease-in-out 2s forwards;
         }
 
-        .paper-bg.active {
-            opacity: 0.9;
-        }
-
-        .dark-overlay {
+        .title {
             position: absolute;
-            top: 0;
+            top: 50px;
             left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, rgba(0,0,0,0.7), rgba(26,26,46,0.8));
-            opacity: 0;
-            transition: opacity 0.5s ease;
-        }
-
-        .dark-overlay.active {
-            opacity: 1;
-        }
-
-        .particles {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-        }
-
-        .particle {
-            position: absolute;
-            width: 3px;
-            height: 3px;
-            background: rgba(255,255,255,0.6);
-            border-radius: 50%;
-            animation: float 3s infinite linear;
-        }
-
-        @keyframes float {
-            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
-        }
-
-        .title-screen {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            right: 0;
             text-align: center;
-            padding: 40px 20px;
-            opacity: 0;
-            transform: scale(0.8);
-            transition: all 0.5s ease;
-        }
-
-        .title-screen.active {
-            opacity: 1;
-            transform: scale(1);
-        }
-
-        .main-title {
-            font-family: 'Anton', sans-serif;
-            font-size: 2.5em;
+            font-size: 32px;
+            color: #fff;
+            text-shadow: 0 0 20px rgba(0,255,255,0.8), 0 0 40px rgba(0,255,255,0.4);
             font-weight: 900;
-            color: #fff;
-            text-shadow: 
-                0 0 10px rgba(255,255,255,0.8),
-                0 0 20px rgba(0,255,255,0.6),
-                0 0 30px rgba(0,255,255,0.4);
-            margin-bottom: 20px;
-            animation: titleGlow 2s ease-in-out infinite alternate;
-        }
-
-        @keyframes titleGlow {
-            0% { text-shadow: 0 0 10px rgba(255,255,255,0.8), 0 0 20px rgba(0,255,255,0.6), 0 0 30px rgba(0,255,255,0.4); }
-            100% { text-shadow: 0 0 15px rgba(255,255,255,1), 0 0 25px rgba(0,255,255,0.8), 0 0 35px rgba(0,255,255,0.6); }
-        }
-
-        .subtitle {
-            font-size: 1.4em;
-            color: #00ffff;
-            text-shadow: 0 0 10px rgba(0,255,255,0.8);
-            margin-bottom: 30px;
-        }
-
-        .character-screen {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            letter-spacing: 2px;
             opacity: 0;
-            transform: scale(0.9);
-            transition: all 0.6s ease;
+            animation: titleGlow 2s ease-in-out forwards;
+            z-index: 10;
         }
 
-        .character-screen.active {
-            opacity: 1;
-            transform: scale(1);
-        }
-
-        .character-container {
-            position: relative;
-            width: 280px;
-            height: 400px;
-            margin-bottom: 40px;
-        }
-
-        .character-image {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            position: absolute;
-            top: 0;
-            left: 0;
-            opacity: 0;
-            transform: scale(0.8);
-            transition: all 0.8s ease;
-            filter: drop-shadow(0 0 20px rgba(255,255,255,0.3));
-        }
-
-        .character-image.sketch {
-            filter: contrast(100%) brightness(0%) drop-shadow(0 0 5px rgba(0,0,0,0.5));
-            opacity: 1;
-            transform: scale(1);
-        }
-
-        .character-image.colored {
-            opacity: 1;
-            transform: scale(1);
-            animation: characterPulse 0.8s ease-out;
-        }
-
-        @keyframes characterPulse {
-            0% { transform: scale(0.8); filter: drop-shadow(0 0 20px rgba(255,255,255,0.3)); }
-            50% { transform: scale(1.05); filter: drop-shadow(0 0 30px rgba(255,255,255,0.8)); }
-            100% { transform: scale(1); filter: drop-shadow(0 0 20px rgba(255,255,255,0.3)); }
-        }
-
-        .character-rank {
-            font-family: 'Anton', sans-serif;
-            font-size: 3em;
-            font-weight: 900;
-            color: #fff;
-            text-align: center;
-            margin-bottom: 10px;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.5s ease 0.3s;
-        }
-
-        .character-name {
-            font-size: 1.6em;
-            font-weight: 700;
-            text-align: center;
-            color: #fff;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.5s ease 0.5s;
-        }
-
-        .character-screen.active .character-rank,
-        .character-screen.active .character-name {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* Character-specific glows */
-        .rick .character-rank, .rick .character-name {
-            text-shadow: 0 0 15px #00ff00, 0 0 25px #00ff00, 0 0 35px #00ff00;
-        }
-
-        .spongebob .character-rank, .spongebob .character-name {
-            text-shadow: 0 0 15px #ffff00, 0 0 25px #ffff00, 0 0 35px #ffff00;
-        }
-
-        .ben10 .character-rank, .ben10 .character-name {
-            text-shadow: 0 0 15px #00ffff, 0 0 25px #00ffff, 0 0 35px #00ffff;
-        }
-
-        .saitama .character-rank, .saitama .character-name {
-            text-shadow: 0 0 15px #ff0000, 0 0 25px #ff0000, 0 0 35px #ff0000;
-        }
-
-        .goku .character-rank, .goku .character-name {
-            text-shadow: 0 0 15px #0080ff, 0 0 25px #0080ff, 0 0 35px #0080ff;
-        }
-
-        .final-boss {
-            font-size: 1.2em;
-            color: #ffd700;
-            text-shadow: 0 0 10px #ffd700;
-            margin-top: 10px;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.5s ease 0.7s;
-        }
-
-        .character-screen.active .final-boss {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .outro-screen {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 40px 20px;
-            opacity: 0;
-            transform: scale(0.9);
-            transition: all 0.5s ease;
-        }
-
-        .outro-screen.active {
-            opacity: 1;
-            transform: scale(1);
-        }
-
-        .outro-text {
-            font-size: 1.8em;
-            font-weight: 700;
-            color: #fff;
-            text-shadow: 0 0 15px rgba(255,255,255,0.8);
-            margin-bottom: 30px;
-        }
-
-        .background-characters {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0.1;
-            z-index: -1;
-        }
-
-        .bg-character {
-            position: absolute;
-            width: 100px;
-            height: 100px;
-            object-fit: contain;
-            opacity: 0.3;
-        }
-
-        .screen-shake {
-            animation: shake 0.5s ease-in-out;
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
-        }
-
-        .energy-burst {
+        .drawing-area {
             position: absolute;
             top: 50%;
             left: 50%;
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
             transform: translate(-50%, -50%);
-            background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(0,255,255,0.4) 50%, transparent 100%);
-            opacity: 0;
-            animation: energyBurst 0.6s ease-out;
+            width: 280px;
+            height: 280px;
         }
 
-        @keyframes energyBurst {
-            0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
-            100% { transform: translate(-50%, -50%) scale(3); opacity: 0; }
-        }
-
-        .drawing-lines {
+        .sketch-canvas {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            pointer-events: none;
-        }
-
-        .line {
-            position: absolute;
-            background: #333;
             opacity: 0;
+            animation: canvasAppear 0.5s ease-in-out 3s forwards;
         }
 
-        .line.animate {
-            opacity: 1;
-            animation: drawLine 0.3s ease-out forwards;
+        .cartoon-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            opacity: 0;
+            filter: brightness(1.1) contrast(1.2);
+            animation: cartoonReveal 1s ease-in-out 8s forwards;
         }
 
-        @keyframes drawLine {
-            0% { transform: scaleX(0); }
-            100% { transform: scaleX(1); }
+        .realistic-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 20px;
+            opacity: 0;
+            transform: scale(0.8);
+            filter: blur(10px);
+            animation: realisticReveal 2s ease-in-out 12s forwards;
+        }
+
+        .glitch-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(90deg, transparent 0%, rgba(0,255,255,0.1) 25%, transparent 50%, rgba(255,0,255,0.1) 75%, transparent 100%);
+            opacity: 0;
+            animation: glitchEffect 1.5s ease-in-out 10.5s forwards;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .glow-effect {
+            position: absolute;
+            top: -20px;
+            left: -20px;
+            right: -20px;
+            bottom: -20px;
+            background: radial-gradient(circle, rgba(0,255,255,0.3) 0%, transparent 70%);
+            opacity: 0;
+            animation: glowPulse 2s ease-in-out 12s infinite;
+            border-radius: 50%;
+        }
+
+        .outro-text {
+            position: absolute;
+            bottom: 80px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 24px;
+            color: #fff;
+            text-shadow: 0 0 15px rgba(0,255,255,0.6);
+            opacity: 0;
+            animation: outroAppear 1s ease-in-out 14s forwards;
+            z-index: 10;
+        }
+
+        .pencil {
+            position: absolute;
+            width: 60px;
+            height: 8px;
+            background: linear-gradient(90deg, #8B4513 0%, #DAA520 50%, #FFD700 100%);
+            border-radius: 4px;
+            opacity: 0;
+            animation: pencilDraw 5s linear 3s forwards;
+            z-index: 6;
+        }
+
+        .pencil::after {
+            content: '';
+            position: absolute;
+            right: -5px;
+            top: 1px;
+            width: 0;
+            height: 0;
+            border-left: 5px solid #2C2C2C;
+            border-top: 3px solid transparent;
+            border-bottom: 3px solid transparent;
+        }
+
+        /* Animations */
+        @keyframes titleGlow {
+            0% { opacity: 0; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.1); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes paperFadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        @keyframes canvasAppear {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        @keyframes pencilDraw {
+            0% { 
+                opacity: 1; 
+                top: 20px; 
+                left: 20px; 
+                transform: rotate(45deg); 
+            }
+            25% { 
+                top: 50px; 
+                left: 120px; 
+                transform: rotate(45deg); 
+            }
+            50% { 
+                top: 150px; 
+                left: 200px; 
+                transform: rotate(45deg); 
+            }
+            75% { 
+                top: 200px; 
+                left: 80px; 
+                transform: rotate(45deg); 
+            }
+            100% { 
+                opacity: 0; 
+                top: 20px; 
+                left: 150px; 
+                transform: rotate(45deg); 
+            }
+        }
+
+        @keyframes cartoonReveal {
+            0% { opacity: 0; transform: scale(0.5) rotate(-5deg); }
+            50% { opacity: 0.8; transform: scale(1.1) rotate(2deg); }
+            100% { opacity: 1; transform: scale(1) rotate(0deg); }
+        }
+
+        @keyframes glitchEffect {
+            0% { opacity: 0; }
+            10% { opacity: 0.8; transform: translateX(-5px); }
+            20% { opacity: 0.6; transform: translateX(5px); }
+            30% { opacity: 0.9; transform: translateX(-3px); }
+            40% { opacity: 0.4; transform: translateX(3px); }
+            50% { opacity: 0.7; transform: translateX(-2px); }
+            60% { opacity: 0.8; transform: translateX(2px); }
+            70% { opacity: 0.5; transform: translateX(-1px); }
+            80% { opacity: 0.9; transform: translateX(1px); }
+            90% { opacity: 0.3; transform: translateX(0); }
+            100% { opacity: 0; transform: translateX(0); }
+        }
+
+        @keyframes realisticReveal {
+            0% { 
+                opacity: 0; 
+                transform: scale(0.8); 
+                filter: blur(10px); 
+            }
+            50% { 
+                opacity: 0.8; 
+                transform: scale(1.05); 
+                filter: blur(2px); 
+            }
+            100% { 
+                opacity: 1; 
+                transform: scale(1); 
+                filter: blur(0px) brightness(1.1) contrast(1.3); 
+            }
+        }
+
+        @keyframes glowPulse {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.1); }
+        }
+
+        @keyframes outroAppear {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes sketchLines {
+            0% { stroke-dashoffset: 1000; }
+            100% { stroke-dashoffset: 0; }
+        }
+
+        .sketch-path {
+            fill: none;
+            stroke: #555;
+            stroke-width: 3;
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: sketchLines 2s ease-in-out 4s forwards;
+        }
+
+        .ink-path {
+            fill: none;
+            stroke: #111;
+            stroke-width: 2;
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: sketchLines 1.5s ease-in-out 6s forwards;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 400px) {
+            .container {
+                width: 100vw;
+                height: 100vh;
+                border-radius: 0;
+            }
+            
+            .title {
+                font-size: 28px;
+                top: 40px;
+            }
+            
+            .drawing-area {
+                width: 250px;
+                height: 250px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container" id="container">
-        <div class="paper-bg" id="paperBg"></div>
-        <div class="dark-overlay" id="darkOverlay"></div>
+    <div class="container">
+        <div class="paper-texture"></div>
         
-        <div class="particles" id="particles"></div>
+        <div class="title">
+            WHAT IF SPONGEBOB<br>WAS REAL?
+        </div>
         
-        <!-- Title Screen -->
-        <div class="title-screen" id="titleScreen">
-            <div class="main-title">WHO WINS<br>THE FIGHT? 👇</div>
-            <div class="subtitle">TOP 5 CARTOON FIGHTERS</div>
+        <div class="drawing-area">
+            <div class="glow-effect"></div>
+            
+            <svg class="sketch-canvas" viewBox="0 0 280 280">
+                <!-- Sketch outline of SpongeBob -->
+                <path class="sketch-path" d="M140 40 Q120 20 100 40 L80 60 Q70 80 80 120 L90 160 Q95 180 110 190 L130 200 Q140 205 150 200 L170 190 Q185 180 190 160 L200 120 Q210 80 200 60 L180 40 Q160 20 140 40 Z"/>
+                
+                <!-- Eyes sketch -->
+                <circle class="sketch-path" cx="120" cy="80" r="15" style="animation-delay: 4.5s;"/>
+                <circle class="sketch-path" cx="160" cy="80" r="15" style="animation-delay: 4.7s;"/>
+                
+                <!-- Mouth sketch -->
+                <path class="sketch-path" d="M120 130 Q140 150 160 130" style="animation-delay: 5s;"/>
+                
+                <!-- Ink lines -->
+                <path class="ink-path" d="M140 40 Q120 20 100 40 L80 60 Q70 80 80 120 L90 160 Q95 180 110 190 L130 200 Q140 205 150 200 L170 190 Q185 180 190 160 L200 120 Q210 80 200 60 L180 40 Q160 20 140 40 Z"/>
+                <circle class="ink-path" cx="120" cy="80" r="15" style="animation-delay: 6.5s;"/>
+                <circle class="ink-path" cx="160" cy="80" r="15" style="animation-delay: 6.7s;"/>
+                <path class="ink-path" d="M120 130 Q140 150 160 130" style="animation-delay: 7s;"/>
+            </svg>
+            
+            <div class="pencil"></div>
+            
+            <!-- Placeholder for cartoon image -->
+            <img src="spongbob.jpg" alt="Cartoon SpongeBob" class="cartoon-image" 
+                 onerror="this.style.display='none'">
+            
+            <div class="glitch-overlay"></div>
+            
+            <!-- Placeholder for realistic image -->
+            <img src="Flux_Dev_A_photorealistic_human_version_of_SpongeBob_SquarePan_3.jpg" alt="Realistic SpongeBob" class="realistic-image"
+                 onerror="this.style.display='none'">
         </div>
-
-        <!-- Character Screens -->
-        <div class="character-screen rick" id="screen1">
-            <div class="character-container">
-                <img src="rick_sanchez__rick_and_morty__render_by_ty50ntheskeleton_df8ftht-fullview.png" alt="Rick Sanchez" class="character-image" id="char1">
-                <div class="drawing-lines" id="lines1"></div>
-            </div>
-            <div class="character-rank">#5</div>
-            <div class="character-name">RICK SANCHEZ</div>
-        </div>
-
-        <div class="character-screen spongebob" id="screen2">
-            <div class="character-container">
-                <img src="spongbob.jpg" alt="SpongeBob" class="character-image" id="char2">
-                <div class="drawing-lines" id="lines2"></div>
-            </div>
-            <div class="character-rank">#4</div>
-            <div class="character-name">SPONGEBOB<br>SQUAREPANTS</div>
-        </div>
-
-        <div class="character-screen ben10" id="screen3">
-            <div class="character-container">
-                <img src="ben10.jpg" alt="Ben 10" class="character-image" id="char3">
-                <div class="drawing-lines" id="lines3"></div>
-            </div>
-            <div class="character-rank">#3</div>
-            <div class="character-name">BEN 10<br>(ALIEN X)</div>
-        </div>
-
-        <div class="character-screen saitama" id="screen4">
-            <div class="character-container">
-                <img src="saitama.webp" alt="Saitama" class="character-image" id="char4">
-                <div class="drawing-lines" id="lines4"></div>
-            </div>
-            <div class="character-rank">#2</div>
-            <div class="character-name">SAITAMA<br>(ONE PUNCH MAN)</div>
-        </div>
-
-        <div class="character-screen goku" id="screen5">
-            <div class="character-container">
-                <img src="e33c2fa94c03efa06678116f80d62d0d_708x.webp" alt="Goku" class="character-image" id="char5">
-                <div class="drawing-lines" id="lines5"></div>
-            </div>
-            <div class="character-rank">#1</div>
-            <div class="character-name">GOKU<br>(ULTRA INSTINCT)</div>
-            <div class="final-boss">FINAL BOSS 👑</div>
-        </div>
-
-        <!-- Outro Screen -->
-        <div class="outro-screen" id="outroScreen">
-            <div class="outro-text">DID WE GET IT RIGHT? 💬<br>COMMENT YOUR WINNER!</div>
-            <div class="background-characters">
-                <img src="images/rick.png" class="bg-character" style="top: 10%; left: 10%;">
-                <img src="images/spongebob.png" class="bg-character" style="top: 20%; right: 15%;">
-                <img src="images/ben10.png" class="bg-character" style="top: 60%; left: 5%;">
-                <img src="images/saitama.png" class="bg-character" style="top: 70%; right: 10%;">
-                <img src="images/goku.png" class="bg-character" style="top: 40%; left: 35%;">
-            </div>
+        
+        <div class="outro-text">
+            WHO SHOULD I MAKE<br>REAL NEXT? 💬
         </div>
     </div>
 
     <script>
-        let currentScreen = 0;
-        const screens = ['titleScreen', 'screen1', 'screen2', 'screen3', 'screen4', 'screen5', 'outroScreen'];
-        const container = document.getElementById('container');
-        const paperBg = document.getElementById('paperBg');
-        const darkOverlay = document.getElementById('darkOverlay');
+        // Enhanced animation control
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.querySelector('.container');
+            const glitchOverlay = document.querySelector('.glitch-overlay');
+            const realisticImage = document.querySelector('.realistic-image');
+            const cartoonImage = document.querySelector('.cartoon-image');
 
-        // Create floating particles
-        function createParticles() {
-            const particlesContainer = document.getElementById('particles');
-            for (let i = 0; i < 20; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.animationDelay = Math.random() * 3 + 's';
-                particle.style.animationDuration = (Math.random() * 2 + 2) + 's';
-                particlesContainer.appendChild(particle);
-            }
-        }
-
-        // Create sketching effect
-        function createSketchEffect(lineContainerId) {
-            const linesContainer = document.getElementById(lineContainerId);
-            const lines = [];
-            
-            // Create random sketch lines
-            for (let i = 0; i < 15; i++) {
-                const line = document.createElement('div');
-                line.className = 'line';
-                line.style.width = Math.random() * 100 + 'px';
-                line.style.height = '2px';
-                line.style.top = Math.random() * 80 + '%';
-                line.style.left = Math.random() * 80 + '%';
-                line.style.transform = 'rotate(' + (Math.random() * 180) + 'deg)';
-                line.style.transformOrigin = 'left center';
-                linesContainer.appendChild(line);
-                lines.push(line);
-            }
-            
-            // Animate lines sequentially
-            lines.forEach((line, index) => {
-                setTimeout(() => {
-                    line.classList.add('animate');
-                }, index * 50);
-            });
-        }
-
-        // Add energy burst effect
-        function addEnergyBurst() {
-            const burst = document.createElement('div');
-            burst.className = 'energy-burst';
-            container.appendChild(burst);
-            
+            // Add extra glitch effects during transformation
             setTimeout(() => {
-                container.removeChild(burst);
-            }, 600);
-        }
-
-        // Screen shake effect
-        function screenShake() {
-            container.classList.add('screen-shake');
-            setTimeout(() => {
-                container.classList.remove('screen-shake');
-            }, 500);
-        }
-
-        // Show specific screen
-        function showScreen(screenId) {
-            // Hide all screens
-            screens.forEach(id => {
-                const screen = document.getElementById(id);
-                if (screen) screen.classList.remove('active');
-            });
-            
-            // Show target screen
-            const targetScreen = document.getElementById(screenId);
-            if (targetScreen) {
-                targetScreen.classList.add('active');
-                
-                // Handle character screens with sketch effect
-                if (screenId.startsWith('screen')) {
-                    const screenNum = screenId.replace('screen', '');
-                    const charImg = document.getElementById('char' + screenNum);
-                    
-                    // Show paper background
-                    paperBg.classList.add('active');
-                    
-                    // Start with sketch
+                // Create multiple glitch layers
+                for (let i = 0; i < 5; i++) {
                     setTimeout(() => {
-                        createSketchEffect('lines' + screenNum);
-                        charImg.classList.add('sketch');
-                    }, 300);
-                    
-                    // Transition to colored
-                    setTimeout(() => {
-                        charImg.classList.remove('sketch');
-                        charImg.classList.add('colored');
-                        paperBg.classList.remove('active');
-                        darkOverlay.classList.add('active');
-                        
-                        // Add special effects for #1 (Goku)
-                        if (screenId === 'screen5') {
-                            addEnergyBurst();
-                            screenShake();
-                        }
-                    }, 1500);
-                } else {
-                    // Non-character screens
-                    paperBg.classList.remove('active');
-                    darkOverlay.classList.remove('active');
+                        container.style.filter = `hue-rotate(${Math.random() * 360}deg) brightness(${0.8 + Math.random() * 0.4})`;
+                        setTimeout(() => {
+                            container.style.filter = 'none';
+                        }, 100);
+                    }, i * 200);
                 }
-            }
-        }
+            }, 10500);
 
-        // Animation timeline
-        function startAnimation() {
-            const timeline = [
-                { screen: 'titleScreen', duration: 3000 },
-                { screen: 'screen1', duration: 4000 },
-                { screen: 'screen2', duration: 4000 },
-                { screen: 'screen3', duration: 4000 },
-                { screen: 'screen4', duration: 4000 },
-                { screen: 'screen5', duration: 5000 },
-                { screen: 'outroScreen', duration: 3000 }
-            ];
-            
-            let currentTime = 0;
-            
-            timeline.forEach((step, index) => {
-                setTimeout(() => {
-                    showScreen(step.screen);
-                    currentScreen = index;
-                }, currentTime);
-                currentTime += step.duration;
-            });
-            
-            // Loop the animation
+            // Hide cartoon when realistic appears
             setTimeout(() => {
-                startAnimation();
-            }, currentTime);
-        }
+                cartoonImage.style.opacity = '0';
+                cartoonImage.style.transform = 'scale(0.8)';
+            }, 12000);
 
-        // Initialize
-        createParticles();
-        darkOverlay.classList.add('active');
-        
-        // Start animation after short delay
-        setTimeout(() => {
-            startAnimation();
-        }, 500);
+            // Add shake effect during transformation
+            setTimeout(() => {
+                container.style.animation = 'shake 0.5s ease-in-out';
+            }, 11000);
 
-        // Click to advance (for testing)
-        container.addEventListener('click', () => {
-            currentScreen = (currentScreen + 1) % screens.length;
-            showScreen(screens[currentScreen]);
+            // Auto-restart animation (for testing)
+            setTimeout(() => {
+                location.reload();
+            }, 16000);
+        });
+
+        // Additional shake animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                25% { transform: translateX(-2px); }
+                75% { transform: translateX(2px); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Fallback for missing images - create colored rectangles
+        document.querySelectorAll('img').forEach(img => {
+            img.addEventListener('error', function() {
+                const placeholder = document.createElement('div');
+                placeholder.style.cssText = `
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: ${this.alt.includes('Cartoon') ? 
+                        'linear-gradient(45deg, #FFD700, #FFA500)' : 
+                        'linear-gradient(45deg, #4A90E2, #7B68EE)'};
+                    border-radius: ${this.alt.includes('Realistic') ? '20px' : '10px'};
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    color: white;
+                    font-weight: bold;
+                    font-size: 14px;
+                    text-align: center;
+                    opacity: ${this.classList.contains('cartoon-image') ? '1' : '0'};
+                    animation: ${this.classList.contains('cartoon-image') ? 
+                        'cartoonReveal 1s ease-in-out 8s forwards' : 
+                        'realisticReveal 2s ease-in-out 12s forwards'};
+                `;
+                placeholder.textContent = this.alt.includes('Cartoon') ? 
+                    '🧽 CARTOON\nSPONGEBOB' : 
+                    '🎭 REALISTIC\nSPONGEBOB';
+                this.parentNode.appendChild(placeholder);
+                this.style.display = 'none';
+            });
         });
     </script>
 </body>
