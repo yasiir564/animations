@@ -3,1103 +3,592 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Top 5 Most Powerful Cartoon Characters</title>
+    <title>Top 5 Cartoon Fighters</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Anton&display=swap" rel="stylesheet">
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600;800&family=Bebas+Neue&display=swap');
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+        body {
+            font-family: 'Orbitron', sans-serif;
+            background: #000;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
 
-body {
-    font-family: 'Exo 2', sans-serif;
-    background: 
-        linear-gradient(135deg, #ffffff 0%, #f8f9fa 25%, #ffffff 50%, #f1f3f4 100%),
-        repeating-linear-gradient(
-            45deg,
-            transparent,
-            transparent 15px,
-            rgba(0, 0, 0, 0.02) 15px,
-            rgba(0, 0, 0, 0.02) 30px
-        ),
-        radial-gradient(circle at 20% 80%, rgba(100, 100, 100, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(150, 150, 150, 0.1) 0%, transparent 50%);
-    background-size: 100% 100%, 60px 60px, 100% 100%, 100% 100%;
-    overflow: hidden;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-    animation: paperPulse 15s ease-in-out infinite alternate;
-}
+        .container {
+            width: 390px;
+            height: 844px;
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            position: relative;
+            overflow: hidden;
+            border-radius: 20px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.8);
+        }
 
-body::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: 
-        repeating-linear-gradient(
-            90deg,
-            transparent,
-            transparent 50px,
-            rgba(0, 0, 0, 0.005) 51px,
-            rgba(0, 0, 0, 0.005) 52px
-        ),
-        repeating-linear-gradient(
-            0deg,
-            transparent,
-            transparent 50px,
-            rgba(0, 0, 0, 0.005) 51px,
-            rgba(0, 0, 0, 0.005) 52px
-        );
-    animation: paperGrid 25s linear infinite;
-}
+        .paper-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, transparent 20%, rgba(255,255,255,0.03) 21%, rgba(255,255,255,0.03) 34%, transparent 35%, transparent),
+                linear-gradient(0deg, transparent 24%, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.05) 26%, transparent 27%, transparent 74%, rgba(255,255,255,0.05) 75%, rgba(255,255,255,0.05) 76%, transparent 77%, transparent),
+                linear-gradient(90deg, transparent 24%, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.05) 26%, transparent 27%, transparent 74%, rgba(255,255,255,0.05) 75%, rgba(255,255,255,0.05) 76%, transparent 77%, transparent);
+            background-color: #f5f5dc;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
 
-.container {
-    width: 400px;
-    height: 700px;
-    background: 
-        linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(248, 249, 250, 0.9)),
-        linear-gradient(145deg, rgba(255, 255, 255, 0.8), rgba(241, 243, 244, 0.7));
-    position: relative;
-    border-radius: 30px;
-    overflow: visible;
-    box-shadow: 
-        0 0 60px rgba(0, 0, 0, 0.1),
-        0 25px 50px rgba(0, 0, 0, 0.15),
-        inset 0 1px 0 rgba(255, 255, 255, 0.8),
-        0 0 0 1px rgba(0, 0, 0, 0.05);
-    backdrop-filter: blur(10px);
-    border: 2px solid rgba(255, 255, 255, 0.6);
-    animation: containerFloat 8s ease-in-out infinite;
-}
+        .paper-bg.active {
+            opacity: 0.9;
+        }
 
-.container::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: 
-        radial-gradient(circle at 25% 25%, rgba(0, 0, 0, 0.02) 1px, transparent 1px),
-        radial-gradient(circle at 75% 75%, rgba(0, 0, 0, 0.02) 1px, transparent 1px);
-    background-size: 30px 30px, 30px 30px;
-    background-position: 0 0, 15px 15px;
-    opacity: 0.3;
-    border-radius: 30px;
-    animation: paperTexture 20s ease-in-out infinite;
-    pointer-events: none;
-}
+        .dark-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0,0,0,0.7), rgba(26,26,46,0.8));
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
 
-.title {
-    position: absolute;
-    top: 30px;
-    left: 50%;
-    transform: translateX(-50%);
-    text-align: center;
-    background: linear-gradient(135deg, #2c3e50, #34495e, #1a252f);
-    background-clip: text;
-    -webkit-background-clip: text;
-    color: transparent;
-    font-size: 32px;
-    font-weight: 900;
-    font-family: 'Bebas Neue', cursive;
-    text-shadow: 
-        0 2px 4px rgba(0, 0, 0, 0.2),
-        0 0 20px rgba(0, 0, 0, 0.1);
-    opacity: 0;
-    animation: titleDrop 2s cubic-bezier(0.68, -0.55, 0.265, 1.55) 0.5s forwards;
-    z-index: 15;
-    letter-spacing: 4px;
-    text-transform: uppercase;
-}
+        .dark-overlay.active {
+            opacity: 1;
+        }
 
-.title::after {
-    content: '';
-    position: absolute;
-    bottom: -10px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 0;
-    height: 3px;
-    background: linear-gradient(90deg, #2c3e50, #34495e, #1a252f);
-    border-radius: 2px;
-    animation: underlineGrow 1.5s ease-out 2.5s forwards;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
 
-.ranking-container {
-    position: absolute;
-    top: 100px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100%;
-    height: calc(100% - 120px);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 30px;
-    gap: 20px;
-}
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: rgba(255,255,255,0.6);
+            border-radius: 50%;
+            animation: float 3s infinite linear;
+        }
 
-.character-container {
-    position: relative;
-    width: 100%;
-    height: 120px;
-    display: flex;
-    align-items: center;
-    background: 
-        linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 249, 250, 0.8) 100%);
-    backdrop-filter: blur(5px);
-    border-radius: 25px;
-    padding: 20px 25px;
-    border: 2px solid rgba(0, 0, 0, 0.08);
-    opacity: 0;
-    transform: translateY(100px) scale(0.8);
-    transition: all 1s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    box-shadow: 
-        0 15px 35px rgba(0, 0, 0, 0.1),
-        0 5px 15px rgba(0, 0, 0, 0.08),
-        inset 0 1px 0 rgba(255, 255, 255, 0.9);
-    overflow: hidden;
-}
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+        }
 
-.character-container::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.05), transparent);
-    transition: left 1s ease;
-}
+        .title-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 40px 20px;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 0.5s ease;
+        }
 
-.character-container:hover::before {
-    left: 100%;
-}
+        .title-screen.active {
+            opacity: 1;
+            transform: scale(1);
+        }
 
-.character-container:hover {
-    transform: translateY(-10px) scale(1.02);
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 249, 250, 0.85) 100%);
-    box-shadow: 
-        0 25px 50px rgba(0, 0, 0, 0.15),
-        0 10px 25px rgba(0, 0, 0, 0.1),
-        inset 0 1px 0 rgba(255, 255, 255, 1);
-    border-color: rgba(0, 0, 0, 0.12);
-}
+        .main-title {
+            font-family: 'Anton', sans-serif;
+            font-size: 2.5em;
+            font-weight: 900;
+            color: #fff;
+            text-shadow: 
+                0 0 10px rgba(255,255,255,0.8),
+                0 0 20px rgba(0,255,255,0.6),
+                0 0 30px rgba(0,255,255,0.4);
+            margin-bottom: 20px;
+            animation: titleGlow 2s ease-in-out infinite alternate;
+        }
 
-.rank-number {
-    font-size: 56px;
-    font-weight: 900;
-    font-family: 'Orbitron', monospace;
-    background: linear-gradient(135deg, #2c3e50, #34495e, #1a252f);
-    background-clip: text;
-    -webkit-background-clip: text;
-    color: transparent;
-    margin-right: 25px;
-    min-width: 70px;
-    position: relative;
-    animation: numberFloat 4s ease-in-out infinite;
-    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
+        @keyframes titleGlow {
+            0% { text-shadow: 0 0 10px rgba(255,255,255,0.8), 0 0 20px rgba(0,255,255,0.6), 0 0 30px rgba(0,255,255,0.4); }
+            100% { text-shadow: 0 0 15px rgba(255,255,255,1), 0 0 25px rgba(0,255,255,0.8), 0 0 35px rgba(0,255,255,0.6); }
+        }
 
-.rank-number::before {
-    content: attr(data-rank);
-    position: absolute;
-    top: 0;
-    left: 0;
-    background: linear-gradient(135deg, rgba(44, 62, 80, 0.2), rgba(52, 73, 94, 0.2));
-    background-clip: text;
-    -webkit-background-clip: text;
-    color: transparent;
-    filter: blur(6px);
-    z-index: -1;
-    animation: numberGlow 3s ease-in-out infinite alternate;
-}
+        .subtitle {
+            font-size: 1.4em;
+            color: #00ffff;
+            text-shadow: 0 0 10px rgba(0,255,255,0.8);
+            margin-bottom: 30px;
+        }
 
-.character-image-container {
-    position: relative;
-    width: 80px;
-    height: 80px;
-    margin-right: 20px;
-    overflow: visible;
-}
+        .character-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transform: scale(0.9);
+            transition: all 0.6s ease;
+        }
 
-.character-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 50%;
-    opacity: 0;
-    transform: scale(0.7) rotate(-20deg);
-    transition: all 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    border: 3px solid transparent;
-    background: linear-gradient(white, white) padding-box,
-                linear-gradient(135deg, #2c3e50, #34495e, #1a252f) border-box;
-    box-shadow: 
-        0 8px 25px rgba(0, 0, 0, 0.15),
-        0 4px 10px rgba(0, 0, 0, 0.1);
-}
+        .character-screen.active {
+            opacity: 1;
+            transform: scale(1);
+        }
 
-.character-image-container::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 95px;
-    height: 95px;
-    border-radius: 50%;
-    background: conic-gradient(
-        from 0deg,
-        rgba(44, 62, 80, 0.3),
-        rgba(52, 73, 94, 0.3),
-        rgba(26, 37, 47, 0.3),
-        rgba(44, 62, 80, 0.3)
-    );
-    opacity: 0;
-    animation: ringSpin 4s linear infinite;
-    z-index: -1;
-}
+        .character-container {
+            position: relative;
+            width: 280px;
+            height: 400px;
+            margin-bottom: 40px;
+        }
 
-.character-image.loaded {
-    opacity: 1;
-    transform: scale(1) rotate(0deg);
-}
+        .character-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 0.8s ease;
+            filter: drop-shadow(0 0 20px rgba(255,255,255,0.3));
+        }
 
-.character-image.loaded + .character-image-container::before {
-    opacity: 0.4;
-}
+        .character-image.sketch {
+            filter: contrast(100%) brightness(0%) drop-shadow(0 0 5px rgba(0,0,0,0.5));
+            opacity: 1;
+            transform: scale(1);
+        }
 
-.character-name {
-    font-size: 20px;
-    font-weight: 700;
-    color: #2c3e50;
-    text-shadow: 
-        0 2px 4px rgba(0, 0, 0, 0.1),
-        0 0 10px rgba(255, 255, 255, 0.8);
-    flex: 1;
-    position: relative;
-    font-family: 'Exo 2', sans-serif;
-    letter-spacing: 1px;
-}
+        .character-image.colored {
+            opacity: 1;
+            transform: scale(1);
+            animation: characterPulse 0.8s ease-out;
+        }
 
-.character-name::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.1), transparent);
-    animation: nameShine 5s ease-in-out infinite;
-}
+        @keyframes characterPulse {
+            0% { transform: scale(0.8); filter: drop-shadow(0 0 20px rgba(255,255,255,0.3)); }
+            50% { transform: scale(1.05); filter: drop-shadow(0 0 30px rgba(255,255,255,0.8)); }
+            100% { transform: scale(1); filter: drop-shadow(0 0 20px rgba(255,255,255,0.3)); }
+        }
 
-/* Champion Styles */
-.character-container.champion {
-    background: 
-        linear-gradient(135deg, rgba(255, 215, 0, 0.3) 0%, rgba(255, 193, 7, 0.2) 100%);
-    border: 4px solid rgba(255, 215, 0, 0.8);
-    box-shadow: 
-        0 0 60px rgba(255, 215, 0, 0.4),
-        0 25px 50px rgba(0, 0, 0, 0.2),
-        inset 0 2px 0 rgba(255, 255, 255, 0.9),
-        0 0 0 8px rgba(255, 215, 0, 0.1);
-    animation: championPulse 2.5s ease-in-out infinite;
-    transform: scale(1.1) translateY(-15px);
-}
+        .character-rank {
+            font-family: 'Anton', sans-serif;
+            font-size: 3em;
+            font-weight: 900;
+            color: #fff;
+            text-align: center;
+            margin-bottom: 10px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease 0.3s;
+        }
 
-.character-container.champion .rank-number {
-    background: linear-gradient(135deg, #ffd700, #ffed4e, #f39c12);
-    background-clip: text;
-    -webkit-background-clip: text;
-    font-size: 64px;
-    animation: championNumberFloat 2.5s ease-in-out infinite;
-    text-shadow: 0 6px 12px rgba(255, 215, 0, 0.3);
-}
+        .character-name {
+            font-size: 1.6em;
+            font-weight: 700;
+            text-align: center;
+            color: #fff;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease 0.5s;
+        }
 
-.character-container.champion .character-image {
-    border: 4px solid #ffd700;
-    box-shadow: 
-        0 0 40px rgba(255, 215, 0, 0.6),
-        0 15px 30px rgba(0, 0, 0, 0.2);
-    animation: championImageGlow 2.5s ease-in-out infinite;
-}
+        .character-screen.active .character-rank,
+        .character-screen.active .character-name {
+            opacity: 1;
+            transform: translateY(0);
+        }
 
-.character-container.champion .character-name {
-    color: #b8860b;
-    font-weight: 800;
-    font-size: 22px;
-    text-shadow: 
-        0 0 20px rgba(255, 215, 0, 0.5),
-        0 4px 8px rgba(0, 0, 0, 0.2);
-}
+        /* Character-specific glows */
+        .rick .character-rank, .rick .character-name {
+            text-shadow: 0 0 15px #00ff00, 0 0 25px #00ff00, 0 0 35px #00ff00;
+        }
 
-/* Sequential Reveal Animation */
-.character-container:nth-child(1) { animation-delay: 3s; }
-.character-container:nth-child(2) { animation-delay: 6s; }
-.character-container:nth-child(3) { animation-delay: 9s; }
-.character-container:nth-child(4) { animation-delay: 12s; }
-.character-container:nth-child(5) { animation-delay: 15s; }
+        .spongebob .character-rank, .spongebob .character-name {
+            text-shadow: 0 0 15px #ffff00, 0 0 25px #ffff00, 0 0 35px #ffff00;
+        }
 
-.character-container.reveal {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-    animation: dramaticReveal 1.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
-}
+        .ben10 .character-rank, .ben10 .character-name {
+            text-shadow: 0 0 15px #00ffff, 0 0 25px #00ffff, 0 0 35px #00ffff;
+        }
 
-/* Champion Crown Effect */
-.champion-crown {
-    position: absolute;
-    top: -30px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 40px;
-    color: #ffd700;
-    opacity: 0;
-    animation: crownDrop 2s cubic-bezier(0.68, -0.55, 0.265, 1.55) 18s forwards;
-    z-index: 10;
-    text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
-}
+        .saitama .character-rank, .saitama .character-name {
+            text-shadow: 0 0 15px #ff0000, 0 0 25px #ff0000, 0 0 35px #ff0000;
+        }
 
-/* Advanced Animations */
-@keyframes paperPulse {
-    0%, 100% { 
-        filter: brightness(1) contrast(1); 
-    }
-    50% { 
-        filter: brightness(1.02) contrast(1.01); 
-    }
-}
+        .goku .character-rank, .goku .character-name {
+            text-shadow: 0 0 15px #0080ff, 0 0 25px #0080ff, 0 0 35px #0080ff;
+        }
 
-@keyframes paperGrid {
-    0% { 
-        transform: translate(0, 0); 
-    }
-    100% { 
-        transform: translate(50px, 50px); 
-    }
-}
+        .final-boss {
+            font-size: 1.2em;
+            color: #ffd700;
+            text-shadow: 0 0 10px #ffd700;
+            margin-top: 10px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease 0.7s;
+        }
 
-@keyframes containerFloat {
-    0%, 100% { 
-        transform: translateY(0px) rotate(0deg); 
-    }
-    33% { 
-        transform: translateY(-5px) rotate(0.3deg); 
-    }
-    66% { 
-        transform: translateY(3px) rotate(-0.2deg); 
-    }
-}
+        .character-screen.active .final-boss {
+            opacity: 1;
+            transform: translateY(0);
+        }
 
-@keyframes paperTexture {
-    0%, 100% { 
-        opacity: 0.3; 
-        transform: scale(1) rotate(0deg); 
-    }
-    50% { 
-        opacity: 0.4; 
-        transform: scale(1.01) rotate(1deg); 
-    }
-}
+        .outro-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 40px 20px;
+            opacity: 0;
+            transform: scale(0.9);
+            transition: all 0.5s ease;
+        }
 
-@keyframes titleDrop {
-    0% {
-        opacity: 0;
-        transform: translateX(-50%) translateY(-60px) scale(0.4) rotate(-15deg);
-        filter: blur(15px);
-    }
-    60% {
-        opacity: 0.8;
-        transform: translateX(-50%) translateY(15px) scale(1.1) rotate(8deg);
-        filter: blur(3px);
-    }
-    100% {
-        opacity: 1;
-        transform: translateX(-50%) translateY(0) scale(1) rotate(0deg);
-        filter: blur(0px);
-    }
-}
+        .outro-screen.active {
+            opacity: 1;
+            transform: scale(1);
+        }
 
-@keyframes underlineGrow {
-    0% { 
-        width: 0; 
-    }
-    100% { 
-        width: 70%; 
-    }
-}
+        .outro-text {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 0 15px rgba(255,255,255,0.8);
+            margin-bottom: 30px;
+        }
 
-@keyframes dramaticReveal {
-    0% {
-        opacity: 0;
-        transform: translateY(100px) scale(0.8) rotateX(45deg);
-        filter: blur(10px);
-    }
-    60% {
-        opacity: 0.9;
-        transform: translateY(-20px) scale(1.05) rotateX(0deg);
-        filter: blur(2px);
-    }
-    100% {
-        opacity: 1;
-        transform: translateY(0) scale(1) rotateX(0deg);
-        filter: blur(0px);
-    }
-}
+        .background-characters {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.1;
+            z-index: -1;
+        }
 
-@keyframes numberFloat {
-    0%, 100% { 
-        transform: translateY(0px); 
-    }
-    50% { 
-        transform: translateY(-5px); 
-    }
-}
+        .bg-character {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            object-fit: contain;
+            opacity: 0.3;
+        }
 
-@keyframes numberGlow {
-    0% { 
-        opacity: 0.2; 
-        transform: scale(1.1); 
-    }
-    100% { 
-        opacity: 0.5; 
-        transform: scale(1.2); 
-    }
-}
+        .screen-shake {
+            animation: shake 0.5s ease-in-out;
+        }
 
-@keyframes ringSpin {
-    0% { 
-        transform: translate(-50%, -50%) rotate(0deg); 
-        opacity: 0.3; 
-    }
-    50% { 
-        opacity: 0.6; 
-    }
-    100% { 
-        transform: translate(-50%, -50%) rotate(360deg); 
-        opacity: 0.3; 
-    }
-}
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
 
-@keyframes nameShine {
-    0%, 100% { 
-        left: -100%; 
-    }
-    50% { 
-        left: 100%; 
-    }
-}
+        .energy-burst {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(0,255,255,0.4) 50%, transparent 100%);
+            opacity: 0;
+            animation: energyBurst 0.6s ease-out;
+        }
 
-@keyframes championPulse {
-    0%, 100% { 
-        box-shadow: 
-            0 0 60px rgba(255, 215, 0, 0.4),
-            0 25px 50px rgba(0, 0, 0, 0.2),
-            inset 0 2px 0 rgba(255, 255, 255, 0.9),
-            0 0 0 8px rgba(255, 215, 0, 0.1);
-        transform: scale(1.1) translateY(-15px);
-    }
-    50% { 
-        box-shadow: 
-            0 0 80px rgba(255, 215, 0, 0.6),
-            0 35px 70px rgba(0, 0, 0, 0.25),
-            inset 0 2px 0 rgba(255, 255, 255, 1),
-            0 0 0 12px rgba(255, 215, 0, 0.2);
-        transform: scale(1.15) translateY(-20px);
-    }
-}
+        @keyframes energyBurst {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(3); opacity: 0; }
+        }
 
-@keyframes championNumberFloat {
-    0%, 100% { 
-        transform: translateY(0px) scale(1); 
-    }
-    50% { 
-        transform: translateY(-8px) scale(1.05); 
-    }
-}
+        .drawing-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
 
-@keyframes championImageGlow {
-    0%, 100% { 
-        box-shadow: 
-            0 0 40px rgba(255, 215, 0, 0.6),
-            0 15px 30px rgba(0, 0, 0, 0.2);
-    }
-    50% { 
-        box-shadow: 
-            0 0 60px rgba(255, 215, 0, 0.8),
-            0 20px 40px rgba(0, 0, 0, 0.25);
-    }
-}
+        .line {
+            position: absolute;
+            background: #333;
+            opacity: 0;
+        }
 
-@keyframes crownDrop {
-    0% {
-        opacity: 0;
-        transform: translateX(-50%) translateY(-100px) rotate(-45deg) scale(0.5);
-        filter: blur(10px);
-    }
-    70% {
-        opacity: 0.8;
-        transform: translateX(-50%) translateY(10px) rotate(15deg) scale(1.2);
-        filter: blur(2px);
-    }
-    100% {
-        opacity: 1;
-        transform: translateX(-50%) translateY(0) rotate(0deg) scale(1);
-        filter: blur(0px);
-    }
-}
+        .line.animate {
+            opacity: 1;
+            animation: drawLine 0.3s ease-out forwards;
+        }
 
-/* Mobile Responsiveness */
-@media (max-width: 480px) {
-    .container {
-        width: 350px;
-        height: 650px;
-    }
-    
-    .character-container {
-        height: 100px;
-        padding: 15px 20px;
-    }
-    
-    .rank-number {
-        font-size: 48px;
-        min-width: 60px;
-        margin-right: 20px;
-    }
-    
-    .character-image-container {
-        width: 70px;
-        height: 70px;
-        margin-right: 15px;
-    }
-    
-    .character-name {
-        font-size: 18px;
-    }
-    
-    .title {
-        font-size: 28px;
-        top: 25px;
-    }
-    
-    .ranking-container {
-        top: 85px;
-        gap: 15px;
-        padding: 25px;
-    }
-    
-    .champion-crown {
-        font-size: 32px;
-        top: -25px;
-    }
-}
+        @keyframes drawLine {
+            0% { transform: scaleX(0); }
+            100% { transform: scaleX(1); }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="paper-texture"></div>
-        <canvas class="canvas-overlay" width="360" height="640"></canvas>
+    <div class="container" id="container">
+        <div class="paper-bg" id="paperBg"></div>
+        <div class="dark-overlay" id="darkOverlay"></div>
         
-        <div class="title">
-            Top 5 Most Powerful<br>Cartoon Characters 👇
+        <div class="particles" id="particles"></div>
+        
+        <!-- Title Screen -->
+        <div class="title-screen" id="titleScreen">
+            <div class="main-title">WHO WINS<br>THE FIGHT? 👇</div>
+            <div class="subtitle">TOP 5 CARTOON FIGHTERS</div>
         </div>
 
-        <div class="character-container" id="char5" style="top: 120px;">
-            <div class="rank-number">#5</div>
-            <div class="character-image-container">
-                <img src="rick_sanchez__rick_and_morty__render_by_ty50ntheskeleton_df8ftht-fullview.png" alt="Rick Sanchez" class="character-image">
-                <div class="sketch-overlay"></div>
+        <!-- Character Screens -->
+        <div class="character-screen rick" id="screen1">
+            <div class="character-container">
+                <img src="rick_sanchez__rick_and_morty__render_by_ty50ntheskeleton_df8ftht-fullview.png" alt="Rick Sanchez" class="character-image" id="char1">
+                <div class="drawing-lines" id="lines1"></div>
             </div>
-            <div class="character-name">Rick Sanchez<br><small>Rick and Morty</small></div>
+            <div class="character-rank">#5</div>
+            <div class="character-name">RICK SANCHEZ</div>
         </div>
 
-        <div class="character-container" id="char4" style="top: 240px;">
-            <div class="rank-number">#4</div>
-            <div class="character-image-container">
-                <img src="spongbob.jpg" alt="SpongeBob" class="character-image">
-                <div class="sketch-overlay"></div>
+        <div class="character-screen spongebob" id="screen2">
+            <div class="character-container">
+                <img src="spongbob.jpg" alt="SpongeBob" class="character-image" id="char2">
+                <div class="drawing-lines" id="lines2"></div>
             </div>
-            <div class="character-name">SpongeBob<br><small>SpongeBob SquarePants</small></div>
+            <div class="character-rank">#4</div>
+            <div class="character-name">SPONGEBOB<br>SQUAREPANTS</div>
         </div>
 
-        <div class="character-container" id="char3" style="top: 360px;">
-            <div class="rank-number">#3</div>
-            <div class="character-image-container">
-                <img src="ben10.jpg" alt="Ben 10" class="character-image">
-                <div class="sketch-overlay"></div>
+        <div class="character-screen ben10" id="screen3">
+            <div class="character-container">
+                <img src="ben10.jpg" alt="Ben 10" class="character-image" id="char3">
+                <div class="drawing-lines" id="lines3"></div>
             </div>
-            <div class="character-name">Ben 10 (Alien X)<br><small>Ben 10: Omniverse</small></div>
+            <div class="character-rank">#3</div>
+            <div class="character-name">BEN 10<br>(ALIEN X)</div>
         </div>
 
-        <div class="character-container" id="char2" style="top: 480px;">
-            <div class="rank-number">#2</div>
-            <div class="character-image-container">
-                <img src="saitama.webp" alt="Saitama" class="character-image">
-                <div class="sketch-overlay"></div>
+        <div class="character-screen saitama" id="screen4">
+            <div class="character-container">
+                <img src="saitama.webp" alt="Saitama" class="character-image" id="char4">
+                <div class="drawing-lines" id="lines4"></div>
             </div>
-            <div class="character-name">Saitama<br><small>One Punch Man</small></div>
+            <div class="character-rank">#2</div>
+            <div class="character-name">SAITAMA<br>(ONE PUNCH MAN)</div>
         </div>
 
-        <div class="character-container" id="char1" style="top: 600px;">
-            <div class="rank-number" style="color: #f39c12; font-size: 52px;">#1</div>
-            <div class="character-image-container">
-                <img src="e33c2fa94c03efa06678116f80d62d0d_708x.webp" alt="Goku" class="character-image">
-                <div class="sketch-overlay"></div>
+        <div class="character-screen goku" id="screen5">
+            <div class="character-container">
+                <img src="e33c2fa94c03efa06678116f80d62d0d_708x.webp" alt="Goku" class="character-image" id="char5">
+                <div class="drawing-lines" id="lines5"></div>
             </div>
-            <div class="character-name">Goku (Ultra Instinct)<br><small>Dragon Ball Super</small></div>
+            <div class="character-rank">#1</div>
+            <div class="character-name">GOKU<br>(ULTRA INSTINCT)</div>
+            <div class="final-boss">FINAL BOSS 👑</div>
         </div>
 
-        <div class="closing-text">
-            Who's your #1? 🔥<br>Comment below!
+        <!-- Outro Screen -->
+        <div class="outro-screen" id="outroScreen">
+            <div class="outro-text">DID WE GET IT RIGHT? 💬<br>COMMENT YOUR WINNER!</div>
+            <div class="background-characters">
+                <img src="images/rick.png" class="bg-character" style="top: 10%; left: 10%;">
+                <img src="images/spongebob.png" class="bg-character" style="top: 20%; right: 15%;">
+                <img src="images/ben10.png" class="bg-character" style="top: 60%; left: 5%;">
+                <img src="images/saitama.png" class="bg-character" style="top: 70%; right: 10%;">
+                <img src="images/goku.png" class="bg-character" style="top: 40%; left: 35%;">
+            </div>
         </div>
     </div>
 
     <script>
-       const canvas = document.querySelector('.canvas-overlay');
-const ctx = canvas.getContext('2d');
+        let currentScreen = 0;
+        const screens = ['titleScreen', 'screen1', 'screen2', 'screen3', 'screen4', 'screen5', 'outroScreen'];
+        const container = document.getElementById('container');
+        const paperBg = document.getElementById('paperBg');
+        const darkOverlay = document.getElementById('darkOverlay');
 
-// Resize canvas to full container
-function resizeCanvas() {
-    const container = document.querySelector('.container');
-    canvas.width = container.offsetWidth;
-    canvas.height = container.offsetHeight;
-}
-resizeCanvas();
-window.addEventListener('resize', resizeCanvas);
+        // Create floating particles
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 3 + 's';
+                particle.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
 
-const characters = [
-    { id: 'char5', delay: 1000, name: 'Fighter 5' },
-    { id: 'char4', delay: 2500, name: 'Fighter 4' },
-    { id: 'char3', delay: 4000, name: 'Fighter 3' },
-    { id: 'char2', delay: 5500, name: 'Fighter 2' },
-    { id: 'char1', delay: 7000, name: 'Champion', isChampion: true }
-];
-
-// Modern particle system
-class ParticleSystem {
-    constructor() {
-        this.particles = [];
-        this.colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#f9ca24', '#f0932b', '#eb4d4b'];
-    }
-    
-    createParticle(x, y, type = 'reveal') {
-        const particle = {
-            x: x,
-            y: y,
-            vx: (Math.random() - 0.5) * 8,
-            vy: (Math.random() - 0.5) * 8,
-            life: 1.0,
-            decay: type === 'champion' ? 0.005 : 0.02,
-            size: type === 'champion' ? Math.random() * 6 + 4 : Math.random() * 4 + 2,
-            color: this.colors[Math.floor(Math.random() * this.colors.length)],
-            type: type
-        };
-        this.particles.push(particle);
-    }
-    
-    update() {
-        this.particles = this.particles.filter(particle => {
-            particle.x += particle.vx;
-            particle.y += particle.vy;
-            particle.vx *= 0.98;
-            particle.vy *= 0.98;
-            particle.life -= particle.decay;
+        // Create sketching effect
+        function createSketchEffect(lineContainerId) {
+            const linesContainer = document.getElementById(lineContainerId);
+            const lines = [];
             
-            if (particle.type === 'champion') {
-                particle.vy -= 0.1; // Float upward
+            // Create random sketch lines
+            for (let i = 0; i < 15; i++) {
+                const line = document.createElement('div');
+                line.className = 'line';
+                line.style.width = Math.random() * 100 + 'px';
+                line.style.height = '2px';
+                line.style.top = Math.random() * 80 + '%';
+                line.style.left = Math.random() * 80 + '%';
+                line.style.transform = 'rotate(' + (Math.random() * 180) + 'deg)';
+                line.style.transformOrigin = 'left center';
+                linesContainer.appendChild(line);
+                lines.push(line);
             }
             
-            return particle.life > 0;
-        });
-    }
-    
-    render() {
-        this.particles.forEach(particle => {
-            ctx.save();
-            ctx.globalAlpha = particle.life;
-            
-            if (particle.type === 'champion') {
-                // Glowing effect for champion particles
-                ctx.shadowColor = particle.color;
-                ctx.shadowBlur = 15;
-                ctx.fillStyle = particle.color;
-            } else {
-                ctx.fillStyle = particle.color;
-            }
-            
-            ctx.beginPath();
-            ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.restore();
-        });
-    }
-}
+            // Animate lines sequentially
+            lines.forEach((line, index) => {
+                setTimeout(() => {
+                    line.classList.add('animate');
+                }, index * 50);
+            });
+        }
 
-const particleSystem = new ParticleSystem();
-
-// Modern sketch effect with geometric patterns
-function drawModernSketch(x, y, width, height) {
-    ctx.save();
-    ctx.strokeStyle = '#34495e';
-    ctx.lineWidth = 3;
-    ctx.lineCap = 'round';
-    ctx.globalAlpha = 0.8;
-    
-    // Draw animated geometric lines
-    const lines = [
-        { x1: x, y1: y, x2: x + width, y2: y },
-        { x1: x + width, y1: y, x2: x + width, y2: y + height },
-        { x1: x + width, y1: y + height, x2: x, y2: y + height },
-        { x1: x, y1: y + height, x2: x, y2: y },
-        { x1: x, y1: y, x2: x + width, y2: y + height },
-        { x1: x + width, y1: y, x2: x, y2: y + height }
-    ];
-    
-    lines.forEach((line, index) => {
-        setTimeout(() => {
-            ctx.beginPath();
-            ctx.moveTo(line.x1, line.y1);
-            ctx.lineTo(line.x2, line.y2);
-            ctx.stroke();
+        // Add energy burst effect
+        function addEnergyBurst() {
+            const burst = document.createElement('div');
+            burst.className = 'energy-burst';
+            container.appendChild(burst);
             
-            // Add particles along the line
-            for (let i = 0; i < 5; i++) {
-                const t = i / 4;
-                const px = line.x1 + (line.x2 - line.x1) * t;
-                const py = line.y1 + (line.y2 - line.y1) * t;
-                particleSystem.createParticle(px, py, 'reveal');
-            }
-        }, index * 100);
-    });
-    
-    ctx.restore();
-}
-
-// Modern character animation with morphing effects
-function animateCharacter(characterId, isChampion = false) {
-    const container = document.getElementById(characterId);
-    const image = container.querySelector('.character-image');
-    const sketch = container.querySelector('.sketch-overlay');
-    
-    // Modern slide-in with scale and rotation
-    container.style.opacity = '1';
-    container.style.transform = 'translateX(0) scale(1) rotate(0deg)';
-    container.style.transition = 'all 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
-    
-    setTimeout(() => {
-        // Show sketch with modern overlay
-        sketch.style.opacity = '1';
-        sketch.style.background = 'linear-gradient(45deg, rgba(52,152,219,0.3), rgba(155,89,182,0.3))';
-        sketch.style.backdropFilter = 'blur(10px)';
-        sketch.style.border = '2px solid rgba(255,255,255,0.3)';
-        sketch.style.borderRadius = '15px';
-        sketch.style.transition = 'all 0.6s ease-out';
-        
-        // Get position for canvas drawing
-        const rect = container.getBoundingClientRect();
-        const containerRect = document.querySelector('.container').getBoundingClientRect();
-        const relativeX = rect.left - containerRect.left;
-        const relativeY = rect.top - containerRect.top;
-        
-        drawModernSketch(relativeX + 10, relativeY + 10, rect.width - 20, rect.height - 20);
-        
-        setTimeout(() => {
-            // Dramatic reveal with modern effects
-            image.style.opacity = '1';
-            image.style.transform = 'scale(1.1) rotate(5deg)';
-            image.style.filter = 'drop-shadow(0 20px 40px rgba(0,0,0,0.3)) brightness(1.2)';
-            image.style.transition = 'all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-            
-            // Hide sketch with fade
-            sketch.style.opacity = '0';
-            sketch.style.transform = 'scale(0.8)';
-            
-            // Clear canvas area with fade effect
             setTimeout(() => {
-                ctx.clearRect(relativeX, relativeY, rect.width, rect.height);
-            }, 300);
+                container.removeChild(burst);
+            }, 600);
+        }
+
+        // Screen shake effect
+        function screenShake() {
+            container.classList.add('screen-shake');
+            setTimeout(() => {
+                container.classList.remove('screen-shake');
+            }, 500);
+        }
+
+        // Show specific screen
+        function showScreen(screenId) {
+            // Hide all screens
+            screens.forEach(id => {
+                const screen = document.getElementById(id);
+                if (screen) screen.classList.remove('active');
+            });
             
-            // Create reveal particles
-            for (let i = 0; i < 30; i++) {
-                particleSystem.createParticle(
-                    relativeX + Math.random() * rect.width,
-                    relativeY + Math.random() * rect.height,
-                    isChampion ? 'champion' : 'reveal'
-                );
+            // Show target screen
+            const targetScreen = document.getElementById(screenId);
+            if (targetScreen) {
+                targetScreen.classList.add('active');
+                
+                // Handle character screens with sketch effect
+                if (screenId.startsWith('screen')) {
+                    const screenNum = screenId.replace('screen', '');
+                    const charImg = document.getElementById('char' + screenNum);
+                    
+                    // Show paper background
+                    paperBg.classList.add('active');
+                    
+                    // Start with sketch
+                    setTimeout(() => {
+                        createSketchEffect('lines' + screenNum);
+                        charImg.classList.add('sketch');
+                    }, 300);
+                    
+                    // Transition to colored
+                    setTimeout(() => {
+                        charImg.classList.remove('sketch');
+                        charImg.classList.add('colored');
+                        paperBg.classList.remove('active');
+                        darkOverlay.classList.add('active');
+                        
+                        // Add special effects for #1 (Goku)
+                        if (screenId === 'screen5') {
+                            addEnergyBurst();
+                            screenShake();
+                        }
+                    }, 1500);
+                } else {
+                    // Non-character screens
+                    paperBg.classList.remove('active');
+                    darkOverlay.classList.remove('active');
+                }
             }
+        }
+
+        // Animation timeline
+        function startAnimation() {
+            const timeline = [
+                { screen: 'titleScreen', duration: 3000 },
+                { screen: 'screen1', duration: 4000 },
+                { screen: 'screen2', duration: 4000 },
+                { screen: 'screen3', duration: 4000 },
+                { screen: 'screen4', duration: 4000 },
+                { screen: 'screen5', duration: 5000 },
+                { screen: 'outroScreen', duration: 3000 }
+            ];
             
-            if (isChampion) {
-                // Champion reveal sequence
+            let currentTime = 0;
+            
+            timeline.forEach((step, index) => {
                 setTimeout(() => {
-                    championReveal(container, image);
-                }, 1000);
-            } else {
-                // Regular character settle
-                setTimeout(() => {
-                    image.style.transform = 'scale(1) rotate(0deg)';
-                    image.style.filter = 'drop-shadow(0 10px 20px rgba(0,0,0,0.2))';
-                }, 500);
-            }
-        }, 1200);
-    }, 400);
-}
+                    showScreen(step.screen);
+                    currentScreen = index;
+                }, currentTime);
+                currentTime += step.duration;
+            });
+            
+            // Loop the animation
+            setTimeout(() => {
+                startAnimation();
+            }, currentTime);
+        }
 
-// Champion reveal with full screen effect
-function championReveal(container, image) {
-    // Create champion title
-    const championTitle = document.createElement('div');
-    championTitle.innerHTML = 'CHAMPION';
-    championTitle.style.cssText = `
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        font-size: 4rem;
-        font-weight: 900;
-        color: #f39c12;
-        text-shadow: 0 0 30px rgba(243, 156, 18, 0.8);
-        z-index: 1000;
-        opacity: 0;
-        animation: championTextReveal 2s ease-out forwards;
-        font-family: 'Arial Black', sans-serif;
-        letter-spacing: 0.2em;
-    `;
-    
-    // Add keyframes for champion text
-    const style = document.createElement('style');
-    style.textContent = `
-        @keyframes championTextReveal {
-            0% {
-                opacity: 0;
-                transform: translate(-50%, -50%) scale(0.5) rotate(-10deg);
-            }
-            50% {
-                opacity: 1;
-                transform: translate(-50%, -50%) scale(1.2) rotate(5deg);
-            }
-            100% {
-                opacity: 1;
-                transform: translate(-50%, -50%) scale(1) rotate(0deg);
-            }
-        }
+        // Initialize
+        createParticles();
+        darkOverlay.classList.add('active');
         
-        @keyframes championGlow {
-            0%, 100% {
-                box-shadow: 0 0 30px rgba(243, 156, 18, 0.8);
-            }
-            50% {
-                box-shadow: 0 0 60px rgba(243, 156, 18, 1);
-            }
-        }
-    `;
-    document.head.appendChild(style);
-    document.body.appendChild(championTitle);
-    
-    // Animate champion to center with glow
-    container.style.position = 'fixed';
-    container.style.top = '50%';
-    container.style.left = '50%';
-    container.style.transform = 'translate(-50%, -50%) scale(1.5)';
-    container.style.zIndex = '999';
-    container.style.transition = 'all 2s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-    
-    image.style.borderRadius = '20px';
-    image.style.animation = 'championGlow 2s ease-in-out infinite';
-    
-     // Create champion particles continuously
-    const championParticleInterval = setInterval(() => {
-        const rect = container.getBoundingClientRect();
-        for (let i = 0; i < 10; i++) {
-            particleSystem.createParticle(
-                rect.left + rect.width / 2 + (Math.random() - 0.5) * rect.width * 2,
-                rect.top + rect.height / 2 + (Math.random() - 0.5) * rect.height * 2,
-                'champion'
-            );
-        }
-    }, 200);
-    
-    // Arrange other characters beautifully
-    setTimeout(() => {
-        arrangeOtherCharacters();
-        
-        // Show final text
+        // Start animation after short delay
         setTimeout(() => {
-            showFinalText();
-        }, 2000);
-        
-        // Stop champion particles after some time
-        setTimeout(() => {
-            clearInterval(championParticleInterval);
-        }, 10000);
-    }, 2500);
-}
+            startAnimation();
+        }, 500);
 
-// Arrange other characters in a beautiful layout
-function arrangeOtherCharacters() {
-    const otherCharacters = characters.filter(char => !char.isChampion);
-    const positions = [
-        { top: '20%', left: '15%', scale: '0.8' },
-        { top: '20%', right: '15%', scale: '0.8' },
-        { bottom: '20%', left: '15%', scale: '0.8' },
-        { bottom: '20%', right: '15%', scale: '0.8' }
-    ];
-    
-    otherCharacters.forEach((char, index) => {
-        const container = document.getElementById(char.id);
-        const image = container.querySelector('.character-image');
-        const pos = positions[index];
-        
-        container.style.position = 'fixed';
-        container.style.top = pos.top || 'auto';
-        container.style.bottom = pos.bottom || 'auto';
-        container.style.left = pos.left || 'auto';
-        container.style.right = pos.right || 'auto';
-        container.style.transform = `scale(${pos.scale})`;
-        container.style.opacity = '0.7';
-        container.style.transition = 'all 1.5s ease-out';
-        container.style.zIndex = '100';
-        
-        image.style.filter = 'grayscale(0.3) brightness(0.8)';
-        image.style.borderRadius = '15px';
-        image.style.transition = 'all 1s ease-out';
-        
-        // Hover effect for other characters
-        container.addEventListener('mouseenter', () => {
-            container.style.opacity = '1';
-            container.style.transform = `scale(${parseFloat(pos.scale) + 0.1})`;
-            image.style.filter = 'grayscale(0) brightness(1.1)';
+        // Click to advance (for testing)
+        container.addEventListener('click', () => {
+            currentScreen = (currentScreen + 1) % screens.length;
+            showScreen(screens[currentScreen]);
         });
-        
-        container.addEventListener('mouseleave', () => {
-            container.style.opacity = '0.7';
-            container.style.transform = `scale(${pos.scale})`;
-            image.style.filter = 'grayscale(0.3) brightness(0.8)';
-        });
-    });
-}
-
-// Show final text with modern typography
-function showFinalText() {
-    const finalText = document.createElement('div');
-    finalText.innerHTML = 'THE ULTIMATE FIGHTER';
-    finalText.style.cssText = `
-        position: fixed;
-        bottom: 10%;
-        left: 50%;
-        transform: translateX(-50%);
-        font-size: 2rem;
-        font-weight: 300;
-        color: #ecf0f1;
-        text-shadow: 0 0 20px rgba(236, 240, 241, 0.5);
-        z-index: 1000;
-        opacity: 0;
-        animation: finalTextReveal 3s ease-out forwards;
-        font-family: 'Arial', sans-serif;
-        letter-spacing: 0.1em;
-        text-align: center;
-    `;
-    
-    const finalStyle = document.createElement('style');
-    finalStyle.textContent = `
-        @keyframes finalTextReveal {
-            0% {
-                opacity: 0;
-                transform: translateX(-50%) translateY(50px);
-            }
-            100% {
-                opacity: 1;
-                transform: translateX(-50%) translateY(0);
-            }
-        }
-    `;
-    document.head.appendChild(finalStyle);
-    document.body.appendChild(finalText);
-}
-
-// Modern background effects
-function addModernBackgroundEffects() {
-    const container = document.querySelector('.container');
-    
-    // Floating geometric shapes
-    setInterval(() => {
-        const shape = document.createElement('div');
-        const size = Math.random() * 20 + 10;
-        const shapes = ['circle', 'square', 'triangle'];
-        const selectedShape = shapes[Math.floor(Math.random() * shapes.length)];
-        
-        shape.style.cssText = `
-            position: absolute;
-            width: ${size}px;
-            height: ${size}px;
-            background: linear-gradient(45deg, #3498db, #9b59b6);
-            opacity: 0.1;
-            left: ${Math.random() * 100}%;
-            top: ${Math.random() * 100}%;
-            border-radius: ${selectedShape === 'circle' ? '50%' : '0'};
-            animation: floatUp 8s linear forwards;
-            z-index: 1;
-            pointer-events: none;
-        `;
-        
-        container.appendChild(shape);
-        
-        setTimeout(() => {
-            shape.remove();
-        }, 8000);
-    }, 1000);
-}
-
-// Add floating animation
-const floatStyle = document.createElement('style');
-floatStyle.textContent = `
-    @keyframes floatUp {
-        0% {
-            transform: translateY(0) rotate(0deg);
-            opacity: 0.1;
-        }
-        50% {
-            opacity: 0.3;
-        }
-        100% {
-            transform: translateY(-100vh) rotate(360deg);
-            opacity: 0;
-        }
-    }
-`;
-document.head.appendChild(floatStyle);
-
-// Animation loop for particles
-function animationLoop() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    particleSystem.update();
-    particleSystem.render();
-    requestAnimationFrame(animationLoop);
-}
-
-// Start the animation sequence
-setTimeout(() => {
-    characters.forEach((char, index) => {
-        setTimeout(() => {
-            animateCharacter(char.id, char.isChampion);
-        }, char.delay);
-    });
-    
-    // Start background effects after first character
-    setTimeout(addModernBackgroundEffects, 2000);
-    
-    // Start animation loop
-    animationLoop();
-}, 500);
     </script>
 </body>
 </html>
