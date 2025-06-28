@@ -184,87 +184,157 @@
     <script src="https://cdn.jsdelivr.net/npm/roughjs@4.3.1/bundled/rough.js"></script>
     
     <script>
-        let canvas, ctx;
-        let backgroundSketch;
-        let pencil;
-        let currentPhase = 'intro';
-        let phaseStartTime = 0;
+       class SpongeBobAnimator {
+    constructor() {
+        this.canvas = null;
+        this.ctx = null;
+        this.pencil = null;
+        this.currentPhase = 'intro';
+        this.phaseStartTime = 0;
+        this.isInitialized = false;
+        this.animationFrame = null;
+        this.vivusInstances = new Map();
         
-        // Initialize background texture with p5.js
-        function setup() {
-            const container = document.querySelector('.container');
-            canvas = createCanvas(container.offsetWidth, container.offsetHeight);
-            canvas.parent('backgroundCanvas');
-            
-            // Create paper texture
-            background(249, 245, 236);
-            loadPixels();
-            
-            for (let x = 0; x < width; x += 2) {
-                for (let y = 0; y < height; y += 2) {
-                    let brightness = random(240, 255);
-                    let alpha = random(10, 30);
-                    fill(brightness, brightness, brightness, alpha);
-                    noStroke();
-                    circle(x + random(-1, 1), y + random(-1, 1), random(0.5, 2));
-                }
+        // Animation configuration
+        this.config = {
+            timeline: {
+                intro: { start: 0, end: 3000 },
+                sketch: { start: 3000, end: 10000 },
+                inking: { start: 10000, end: 18000 },
+                coloring: { start: 18000, end: 27000 },
+                final: { start: 27000, end: 30000 }
+            },
+            colors: {
+                body: '#FFD700',
+                eyes: '#FFFFFF',
+                pupils: '#000080',
+                pants: '#8B4513',
+                tie: '#FF0000'
+            },
+            pencil: {
+                radius: 50,
+                speed: 0.1
             }
-            
-            noLoop();
-        }
-        
-        function draw() {
-            // p5.js will handle the background texture
-        }
-        
-        // Animation Timeline
-        let timeline = {
-            intro: { start: 0, end: 3000 },
-            sketch: { start: 3000, end: 10000 },
-            inking: { start: 10000, end: 18000 },
-            coloring: { start: 18000, end: 27000 },
-            final: { start: 27000, end: 30000 }
         };
         
-        let vivusSketch, vivusInk;
-        let isInitialized = false;
-        
-        function initializeAnimation() {
-            if (isInitialized) return;
-            isInitialized = true;
-            
-            pencil = document.getElementById('pencil');
-            
-            // Create rough sketch paths
-            setTimeout(() => {
-                createRoughSketch();
-                startSketchPhase();
-            }, 3000);
-            
-            // Start inking phase
-            setTimeout(() => {
-                startInkingPhase();
-            }, 10000);
-            
-            // Start coloring phase
-            setTimeout(() => {
-                startColoringPhase();
-            }, 18000);
-            
-            // Final reveal
-            setTimeout(() => {
-                startFinalReveal();
-            }, 27000);
+        this.init();
+    }
+    
+    async init() {
+        this.setupEventListeners();
+        await this.waitForDOM();
+        this.setupP5Background();
+        setTimeout(() => this.initializeAnimation(), 100);
+    }
+    
+    waitForDOM() {
+        return new Promise(resolve => {
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', resolve);
+            } else {
+                resolve();
+            }
+        });
+    }
+    
+    setupEventListeners() {
+        window.addEventListener('resize', this.debounce(this.handleResize.bind(this), 250));
+        window.addEventListener('beforeunload', this.cleanup.bind(this));
+    }
+    
+    setupP5Background() {
+        if (typeof createCanvas === 'undefined') {
+            console.warn('p5.js not loaded, skipping background setup');
+            return;
         }
         
-        function createRoughSketch() {
-            const svg = document.getElementById('spongebob-svg');
-            const paths = svg.querySelectorAll('path, circle, rect');
+        window.setup = () => {
+            const container = document.querySelector('.container');
+            if (!container) return;
             
-            // Apply rough.js styling to make paths look hand-drawn
-            const rough = roughjs.svg(svg);
+            this.canvas = createCanvas(container.offsetWidth, container.offsetHeight);
+            this.canvas.parent('backgroundCanvas');
             
-            paths.forEach(path => {
+            this.createPaperTexture();
+            noLoop();
+        };
+        
+        window.draw = () => {
+            // p5.js background rendering
+        };
+        
+        window.windowResized = () => {
+            const container = document.querySelector('.container');
+            if (container && this.canvas) {
+                resizeCanvas(container.offsetWidth, container.offsetHeight);
+                this.createPaperTexture();
+            }
+        };
+    }
+    
+    createPaperTexture() {
+        background(249, 245, 236);
+        
+        // Use more efficient rendering
+        for (let x = 0; x < width; x += 3) {
+            for (let y = 0; y < height; y += 3) {
+                if (Math.random() > 0.7) { // Reduce density for performance
+                    const brightness = this.randomBetween(240, 255);
+                    const alpha = this.randomBetween(10, 30);
+                    fill(brightness, brightness, brightness, alpha);
+                    noStroke();
+                    circle(
+                        x + this.randomBetween(-1, 1), 
+                        y + this.randomBetween(-1, 1), 
+                        this.randomBetween(0.5, 2)
+                    );
+                }
+            }
+        }
+    }
+    
+    async initializeAnimation() {
+        if (this.isInitialized) return;
+        this.isInitialized = true;
+        
+        this.pencil = document.getElementById('pencil');
+        if (!this.pencil) {
+            console.error('Pencil element not found');
+            return;
+        }
+        
+        try {
+            await this.executeAnimationSequence();
+        } catch (error) {
+            console.error('Animation sequence failed:', error);
+        }
+    }
+    
+    async executeAnimationSequence() {
+        const phases = [
+            { delay: 3000, method: this.startSketchPhase.bind(this) },
+            { delay: 10000, method: this.startInkingPhase.bind(this) },
+            { delay: 18000, method: this.startColoringPhase.bind(this) },
+            { delay: 27000, method: this.startFinalReveal.bind(this) }
+        ];
+        
+        phases.forEach(({ delay, method }) => {
+            setTimeout(method, delay);
+        });
+    }
+    
+    createRoughSketch() {
+        const svg = document.getElementById('spongebob-svg');
+        if (!svg || typeof roughjs === 'undefined') {
+            console.warn('SVG element or rough.js not found');
+            return;
+        }
+        
+        const rough = roughjs.svg(svg);
+        const paths = svg.querySelectorAll('path, circle, rect');
+        
+        paths.forEach(path => {
+            try {
                 if (path.tagName === 'path') {
                     const d = path.getAttribute('d');
                     if (d) {
@@ -274,123 +344,191 @@
                             roughness: 2,
                             bowing: 1
                         });
-                        path.parentNode.replaceChild(roughPath, path);
+                        path.parentNode?.replaceChild(roughPath, path);
                     }
                 }
-            });
-        }
+            } catch (error) {
+                console.warn('Failed to create rough sketch for element:', path, error);
+            }
+        });
+    }
+    
+    startSketchPhase() {
+        this.createRoughSketch();
+        this.setPencilVisibility(true);
         
-        function startSketchPhase() {
-            pencil.style.opacity = '1';
-            
-            vivusSketch = new Vivus('spongebob-svg', {
+        if (typeof Vivus !== 'undefined') {
+            this.vivusInstances.set('sketch', new Vivus('spongebob-svg', {
                 type: 'delayed',
                 duration: 140,
                 start: 'manual',
                 animTimingFunction: Vivus.EASE_OUT
             }, () => {
-                pencil.style.opacity = '0';
-            });
+                this.setPencilVisibility(false);
+            }));
             
-            vivusSketch.play();
-            animatePencil();
+            this.vivusInstances.get('sketch').play();
         }
         
-        function startInkingPhase() {
-            // Change stroke color to darker ink
-            const paths = document.querySelectorAll('#spongebob-svg path, #spongebob-svg circle, #spongebob-svg rect');
-            paths.forEach(path => {
-                path.style.stroke = '#111';
-                path.style.strokeWidth = '2';
-            });
-            
-            pencil.style.opacity = '1';
-            
-            vivusInk = new Vivus('spongebob-svg', {
+        this.animatePencil();
+    }
+    
+    startInkingPhase() {
+        this.applyInkStyling();
+        this.setPencilVisibility(true);
+        
+        if (typeof Vivus !== 'undefined') {
+            this.vivusInstances.set('ink', new Vivus('spongebob-svg', {
                 type: 'sync',
                 duration: 80,
                 start: 'manual'
             }, () => {
-                pencil.style.opacity = '0';
-                pencil.classList.add('bounce');
+                this.setPencilVisibility(false);
+                this.pencil?.classList.add('bounce');
+            }));
+            
+            this.vivusInstances.get('ink').play();
+        }
+        
+        this.animatePencil();
+    }
+    
+    applyInkStyling() {
+        const elements = document.querySelectorAll('#spongebob-svg path, #spongebob-svg circle, #spongebob-svg rect');
+        elements.forEach(element => {
+            Object.assign(element.style, {
+                stroke: '#111',
+                strokeWidth: '2',
+                transition: 'stroke 0.3s ease, stroke-width 0.3s ease'
             });
-            
-            vivusInk.play();
-            animatePencil();
-        }
+        });
+    }
+    
+    async startColoringPhase() {
+        const colorSequence = [
+            { delay: 500, id: 'body', color: this.config.colors.body },
+            { delay: 1000, id: 'left-eye', color: this.config.colors.eyes },
+            { delay: 1200, id: 'right-eye', color: this.config.colors.eyes },
+            { delay: 1400, id: 'left-pupil', color: this.config.colors.pupils },
+            { delay: 1600, id: 'right-pupil', color: this.config.colors.pupils },
+            { delay: 2000, id: 'pants', color: this.config.colors.pants },
+            { delay: 2500, id: 'tie', color: this.config.colors.tie },
+            { delay: 3000, id: 'left-arm', color: this.config.colors.body },
+            { delay: 3200, id: 'right-arm', color: this.config.colors.body },
+            { delay: 3500, id: 'left-leg', color: this.config.colors.body },
+            { delay: 3700, id: 'right-leg', color: this.config.colors.body }
+        ];
         
-        function startColoringPhase() {
-            const svg = document.getElementById('spongebob-svg');
-            
-            // Color SpongeBob parts with animation
-            setTimeout(() => fillElement('body', '#FFD700'), 500);
-            setTimeout(() => fillElement('left-eye', '#FFFFFF'), 1000);
-            setTimeout(() => fillElement('right-eye', '#FFFFFF'), 1200);
-            setTimeout(() => fillElement('left-pupil', '#000080'), 1400);
-            setTimeout(() => fillElement('right-pupil', '#000080'), 1600);
-            setTimeout(() => fillElement('pants', '#8B4513'), 2000);
-            setTimeout(() => fillElement('tie', '#FF0000'), 2500);
-            setTimeout(() => fillElement('left-arm', '#FFD700'), 3000);
-            setTimeout(() => fillElement('right-arm', '#FFD700'), 3200);
-            setTimeout(() => fillElement('left-leg', '#FFD700'), 3500);
-            setTimeout(() => fillElement('right-leg', '#FFD700'), 3700);
+        colorSequence.forEach(({ delay, id, color }) => {
+            setTimeout(() => this.fillElement(id, color), delay);
+        });
+    }
+    
+    fillElement(id, color) {
+        const element = document.getElementById(id);
+        if (element) {
+            Object.assign(element.style, {
+                fill: color,
+                transition: 'fill 0.5s ease'
+            });
         }
+    }
+    
+    startFinalReveal() {
+        const svg = document.getElementById('spongebob-svg');
+        const finalText = document.querySelector('.final-text');
         
-        function fillElement(id, color) {
-            const element = document.getElementById(id);
-            if (element) {
-                element.style.fill = color;
-                element.style.transition = 'fill 0.5s ease';
+        svg?.classList.add('glow-effect', 'zoom-in');
+        
+        if (finalText) {
+            Object.assign(finalText.style, {
+                opacity: '1',
+                animation: 'fadeInOut 3s ease-in-out'
+            });
+        }
+    }
+    
+    animatePencil() {
+        if (!this.pencil) return;
+        
+        const svg = document.getElementById('spongebob-svg');
+        const container = document.querySelector('.container');
+        
+        if (!svg || !container) return;
+        
+        const svgRect = svg.getBoundingClientRect();
+        const containerRect = container.getBoundingClientRect();
+        
+        let angle = 0;
+        const { radius, speed } = this.config.pencil;
+        const centerX = svgRect.left + svgRect.width / 2 - containerRect.left;
+        const centerY = svgRect.top + svgRect.height / 2 - containerRect.top;
+        
+        const movePencil = () => {
+            if (this.pencil.style.opacity === '1') {
+                const x = centerX + Math.cos(angle) * radius;
+                const y = centerY + Math.sin(angle) * radius;
+                
+                Object.assign(this.pencil.style, {
+                    left: `${x}px`,
+                    top: `${y}px`,
+                    transform: `rotate(${angle * 180 / Math.PI + 45}deg)`
+                });
+                
+                angle += speed;
+                this.animationFrame = requestAnimationFrame(movePencil);
             }
+        };
+        
+        movePencil();
+    }
+    
+    setPencilVisibility(visible) {
+        if (this.pencil) {
+            this.pencil.style.opacity = visible ? '1' : '0';
+        }
+    }
+    
+    handleResize() {
+        if (typeof windowResized === 'function') {
+            windowResized();
+        }
+    }
+    
+    cleanup() {
+        if (this.animationFrame) {
+            cancelAnimationFrame(this.animationFrame);
         }
         
-        function startFinalReveal() {
-            const svg = document.getElementById('spongebob-svg');
-            const finalText = document.querySelector('.final-text');
-            
-            svg.classList.add('glow-effect', 'zoom-in');
-            finalText.style.opacity = '1';
-            finalText.style.animation = 'fadeInOut 3s ease-in-out';
-        }
-        
-        function animatePencil() {
-            const svg = document.getElementById('spongebob-svg');
-            const svgRect = svg.getBoundingClientRect();
-            const containerRect = document.querySelector('.container').getBoundingClientRect();
-            
-            // Simple pencil animation following the drawing
-            let angle = 0;
-            const radius = 50;
-            const centerX = svgRect.left + svgRect.width / 2 - containerRect.left;
-            const centerY = svgRect.top + svgRect.height / 2 - containerRect.top;
-            
-            function movePencil() {
-                if (pencil.style.opacity === '1') {
-                    const x = centerX + Math.cos(angle) * radius;
-                    const y = centerY + Math.sin(angle) * radius;
-                    
-                    pencil.style.left = x + 'px';
-                    pencil.style.top = y + 'px';
-                    pencil.style.transform = `rotate(${angle * 180 / Math.PI + 45}deg)`;
-                    
-                    angle += 0.1;
-                    requestAnimationFrame(movePencil);
-                }
+        this.vivusInstances.forEach(vivus => {
+            if (vivus && typeof vivus.destroy === 'function') {
+                vivus.destroy();
             }
-            
-            movePencil();
-        }
-        
-        // Start the animation
-        document.addEventListener('DOMContentLoaded', () => {
-            setTimeout(initializeAnimation, 100);
         });
         
-        // Handle window resize
-        function windowResized() {
-            const container = document.querySelector('.container');
-            resizeCanvas(container.offsetWidth, container.offsetHeight);
-        }
+        this.vivusInstances.clear();
+    }
+    
+    // Utility methods
+    randomBetween(min, max) {
+        return Math.random() * (max - min) + min;
+    }
+    
+    debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+}
+
+// Initialize the animator
+const spongeBobAnimator = new SpongeBobAnimator();
     </script>
 </body>
 </html>
