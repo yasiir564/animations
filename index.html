@@ -3,442 +3,394 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>What If Cartoon Characters Were Real?</title>
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <title>Drawing SpongeBob - Realistic Hand-Drawn Animation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
+        
         body {
-            overflow: hidden;
-            background: #000;
             font-family: 'Bebas Neue', cursive;
+            background: #f9f5ec;
+            overflow: hidden;
+            height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
         }
-
+        
         .container {
-            width: 375px;
-            height: 667px;
+            width: 100vw;
+            height: 100vh;
+            max-width: 563px;
+            max-height: 1000px;
             position: relative;
-            background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
-            overflow: hidden;
-            border-radius: 8px;
-            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+            background: #f9f5ec;
+            aspect-ratio: 9/16;
         }
-
-        .paper-texture {
+        
+        #backgroundCanvas {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: 
-                radial-gradient(circle at 20% 30%, rgba(200,200,200,0.1) 1px, transparent 1px),
-                radial-gradient(circle at 80% 70%, rgba(180,180,180,0.1) 1px, transparent 1px),
-                linear-gradient(45deg, rgba(220,220,220,0.1) 25%, transparent 25%),
-                linear-gradient(-45deg, rgba(210,210,210,0.1) 25%, transparent 25%);
-            background-size: 15px 15px, 20px 20px, 8px 8px, 8px 8px;
-            opacity: 0;
-            animation: paperFadeIn 1s ease-in-out 2s forwards;
+            z-index: 1;
         }
-
-        .title {
-            position: absolute;
-            top: 50px;
-            left: 0;
-            right: 0;
-            text-align: center;
-            font-size: 32px;
-            color: #fff;
-            text-shadow: 0 0 20px rgba(0,255,255,0.8), 0 0 40px rgba(0,255,255,0.4);
-            font-weight: 900;
-            letter-spacing: 2px;
-            opacity: 0;
-            animation: titleGlow 2s ease-in-out forwards;
-            z-index: 10;
-        }
-
-        .drawing-area {
+        
+        #spongebob-svg {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 280px;
-            height: 280px;
+            width: 300px;
+            height: 350px;
+            z-index: 2;
         }
-
-        .sketch-canvas {
+        
+        .intro-text {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            animation: canvasAppear 0.5s ease-in-out 3s forwards;
-        }
-
-        .cartoon-image {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            opacity: 0;
-            filter: brightness(1.1) contrast(1.2);
-            animation: cartoonReveal 1s ease-in-out 8s forwards;
-        }
-
-        .realistic-image {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 20px;
-            opacity: 0;
-            transform: scale(0.8);
-            filter: blur(10px);
-            animation: realisticReveal 2s ease-in-out 12s forwards;
-        }
-
-        .glitch-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                linear-gradient(90deg, transparent 0%, rgba(0,255,255,0.1) 25%, transparent 50%, rgba(255,0,255,0.1) 75%, transparent 100%);
-            opacity: 0;
-            animation: glitchEffect 1.5s ease-in-out 10.5s forwards;
-            pointer-events: none;
-            z-index: 5;
-        }
-
-        .glow-effect {
-            position: absolute;
-            top: -20px;
-            left: -20px;
-            right: -20px;
-            bottom: -20px;
-            background: radial-gradient(circle, rgba(0,255,255,0.3) 0%, transparent 70%);
-            opacity: 0;
-            animation: glowPulse 2s ease-in-out 12s infinite;
-            border-radius: 50%;
-        }
-
-        .outro-text {
-            position: absolute;
-            bottom: 80px;
-            left: 0;
-            right: 0;
-            text-align: center;
-            font-size: 24px;
-            color: #fff;
-            text-shadow: 0 0 15px rgba(0,255,255,0.6);
-            opacity: 0;
-            animation: outroAppear 1s ease-in-out 14s forwards;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 3rem;
+            font-weight: bold;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
             z-index: 10;
+            opacity: 0;
+            animation: fadeInOut 3s ease-in-out;
         }
-
+        
+        .final-text {
+            position: absolute;
+            bottom: 15%;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 2rem;
+            font-weight: bold;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            z-index: 10;
+            opacity: 0;
+            text-align: center;
+        }
+        
         .pencil {
             position: absolute;
             width: 60px;
-            height: 8px;
-            background: linear-gradient(90deg, #8B4513 0%, #DAA520 50%, #FFD700 100%);
-            border-radius: 4px;
+            height: 15px;
+            z-index: 5;
             opacity: 0;
-            animation: pencilDraw 5s linear 3s forwards;
-            z-index: 6;
+            transition: all 0.1s ease;
         }
-
-        .pencil::after {
-            content: '';
-            position: absolute;
-            right: -5px;
-            top: 1px;
-            width: 0;
-            height: 0;
-            border-left: 5px solid #2C2C2C;
-            border-top: 3px solid transparent;
-            border-bottom: 3px solid transparent;
+        
+        .glow-effect {
+            filter: drop-shadow(0 0 10px rgba(255, 255, 0, 0.5));
+            animation: glow 2s ease-in-out infinite alternate;
         }
-
-        /* Animations */
-        @keyframes titleGlow {
-            0% { opacity: 0; transform: scale(0.8); }
-            50% { opacity: 1; transform: scale(1.1); }
-            100% { opacity: 1; transform: scale(1); }
-        }
-
-        @keyframes paperFadeIn {
+        
+        @keyframes fadeInOut {
             0% { opacity: 0; }
-            100% { opacity: 1; }
+            30% { opacity: 1; }
+            70% { opacity: 1; }
+            100% { opacity: 0; }
         }
-
-        @keyframes canvasAppear {
-            0% { opacity: 0; }
-            100% { opacity: 1; }
+        
+        @keyframes glow {
+            from { filter: drop-shadow(0 0 10px rgba(255, 255, 0, 0.5)); }
+            to { filter: drop-shadow(0 0 20px rgba(255, 255, 0, 0.8)); }
         }
-
-        @keyframes pencilDraw {
-            0% { 
-                opacity: 1; 
-                top: 20px; 
-                left: 20px; 
-                transform: rotate(45deg); 
-            }
-            25% { 
-                top: 50px; 
-                left: 120px; 
-                transform: rotate(45deg); 
-            }
-            50% { 
-                top: 150px; 
-                left: 200px; 
-                transform: rotate(45deg); 
-            }
-            75% { 
-                top: 200px; 
-                left: 80px; 
-                transform: rotate(45deg); 
-            }
-            100% { 
-                opacity: 0; 
-                top: 20px; 
-                left: 150px; 
-                transform: rotate(45deg); 
-            }
+        
+        .bounce {
+            animation: bounce 0.5s ease-in-out;
         }
-
-        @keyframes cartoonReveal {
-            0% { opacity: 0; transform: scale(0.5) rotate(-5deg); }
-            50% { opacity: 0.8; transform: scale(1.1) rotate(2deg); }
-            100% { opacity: 1; transform: scale(1) rotate(0deg); }
+        
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
         }
-
-        @keyframes glitchEffect {
-            0% { opacity: 0; }
-            10% { opacity: 0.8; transform: translateX(-5px); }
-            20% { opacity: 0.6; transform: translateX(5px); }
-            30% { opacity: 0.9; transform: translateX(-3px); }
-            40% { opacity: 0.4; transform: translateX(3px); }
-            50% { opacity: 0.7; transform: translateX(-2px); }
-            60% { opacity: 0.8; transform: translateX(2px); }
-            70% { opacity: 0.5; transform: translateX(-1px); }
-            80% { opacity: 0.9; transform: translateX(1px); }
-            90% { opacity: 0.3; transform: translateX(0); }
-            100% { opacity: 0; transform: translateX(0); }
+        
+        .zoom-in {
+            animation: zoomIn 3s ease-in-out;
         }
-
-        @keyframes realisticReveal {
-            0% { 
-                opacity: 0; 
-                transform: scale(0.8); 
-                filter: blur(10px); 
-            }
-            50% { 
-                opacity: 0.8; 
-                transform: scale(1.05); 
-                filter: blur(2px); 
-            }
-            100% { 
-                opacity: 1; 
-                transform: scale(1); 
-                filter: blur(0px) brightness(1.1) contrast(1.3); 
-            }
-        }
-
-        @keyframes glowPulse {
-            0%, 100% { opacity: 0.3; transform: scale(1); }
-            50% { opacity: 0.6; transform: scale(1.1); }
-        }
-
-        @keyframes outroAppear {
-            0% { opacity: 0; transform: translateY(20px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes sketchLines {
-            0% { stroke-dashoffset: 1000; }
-            100% { stroke-dashoffset: 0; }
-        }
-
-        .sketch-path {
-            fill: none;
-            stroke: #555;
-            stroke-width: 3;
-            stroke-dasharray: 1000;
-            stroke-dashoffset: 1000;
-            animation: sketchLines 2s ease-in-out 4s forwards;
-        }
-
-        .ink-path {
-            fill: none;
-            stroke: #111;
-            stroke-width: 2;
-            stroke-dasharray: 1000;
-            stroke-dashoffset: 1000;
-            animation: sketchLines 1.5s ease-in-out 6s forwards;
-        }
-
-        /* Responsive adjustments */
-        @media (max-width: 400px) {
-            .container {
-                width: 100vw;
-                height: 100vh;
-                border-radius: 0;
-            }
-            
-            .title {
-                font-size: 28px;
-                top: 40px;
-            }
-            
-            .drawing-area {
-                width: 250px;
-                height: 250px;
-            }
+        
+        @keyframes zoomIn {
+            0% { transform: translate(-50%, -50%) scale(1); }
+            100% { transform: translate(-50%, -50%) scale(1.1); }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="paper-texture"></div>
+        <canvas id="backgroundCanvas"></canvas>
         
-        <div class="title">
-            WHAT IF SPONGEBOB<br>WAS REAL?
-        </div>
+        <div class="intro-text">DRAWING SPONGEBOB...</div>
         
-        <div class="drawing-area">
-            <div class="glow-effect"></div>
+        <svg id="spongebob-svg" viewBox="0 0 300 350">
+            <!-- SpongeBob Body -->
+            <path id="body" d="M75 80 Q75 60 95 60 L205 60 Q225 60 225 80 L225 200 Q225 220 205 220 L95 220 Q75 220 75 200 Z" 
+                  fill="none" stroke="#777" stroke-width="3"/>
             
-            <svg class="sketch-canvas" viewBox="0 0 280 280">
-                <!-- Sketch outline of SpongeBob -->
-                <path class="sketch-path" d="M140 40 Q120 20 100 40 L80 60 Q70 80 80 120 L90 160 Q95 180 110 190 L130 200 Q140 205 150 200 L170 190 Q185 180 190 160 L200 120 Q210 80 200 60 L180 40 Q160 20 140 40 Z"/>
-                
-                <!-- Eyes sketch -->
-                <circle class="sketch-path" cx="120" cy="80" r="15" style="animation-delay: 4.5s;"/>
-                <circle class="sketch-path" cx="160" cy="80" r="15" style="animation-delay: 4.7s;"/>
-                
-                <!-- Mouth sketch -->
-                <path class="sketch-path" d="M120 130 Q140 150 160 130" style="animation-delay: 5s;"/>
-                
-                <!-- Ink lines -->
-                <path class="ink-path" d="M140 40 Q120 20 100 40 L80 60 Q70 80 80 120 L90 160 Q95 180 110 190 L130 200 Q140 205 150 200 L170 190 Q185 180 190 160 L200 120 Q210 80 200 60 L180 40 Q160 20 140 40 Z"/>
-                <circle class="ink-path" cx="120" cy="80" r="15" style="animation-delay: 6.5s;"/>
-                <circle class="ink-path" cx="160" cy="80" r="15" style="animation-delay: 6.7s;"/>
-                <path class="ink-path" d="M120 130 Q140 150 160 130" style="animation-delay: 7s;"/>
-            </svg>
+            <!-- SpongeBob Eyes -->
+            <circle id="left-eye" cx="120" cy="110" r="25" fill="none" stroke="#777" stroke-width="3"/>
+            <circle id="right-eye" cx="180" cy="110" r="25" fill="none" stroke="#777" stroke-width="3"/>
+            <circle id="left-pupil" cx="120" cy="110" r="8" fill="none" stroke="#777" stroke-width="2"/>
+            <circle id="right-pupil" cx="180" cy="110" r="8" fill="none" stroke="#777" stroke-width="2"/>
             
-            <div class="pencil"></div>
+            <!-- SpongeBob Nose -->
+            <path id="nose" d="M145 125 Q150 130 155 125" fill="none" stroke="#777" stroke-width="2"/>
             
-            <!-- Placeholder for cartoon image -->
-            <img src="spongbob.jpg" alt="Cartoon SpongeBob" class="cartoon-image" 
-                 onerror="this.style.display='none'">
+            <!-- SpongeBob Mouth -->
+            <path id="mouth" d="M130 150 Q150 170 170 150" fill="none" stroke="#777" stroke-width="3"/>
             
-            <div class="glitch-overlay"></div>
+            <!-- SpongeBob Pants -->
+            <rect id="pants" x="85" y="180" width="130" height="60" fill="none" stroke="#777" stroke-width="3"/>
             
-            <!-- Placeholder for realistic image -->
-            <img src="Flux_Dev_A_photorealistic_human_version_of_SpongeBob_SquarePan_3.jpg" alt="Realistic SpongeBob" class="realistic-image"
-                 onerror="this.style.display='none'">
-        </div>
+            <!-- SpongeBob Tie -->
+            <path id="tie" d="M140 170 L160 170 L155 190 L145 190 Z" fill="none" stroke="#777" stroke-width="2"/>
+            
+            <!-- SpongeBob Arms -->
+            <path id="left-arm" d="M75 140 Q50 135 45 150 Q50 165 75 160" fill="none" stroke="#777" stroke-width="3"/>
+            <path id="right-arm" d="M225 140 Q250 135 255 150 Q250 165 225 160" fill="none" stroke="#777" stroke-width="3"/>
+            
+            <!-- SpongeBob Legs -->
+            <path id="left-leg" d="M110 240 L110 290 Q110 300 120 300 L130 300" fill="none" stroke="#777" stroke-width="3"/>
+            <path id="right-leg" d="M190 240 L190 290 Q190 300 180 300 L170 300" fill="none" stroke="#777" stroke-width="3"/>
+            
+            <!-- Sponge holes -->
+            <circle id="hole1" cx="100" cy="90" r="4" fill="none" stroke="#777" stroke-width="2"/>
+            <circle id="hole2" cx="130" cy="85" r="3" fill="none" stroke="#777" stroke-width="2"/>
+            <circle id="hole3" cx="170" cy="90" r="4" fill="none" stroke="#777" stroke-width="2"/>
+            <circle id="hole4" cx="200" cy="85" r="3" fill="none" stroke="#777" stroke-width="2"/>
+            <circle id="hole5" cx="105" cy="160" r="3" fill="none" stroke="#777" stroke-width="2"/>
+            <circle id="hole6" cx="195" cy="165" r="4" fill="none" stroke="#777" stroke-width="2"/>
+        </svg>
         
-        <div class="outro-text">
-            WHO SHOULD I MAKE<br>REAL NEXT? 💬
-        </div>
+        <svg class="pencil" id="pencil">
+            <rect x="0" y="5" width="45" height="5" fill="#f4d03f"/>
+            <polygon points="45,5 60,7.5 45,10" fill="#8b4513"/>
+            <circle cx="52" cy="7.5" r="1" fill="#333"/>
+        </svg>
+        
+        <div class="final-text">LIKE IF YOU LOVE SPONGEBOB! 🍍</div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.2/p5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vivus@latest/dist/vivus.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/roughjs@4.3.1/bundled/rough.js"></script>
+    
     <script>
-        // Enhanced animation control
-        document.addEventListener('DOMContentLoaded', function() {
+        let canvas, ctx;
+        let backgroundSketch;
+        let pencil;
+        let currentPhase = 'intro';
+        let phaseStartTime = 0;
+        
+        // Initialize background texture with p5.js
+        function setup() {
             const container = document.querySelector('.container');
-            const glitchOverlay = document.querySelector('.glitch-overlay');
-            const realisticImage = document.querySelector('.realistic-image');
-            const cartoonImage = document.querySelector('.cartoon-image');
-
-            // Add extra glitch effects during transformation
-            setTimeout(() => {
-                // Create multiple glitch layers
-                for (let i = 0; i < 5; i++) {
-                    setTimeout(() => {
-                        container.style.filter = `hue-rotate(${Math.random() * 360}deg) brightness(${0.8 + Math.random() * 0.4})`;
-                        setTimeout(() => {
-                            container.style.filter = 'none';
-                        }, 100);
-                    }, i * 200);
+            canvas = createCanvas(container.offsetWidth, container.offsetHeight);
+            canvas.parent('backgroundCanvas');
+            
+            // Create paper texture
+            background(249, 245, 236);
+            loadPixels();
+            
+            for (let x = 0; x < width; x += 2) {
+                for (let y = 0; y < height; y += 2) {
+                    let brightness = random(240, 255);
+                    let alpha = random(10, 30);
+                    fill(brightness, brightness, brightness, alpha);
+                    noStroke();
+                    circle(x + random(-1, 1), y + random(-1, 1), random(0.5, 2));
                 }
-            }, 10500);
-
-            // Hide cartoon when realistic appears
-            setTimeout(() => {
-                cartoonImage.style.opacity = '0';
-                cartoonImage.style.transform = 'scale(0.8)';
-            }, 12000);
-
-            // Add shake effect during transformation
-            setTimeout(() => {
-                container.style.animation = 'shake 0.5s ease-in-out';
-            }, 11000);
-
-            // Auto-restart animation (for testing)
-            setTimeout(() => {
-                location.reload();
-            }, 16000);
-        });
-
-        // Additional shake animation
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes shake {
-                0%, 100% { transform: translateX(0); }
-                25% { transform: translateX(-2px); }
-                75% { transform: translateX(2px); }
             }
-        `;
-        document.head.appendChild(style);
-
-        // Fallback for missing images - create colored rectangles
-        document.querySelectorAll('img').forEach(img => {
-            img.addEventListener('error', function() {
-                const placeholder = document.createElement('div');
-                placeholder.style.cssText = `
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    width: 100%;
-                    height: 100%;
-                    background: ${this.alt.includes('Cartoon') ? 
-                        'linear-gradient(45deg, #FFD700, #FFA500)' : 
-                        'linear-gradient(45deg, #4A90E2, #7B68EE)'};
-                    border-radius: ${this.alt.includes('Realistic') ? '20px' : '10px'};
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    color: white;
-                    font-weight: bold;
-                    font-size: 14px;
-                    text-align: center;
-                    opacity: ${this.classList.contains('cartoon-image') ? '1' : '0'};
-                    animation: ${this.classList.contains('cartoon-image') ? 
-                        'cartoonReveal 1s ease-in-out 8s forwards' : 
-                        'realisticReveal 2s ease-in-out 12s forwards'};
-                `;
-                placeholder.textContent = this.alt.includes('Cartoon') ? 
-                    '🧽 CARTOON\nSPONGEBOB' : 
-                    '🎭 REALISTIC\nSPONGEBOB';
-                this.parentNode.appendChild(placeholder);
-                this.style.display = 'none';
+            
+            noLoop();
+        }
+        
+        function draw() {
+            // p5.js will handle the background texture
+        }
+        
+        // Animation Timeline
+        let timeline = {
+            intro: { start: 0, end: 3000 },
+            sketch: { start: 3000, end: 10000 },
+            inking: { start: 10000, end: 18000 },
+            coloring: { start: 18000, end: 27000 },
+            final: { start: 27000, end: 30000 }
+        };
+        
+        let vivusSketch, vivusInk;
+        let isInitialized = false;
+        
+        function initializeAnimation() {
+            if (isInitialized) return;
+            isInitialized = true;
+            
+            pencil = document.getElementById('pencil');
+            
+            // Create rough sketch paths
+            setTimeout(() => {
+                createRoughSketch();
+                startSketchPhase();
+            }, 3000);
+            
+            // Start inking phase
+            setTimeout(() => {
+                startInkingPhase();
+            }, 10000);
+            
+            // Start coloring phase
+            setTimeout(() => {
+                startColoringPhase();
+            }, 18000);
+            
+            // Final reveal
+            setTimeout(() => {
+                startFinalReveal();
+            }, 27000);
+        }
+        
+        function createRoughSketch() {
+            const svg = document.getElementById('spongebob-svg');
+            const paths = svg.querySelectorAll('path, circle, rect');
+            
+            // Apply rough.js styling to make paths look hand-drawn
+            const rough = roughjs.svg(svg);
+            
+            paths.forEach(path => {
+                if (path.tagName === 'path') {
+                    const d = path.getAttribute('d');
+                    if (d) {
+                        const roughPath = rough.path(d, {
+                            stroke: '#777',
+                            strokeWidth: 3,
+                            roughness: 2,
+                            bowing: 1
+                        });
+                        path.parentNode.replaceChild(roughPath, path);
+                    }
+                }
             });
+        }
+        
+        function startSketchPhase() {
+            pencil.style.opacity = '1';
+            
+            vivusSketch = new Vivus('spongebob-svg', {
+                type: 'delayed',
+                duration: 140,
+                start: 'manual',
+                animTimingFunction: Vivus.EASE_OUT
+            }, () => {
+                pencil.style.opacity = '0';
+            });
+            
+            vivusSketch.play();
+            animatePencil();
+        }
+        
+        function startInkingPhase() {
+            // Change stroke color to darker ink
+            const paths = document.querySelectorAll('#spongebob-svg path, #spongebob-svg circle, #spongebob-svg rect');
+            paths.forEach(path => {
+                path.style.stroke = '#111';
+                path.style.strokeWidth = '2';
+            });
+            
+            pencil.style.opacity = '1';
+            
+            vivusInk = new Vivus('spongebob-svg', {
+                type: 'sync',
+                duration: 80,
+                start: 'manual'
+            }, () => {
+                pencil.style.opacity = '0';
+                pencil.classList.add('bounce');
+            });
+            
+            vivusInk.play();
+            animatePencil();
+        }
+        
+        function startColoringPhase() {
+            const svg = document.getElementById('spongebob-svg');
+            
+            // Color SpongeBob parts with animation
+            setTimeout(() => fillElement('body', '#FFD700'), 500);
+            setTimeout(() => fillElement('left-eye', '#FFFFFF'), 1000);
+            setTimeout(() => fillElement('right-eye', '#FFFFFF'), 1200);
+            setTimeout(() => fillElement('left-pupil', '#000080'), 1400);
+            setTimeout(() => fillElement('right-pupil', '#000080'), 1600);
+            setTimeout(() => fillElement('pants', '#8B4513'), 2000);
+            setTimeout(() => fillElement('tie', '#FF0000'), 2500);
+            setTimeout(() => fillElement('left-arm', '#FFD700'), 3000);
+            setTimeout(() => fillElement('right-arm', '#FFD700'), 3200);
+            setTimeout(() => fillElement('left-leg', '#FFD700'), 3500);
+            setTimeout(() => fillElement('right-leg', '#FFD700'), 3700);
+        }
+        
+        function fillElement(id, color) {
+            const element = document.getElementById(id);
+            if (element) {
+                element.style.fill = color;
+                element.style.transition = 'fill 0.5s ease';
+            }
+        }
+        
+        function startFinalReveal() {
+            const svg = document.getElementById('spongebob-svg');
+            const finalText = document.querySelector('.final-text');
+            
+            svg.classList.add('glow-effect', 'zoom-in');
+            finalText.style.opacity = '1';
+            finalText.style.animation = 'fadeInOut 3s ease-in-out';
+        }
+        
+        function animatePencil() {
+            const svg = document.getElementById('spongebob-svg');
+            const svgRect = svg.getBoundingClientRect();
+            const containerRect = document.querySelector('.container').getBoundingClientRect();
+            
+            // Simple pencil animation following the drawing
+            let angle = 0;
+            const radius = 50;
+            const centerX = svgRect.left + svgRect.width / 2 - containerRect.left;
+            const centerY = svgRect.top + svgRect.height / 2 - containerRect.top;
+            
+            function movePencil() {
+                if (pencil.style.opacity === '1') {
+                    const x = centerX + Math.cos(angle) * radius;
+                    const y = centerY + Math.sin(angle) * radius;
+                    
+                    pencil.style.left = x + 'px';
+                    pencil.style.top = y + 'px';
+                    pencil.style.transform = `rotate(${angle * 180 / Math.PI + 45}deg)`;
+                    
+                    angle += 0.1;
+                    requestAnimationFrame(movePencil);
+                }
+            }
+            
+            movePencil();
+        }
+        
+        // Start the animation
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(initializeAnimation, 100);
         });
+        
+        // Handle window resize
+        function windowResized() {
+            const container = document.querySelector('.container');
+            resizeCanvas(container.offsetWidth, container.offsetHeight);
+        }
     </script>
 </body>
 </html>
