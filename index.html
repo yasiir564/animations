@@ -3,11 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Drawing Patrick – Hand-Drawn on Notebook Paper</title>
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Anton&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/vivus@latest/dist/vivus.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/roughjs@4.3.1/bundled/rough.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.2/p5.min.js"></script>
+    <title>Drawing Neymar in Brazil Jersey</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -16,373 +13,426 @@
         }
 
         body {
+            background: #f5f5f0;
             font-family: 'Bebas Neue', cursive;
-            background: #f0f0f0;
+            overflow: hidden;
+            height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            overflow: hidden;
         }
 
         .container {
-            width: 400px;
-            height: 711px; /* 9:16 aspect ratio */
+            width: 100vw;
+            height: 100vh;
+            max-width: 430px;
             position: relative;
-            background: #fdfaf5;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            overflow: hidden;
+            background: #fefefe;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
 
-        #notebook-canvas {
+        #notebook-bg {
             position: absolute;
             top: 0;
             left: 0;
+            width: 100%;
+            height: 100%;
             z-index: 1;
         }
 
-        #drawing-svg {
+        .drawing-area {
             position: absolute;
             top: 0;
             left: 0;
-            z-index: 2;
             width: 100%;
             height: 100%;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
         }
 
-        .title {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 24px;
-            color: #333;
-            z-index: 10;
-            text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
-            letter-spacing: 2px;
+        #neymar-svg {
+            width: 80%;
+            height: 70%;
+            max-width: 300px;
+            max-height: 400px;
         }
 
-        .phase-indicator {
+        .caption {
             position: absolute;
             bottom: 30px;
             left: 50%;
             transform: translateX(-50%);
-            font-size: 18px;
-            color: #666;
-            z-index: 10;
-            background: rgba(255,255,255,0.8);
-            padding: 8px 16px;
-            border-radius: 20px;
-            transition: all 0.3s ease;
-        }
-
-        .pencil {
-            position: absolute;
-            width: 120px;
-            height: 20px;
-            z-index: 5;
+            font-size: 24px;
+            color: #333;
+            text-align: center;
             opacity: 0;
-            transition: all 0.5s ease;
+            transition: opacity 1s ease;
+            z-index: 3;
         }
 
-        .pencil.active {
+        .caption.show {
             opacity: 1;
+        }
+
+        .phase-indicator {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.9);
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            color: #666;
+            z-index: 3;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        /* SVG styles for different phases */
+        .sketch-line {
+            stroke: #888;
+            stroke-width: 2;
+            fill: none;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .ink-line {
+            stroke: #111;
+            stroke-width: 2.5;
+            fill: none;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            opacity: 0;
         }
 
         .color-fill {
             opacity: 0;
-            transition: opacity 1s ease;
+            stroke: none;
         }
 
-        .color-fill.active {
-            opacity: 1;
+        /* Animation classes */
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        .bounce {
+            animation: bounce 0.6s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        @keyframes shine {
+            0% { filter: brightness(1); }
+            50% { filter: brightness(1.2); }
+            100% { filter: brightness(1); }
+        }
+
+        .shine-effect {
+            animation: shine 2s ease-in-out infinite;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="title">DRAWING PATRICK</div>
-        <canvas id="notebook-canvas"></canvas>
+        <!-- Notebook background canvas -->
+        <canvas id="notebook-bg"></canvas>
         
-        <svg id="drawing-svg" viewBox="0 0 400 711">
-            <!-- Pencil Tool -->
-            <g class="pencil" id="pencil-tool">
-                <rect x="0" y="0" width="100" height="8" fill="#ffd700" stroke="#ddd" stroke-width="1"/>
-                <rect x="95" y="2" width="20" height="4" fill="#ff6b6b"/>
-                <circle cx="105" cy="4" r="2" fill="#333"/>
-            </g>
-
-            <!-- Patrick's Body Outline -->
-            <g id="patrick-sketch" opacity="0">
-                <path id="body-outline" d="M200 150 Q170 120 150 160 Q140 200 160 250 Q180 320 200 350 Q220 320 240 250 Q260 200 250 160 Q230 120 200 150 Z" 
-                      fill="none" stroke="#888" stroke-width="2" stroke-dasharray="3,2"/>
+        <!-- Drawing area -->
+        <div class="drawing-area">
+            <div class="phase-indicator" id="phase-text">Phase 1: Sketching...</div>
+            
+            <!-- SVG for Neymar drawing -->
+            <svg id="neymar-svg" viewBox="0 0 300 400" xmlns="http://www.w3.org/2000/svg">
+                <!-- Sketch layer -->
+                <g id="sketch-layer">
+                    <!-- Face outline -->
+                    <path id="face" class="sketch-line" d="M150,80 Q170,85 175,110 Q175,130 170,145 Q165,160 150,165 Q135,160 130,145 Q125,130 125,110 Q130,85 150,80 Z"/>
+                    
+                    <!-- Hair -->
+                    <path id="hair" class="sketch-line" d="M125,85 Q120,70 125,60 Q135,50 150,52 Q165,50 175,60 Q180,70 175,85 Q170,75 165,70 Q155,65 150,67 Q145,65 135,70 Q130,75 125,85"/>
+                    
+                    <!-- Eyes -->
+                    <circle id="left-eye" class="sketch-line" cx="140" cy="115" r="3"/>
+                    <circle id="right-eye" class="sketch-line" cx="160" cy="115" r="3"/>
+                    
+                    <!-- Nose -->
+                    <path id="nose" class="sketch-line" d="M150,120 L148,130 L152,130 Z"/>
+                    
+                    <!-- Mouth -->
+                    <path id="mouth" class="sketch-line" d="M145,140 Q150,145 155,140"/>
+                    
+                    <!-- Neck -->
+                    <path id="neck" class="sketch-line" d="M145,165 L145,180 L155,180 L155,165"/>
+                    
+                    <!-- Jersey body -->
+                    <path id="jersey-body" class="sketch-line" d="M120,180 Q115,185 115,200 L115,320 Q115,330 125,330 L175,330 Q185,330 185,320 L185,200 Q185,185 180,180 L155,180 L145,180 Z"/>
+                    
+                    <!-- Jersey sleeves -->
+                    <path id="left-sleeve" class="sketch-line" d="M120,180 Q100,185 95,200 Q90,220 95,240 Q100,250 110,245 L120,220"/>
+                    <path id="right-sleeve" class="sketch-line" d="M180,180 Q200,185 205,200 Q210,220 205,240 Q200,250 190,245 L180,220"/>
+                    
+                    <!-- Jersey number -->
+                    <text id="jersey-number" x="150" y="250" text-anchor="middle" class="sketch-line" style="font-size: 24px; font-family: Arial, sans-serif; stroke-width: 1;">10</text>
+                    
+                    <!-- Arms -->
+                    <path id="left-arm" class="sketch-line" d="M110,245 Q105,260 110,275 Q115,285 125,280 Q130,275 125,265"/>
+                    <path id="right-arm" class="sketch-line" d="M190,245 Q195,260 190,275 Q185,285 175,280 Q170,275 175,265"/>
+                    
+                    <!-- Shorts -->
+                    <path id="shorts" class="sketch-line" d="M125,330 L125,360 Q125,370 135,370 L165,370 Q175,370 175,360 L175,330"/>
+                </g>
                 
-                <!-- Arms -->
-                <path id="left-arm" d="M160 200 Q120 190 100 220 Q90 240 110 250 Q130 240 160 230" 
-                      fill="none" stroke="#888" stroke-width="2" stroke-dasharray="3,2"/>
-                <path id="right-arm" d="M240 200 Q280 190 300 220 Q310 240 290 250 Q270 240 240 230" 
-                      fill="none" stroke="#888" stroke-width="2" stroke-dasharray="3,2"/>
+                <!-- Ink layer -->
+                <g id="ink-layer">
+                    <path id="face-ink" class="ink-line" d="M150,80 Q170,85 175,110 Q175,130 170,145 Q165,160 150,165 Q135,160 130,145 Q125,130 125,110 Q130,85 150,80 Z"/>
+                    <path id="hair-ink" class="ink-line" d="M125,85 Q120,70 125,60 Q135,50 150,52 Q165,50 175,60 Q180,70 175,85 Q170,75 165,70 Q155,65 150,67 Q145,65 135,70 Q130,75 125,85"/>
+                    <circle id="left-eye-ink" class="ink-line" cx="140" cy="115" r="3"/>
+                    <circle id="right-eye-ink" class="ink-line" cx="160" cy="115" r="3"/>
+                    <path id="nose-ink" class="ink-line" d="M150,120 L148,130 L152,130 Z"/>
+                    <path id="mouth-ink" class="ink-line" d="M145,140 Q150,145 155,140"/>
+                    <path id="neck-ink" class="ink-line" d="M145,165 L145,180 L155,180 L155,165"/>
+                    <path id="jersey-body-ink" class="ink-line" d="M120,180 Q115,185 115,200 L115,320 Q115,330 125,330 L175,330 Q185,330 185,320 L185,200 Q185,185 180,180 L155,180 L145,180 Z"/>
+                    <path id="left-sleeve-ink" class="ink-line" d="M120,180 Q100,185 95,200 Q90,220 95,240 Q100,250 110,245 L120,220"/>
+                    <path id="right-sleeve-ink" class="ink-line" d="M180,180 Q200,185 205,200 Q210,220 205,240 Q200,250 190,245 L180,220"/>
+                    <text id="jersey-number-ink" x="150" y="250" text-anchor="middle" class="ink-line" style="font-size: 24px; font-family: Arial, sans-serif; stroke-width: 1.5;">10</text>
+                    <path id="left-arm-ink" class="ink-line" d="M110,245 Q105,260 110,275 Q115,285 125,280 Q130,275 125,265"/>
+                    <path id="right-arm-ink" class="ink-line" d="M190,245 Q195,260 190,275 Q185,285 175,280 Q170,275 175,265"/>
+                    <path id="shorts-ink" class="ink-line" d="M125,330 L125,360 Q125,370 135,370 L165,370 Q175,370 175,360 L175,330"/>
+                </g>
                 
-                <!-- Legs -->
-                <path id="left-leg" d="M180 350 Q170 400 160 450 Q150 480 170 490 Q190 480 180 450" 
-                      fill="none" stroke="#888" stroke-width="2" stroke-dasharray="3,2"/>
-                <path id="right-leg" d="M220 350 Q230 400 240 450 Q250 480 230 490 Q210 480 220 450" 
-                      fill="none" stroke="#888" stroke-width="2" stroke-dasharray="3,2"/>
-                
-                <!-- Eyes -->
-                <circle id="left-eye" cx="185" cy="180" r="15" fill="none" stroke="#888" stroke-width="2" stroke-dasharray="2,1"/>
-                <circle id="right-eye" cx="215" cy="180" r="15" fill="none" stroke="#888" stroke-width="2" stroke-dasharray="2,1"/>
-                
-                <!-- Mouth -->
-                <path id="mouth" d="M190 210 Q200 220 210 210" fill="none" stroke="#888" stroke-width="2" stroke-dasharray="2,1"/>
-                
-                <!-- Shorts -->
-                <path id="shorts" d="M170 280 Q200 270 230 280 L235 320 Q200 330 165 320 Z" 
-                      fill="none" stroke="#888" stroke-width="2" stroke-dasharray="3,2"/>
-            </g>
-
-            <!-- Ink Lines -->
-            <g id="patrick-ink" opacity="0">
-                <path id="body-ink" d="M200 150 Q170 120 150 160 Q140 200 160 250 Q180 320 200 350 Q220 320 240 250 Q260 200 250 160 Q230 120 200 150 Z" 
-                      fill="none" stroke="#111" stroke-width="3"/>
-                
-                <path id="left-arm-ink" d="M160 200 Q120 190 100 220 Q90 240 110 250 Q130 240 160 230" 
-                      fill="none" stroke="#111" stroke-width="3"/>
-                <path id="right-arm-ink" d="M240 200 Q280 190 300 220 Q310 240 290 250 Q270 240 240 230" 
-                      fill="none" stroke="#111" stroke-width="3"/>
-                
-                <path id="left-leg-ink" d="M180 350 Q170 400 160 450 Q150 480 170 490 Q190 480 180 450" 
-                      fill="none" stroke="#111" stroke-width="3"/>
-                <path id="right-leg-ink" d="M220 350 Q230 400 240 450 Q250 480 230 490 Q210 480 220 450" 
-                      fill="none" stroke="#111" stroke-width="3"/>
-                
-                <circle id="left-eye-ink" cx="185" cy="180" r="15" fill="none" stroke="#111" stroke-width="3"/>
-                <circle id="right-eye-ink" cx="215" cy="180" r="15" fill="none" stroke="#111" stroke-width="3"/>
-                
-                <path id="mouth-ink" d="M190 210 Q200 220 210 210" fill="none" stroke="#111" stroke-width="3"/>
-                
-                <path id="shorts-ink" d="M170 280 Q200 270 230 280 L235 320 Q200 330 165 320 Z" 
-                      fill="none" stroke="#111" stroke-width="3"/>
-            </g>
-
-            <!-- Color Fills -->
-            <g id="patrick-colors" class="color-fill">
-                <!-- Body Fill -->
-                <path d="M200 150 Q170 120 150 160 Q140 200 160 250 Q180 320 200 350 Q220 320 240 250 Q260 200 250 160 Q230 120 200 150 Z" 
-                      fill="#ffcccc"/>
-                
-                <!-- Arms Fill -->
-                <path d="M160 200 Q120 190 100 220 Q90 240 110 250 Q130 240 160 230" fill="#ffcccc"/>
-                <path d="M240 200 Q280 190 300 220 Q310 240 290 250 Q270 240 240 230" fill="#ffcccc"/>
-                
-                <!-- Legs Fill -->
-                <path d="M180 350 Q170 400 160 450 Q150 480 170 490 Q190 480 180 450" fill="#ffcccc"/>
-                <path d="M220 350 Q230 400 240 450 Q250 480 230 490 Q210 480 220 450" fill="#ffcccc"/>
-                
-                <!-- Eyes Fill -->
-                <circle cx="185" cy="180" r="15" fill="white"/>
-                <circle cx="215" cy="180" r="15" fill="white"/>
-                <circle cx="185" cy="180" r="8" fill="#111"/>
-                <circle cx="215" cy="180" r="8" fill="#111"/>
-                
-                <!-- Shorts Fill -->
-                <path d="M170 280 Q200 270 230 280 L235 320 Q200 330 165 320 Z" fill="#8bc34a"/>
-                
-                <!-- Flower Pattern on Shorts -->
-                <circle cx="190" cy="295" r="4" fill="#9c27b0"/>
-                <circle cx="210" cy="300" r="4" fill="#9c27b0"/>
-                <circle cx="185" cy="310" r="3" fill="#9c27b0"/>
-                <circle cx="215" cy="308" r="3" fill="#9c27b0"/>
-            </g>
-        </svg>
-
-        <div class="phase-indicator" id="phase-text">Phase 1: Sketching</div>
+                <!-- Color layer -->
+                <g id="color-layer">
+                    <!-- Skin -->
+                    <path id="face-color" class="color-fill" fill="#DEB887" d="M150,80 Q170,85 175,110 Q175,130 170,145 Q165,160 150,165 Q135,160 130,145 Q125,130 125,110 Q130,85 150,80 Z"/>
+                    <path id="neck-color" class="color-fill" fill="#DEB887" d="M145,165 L145,180 L155,180 L155,165"/>
+                    <path id="left-arm-color" class="color-fill" fill="#DEB887" d="M110,245 Q105,260 110,275 Q115,285 125,280 Q130,275 125,265"/>
+                    <path id="right-arm-color" class="color-fill" fill="#DEB887" d="M190,245 Q195,260 190,275 Q185,285 175,280 Q170,275 175,265"/>
+                    
+                    <!-- Hair -->
+                    <path id="hair-color" class="color-fill" fill="#8B4513" d="M125,85 Q120,70 125,60 Q135,50 150,52 Q165,50 175,60 Q180,70 175,85 Q170,75 165,70 Q155,65 150,67 Q145,65 135,70 Q130,75 125,85"/>
+                    
+                    <!-- Eyes -->
+                    <circle id="left-eye-color" class="color-fill" fill="#2E2E2E" cx="140" cy="115" r="3"/>
+                    <circle id="right-eye-color" class="color-fill" fill="#2E2E2E" cx="160" cy="115" r="3"/>
+                    
+                    <!-- Jersey body (yellow) -->
+                    <path id="jersey-body-color" class="color-fill" fill="#FFEB3B" d="M120,180 Q115,185 115,200 L115,320 Q115,330 125,330 L175,330 Q185,330 185,320 L185,200 Q185,185 180,180 L155,180 L145,180 Z"/>
+                    
+                    <!-- Jersey sleeves (green) -->
+                    <path id="left-sleeve-color" class="color-fill" fill="#1B5E20" d="M120,180 Q100,185 95,200 Q90,220 95,240 Q100,250 110,245 L120,220"/>
+                    <path id="right-sleeve-color" class="color-fill" fill="#1B5E20" d="M180,180 Q200,185 205,200 Q210,220 205,240 Q200,250 190,245 L180,220"/>
+                    
+                    <!-- Jersey number -->
+                    <text id="jersey-number-color" x="150" y="250" text-anchor="middle" class="color-fill" fill="#1B5E20" style="font-size: 24px; font-family: Arial, sans-serif; font-weight: bold;">10</text>
+                    
+                    <!-- Shorts (blue) -->
+                    <path id="shorts-color" class="color-fill" fill="#1976D2" d="M125,330 L125,360 Q125,370 135,370 L165,370 Q175,370 175,360 L175,330"/>
+                </g>
+            </svg>
+            
+            <div class="caption" id="caption">Drawn with Code 🇧🇷⚽</div>
+        </div>
     </div>
 
+    <!-- Required Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/vivus@latest/dist/vivus.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/roughjs@4.3.1/bundled/rough.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.2/p5.min.js"></script>
+
     <script>
-        // p5.js sketch for notebook paper background
+        // p5.js sketch for notebook background
         function setup() {
-            let canvas = createCanvas(400, 711);
-            canvas.parent('notebook-canvas');
-            noLoop();
+            const canvas = createCanvas(windowWidth > 430 ? 430 : windowWidth, windowHeight);
+            canvas.parent('notebook-bg');
+            
+            // Draw notebook paper background
+            background(254, 254, 254);
+            
+            // Draw horizontal lines
+            stroke(135, 206, 235, 150); // Light blue
+            strokeWeight(1);
+            for (let y = 40; y < height; y += 25) {
+                line(60, y, width - 20, y);
+            }
+            
+            // Draw red margin
+            stroke(220, 20, 60, 180); // Red
+            strokeWeight(2);
+            line(60, 0, 60, height);
+            
+            // Add subtle paper texture
+            for (let i = 0; i < 1000; i++) {
+                stroke(200, 200, 200, 20);
+                strokeWeight(0.5);
+                point(random(width), random(height));
+            }
+            
+            noLoop(); // Static background
         }
 
-        function draw() {
-            // Paper background
-            background('#fdfaf5');
-            
-            // Add paper texture/grain
-            for (let i = 0; i < 2000; i++) {
-                let x = random(width);
-                let y = random(height);
-                stroke(random(220, 240));
-                strokeWeight(0.5);
-                point(x, y);
-            }
-            
-            // Red margin line
-            stroke('#ff6b6b');
-            strokeWeight(1);
-            line(50, 0, 50, height);
-            
-            // Blue horizontal lines
-            stroke('#4a90e2');
-            strokeWeight(0.8);
-            for (let y = 80; y < height - 50; y += 25) {
-                line(0, y, width, y);
-            }
-            
-            // Add subtle shadows at edges
-            for (let i = 0; i < 20; i++) {
-                stroke(red('#fdfaf5') - i, green('#fdfaf5') - i, blue('#fdfaf5') - i, 20);
-                strokeWeight(1);
-                line(i, 0, i, height);
-                line(width - i, 0, width - i, height);
-            }
+        function windowResized() {
+            resizeCanvas(windowWidth > 430 ? 430 : windowWidth, windowHeight);
+            setup();
         }
 
         // Animation controller
         class DrawingAnimation {
             constructor() {
-                this.currentPhase = 0;
-                this.phases = ['Sketching', 'Inking', 'Coloring'];
+                this.currentPhase = 1;
                 this.phaseText = document.getElementById('phase-text');
-                this.pencil = document.getElementById('pencil-tool');
-                this.sketchGroup = document.getElementById('patrick-sketch');
-                this.inkGroup = document.getElementById('patrick-ink');
-                this.colorGroup = document.getElementById('patrick-colors');
-            }
-
-            start() {
-                setTimeout(() => this.startSketchPhase(), 1000);
-            }
-
-            updatePhase(phaseIndex) {
-                this.currentPhase = phaseIndex;
-                this.phaseText.textContent = `Phase ${phaseIndex + 1}: ${this.phases[phaseIndex]}`;
-            }
-
-            startSketchPhase() {
-                this.updatePhase(0);
-                this.pencil.classList.add('active');
-                this.sketchGroup.style.opacity = '1';
+                this.caption = document.getElementById('caption');
+                this.isAnimating = false;
                 
-                // Animate pencil movement
-                this.animatePencil();
+                this.init();
+            }
+            
+            init() {
+                // Start the animation sequence
+                setTimeout(() => this.startPhase1(), 1000);
+            }
+            
+            startPhase1() {
+                if (this.isAnimating) return;
+                this.isAnimating = true;
+                
+                this.phaseText.textContent = 'Phase 1: Sketching...';
                 
                 // Use Vivus to animate sketch lines
-                setTimeout(() => {
-                    this.animateSketchLines();
-                }, 500);
-            }
-
-            animatePencil() {
-                const pencil = this.pencil;
-                let positions = [
-                    {x: 150, y: 140},
-                    {x: 180, y: 160},
-                    {x: 220, y: 180},
-                    {x: 160, y: 200},
-                    {x: 240, y: 220}
+                const sketchElements = [
+                    'face', 'hair', 'left-eye', 'right-eye', 'nose', 'mouth', 
+                    'neck', 'jersey-body', 'left-sleeve', 'right-sleeve', 
+                    'jersey-number', 'left-arm', 'right-arm', 'shorts'
                 ];
                 
-                let index = 0;
-                const movePencil = () => {
-                    if (index < positions.length) {
-                        pencil.style.transform = `translate(${positions[index].x}px, ${positions[index].y}px)`;
-                        index++;
-                        setTimeout(movePencil, 800);
-                    } else {
-                        pencil.classList.remove('active');
-                    }
-                };
-                movePencil();
-            }
-
-            animateSketchLines() {
-                // Simulate rough sketch animation by gradually showing elements
-                const elements = this.sketchGroup.children;
                 let delay = 0;
-                
-                for (let element of elements) {
+                sketchElements.forEach((id, index) => {
                     setTimeout(() => {
-                        element.style.strokeDasharray = 'none';
-                        element.style.animation = 'drawLine 1s ease-in-out forwards';
+                        const element = document.getElementById(id);
+                        if (element) {
+                            new Vivus(element, {
+                                duration: 80,
+                                type: 'oneByOne'
+                            });
+                        }
+                        
+                        if (index === sketchElements.length - 1) {
+                            setTimeout(() => this.startPhase2(), 1000);
+                        }
                     }, delay);
-                    delay += 600;
-                }
-                
-                setTimeout(() => this.startInkPhase(), delay + 1000);
+                    delay += 300;
+                });
             }
-
-            startInkPhase() {
-                this.updatePhase(1);
-                this.inkGroup.style.opacity = '1';
+            
+            startPhase2() {
+                this.currentPhase = 2;
+                this.phaseText.textContent = 'Phase 2: Inking...';
                 
-                // Create Vivus animation for ink lines
-                const inkPaths = this.inkGroup.querySelectorAll('path, circle');
+                // Fade in ink layer
+                const inkElements = document.querySelectorAll('#ink-layer .ink-line');
                 let delay = 0;
                 
-                inkPaths.forEach(path => {
+                inkElements.forEach((element, index) => {
                     setTimeout(() => {
-                        new Vivus(path, {
-                            duration: 80,
-                            type: 'oneByOne'
-                        });
+                        element.style.opacity = '1';
+                        element.style.transition = 'opacity 0.5s ease';
+                        
+                        if (index === inkElements.length - 1) {
+                            setTimeout(() => this.startPhase3(), 1000);
+                        }
+                    }, delay);
+                    delay += 200;
+                });
+            }
+            
+            startPhase3() {
+                this.currentPhase = 3;
+                this.phaseText.textContent = 'Phase 3: Coloring...';
+                
+                // Animate color fills
+                const colorElements = [
+                    'face-color', 'neck-color', 'hair-color', 'left-eye-color', 'right-eye-color',
+                    'jersey-body-color', 'left-sleeve-color', 'right-sleeve-color', 
+                    'jersey-number-color', 'left-arm-color', 'right-arm-color', 'shorts-color'
+                ];
+                
+                let delay = 0;
+                colorElements.forEach((id, index) => {
+                    setTimeout(() => {
+                        const element = document.getElementById(id);
+                        if (element) {
+                            element.style.opacity = '1';
+                            element.style.transition = 'opacity 0.8s ease';
+                        }
+                        
+                        if (index === colorElements.length - 1) {
+                            setTimeout(() => this.finalReveal(), 500);
+                        }
                     }, delay);
                     delay += 400;
                 });
-                
-                setTimeout(() => this.startColorPhase(), delay + 1000);
-            }
-
-            startColorPhase() {
-                this.updatePhase(2);
-                this.colorGroup.classList.add('active');
-                
-                // Animate color fills one by one
-                const colorElements = this.colorGroup.children;
-                let delay = 0;
-                
-                for (let element of colorElements) {
-                    setTimeout(() => {
-                        element.style.animation = 'colorFill 1s ease-in-out forwards';
-                    }, delay);
-                    delay += 300;
-                }
-            }
-        }
-
-        // CSS animations
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes drawLine {
-                from {
-                    stroke-dasharray: 1000;
-                    stroke-dashoffset: 1000;
-                }
-                to {
-                    stroke-dasharray: 1000;
-                    stroke-dashoffset: 0;
-                }
             }
             
-            @keyframes colorFill {
-                from {
-                    fill-opacity: 0;
-                }
-                to {
-                    fill-opacity: 1;
-                }
+            finalReveal() {
+                this.phaseText.textContent = 'Complete! 🎨';
+                
+                // Add bounce effect to the whole drawing
+                const svg = document.getElementById('neymar-svg');
+                svg.classList.add('bounce', 'shine-effect');
+                
+                // Show caption
+                setTimeout(() => {
+                    this.caption.classList.add('show');
+                }, 500);
+                
+                // Restart animation after delay
+                setTimeout(() => {
+                    this.restart();
+                }, 8000);
+                
+                this.isAnimating = false;
             }
-        `;
-        document.head.appendChild(style);
-
+            
+            restart() {
+                // Reset all elements
+                const allElements = document.querySelectorAll('#neymar-svg path, #neymar-svg circle, #neymar-svg text');
+                allElements.forEach(element => {
+                    if (element.classList.contains('sketch-line')) {
+                        element.style.strokeDasharray = '';
+                        element.style.strokeDashoffset = '';
+                    } else if (element.classList.contains('ink-line')) {
+                        element.style.opacity = '0';
+                    } else if (element.classList.contains('color-fill')) {
+                        element.style.opacity = '0';
+                    }
+                });
+                
+                // Reset classes
+                const svg = document.getElementById('neymar-svg');
+                svg.classList.remove('bounce', 'shine-effect');
+                this.caption.classList.remove('show');
+                
+                // Restart
+                this.currentPhase = 1;
+                setTimeout(() => this.startPhase1(), 2000);
+            }
+        }
+        
         // Start animation when page loads
         window.addEventListener('load', () => {
-            const animation = new DrawingAnimation();
-            animation.start();
+            new DrawingAnimation();
         });
     </script>
 </body>
