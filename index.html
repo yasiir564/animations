@@ -303,127 +303,386 @@
     </div>
 
     <script>
-        const kits = ['Gemini_Generated_Image_5ubuja5ubuja5ubu (2).png', 'Gemini_Generated_Image_5ubuja5ubuja5ubu (1).png', 'Gemini_Generated_Image_5ubuja5ubuja5ubu (1).png', 'Gemini_Generated_Image_5ubuja5ubuja5ubu (2).png', 'Gemini_Generated_Image_5ubuja5ubuja5ubu.png', 'Gemini_Generated_Image_5ubuja5ubuja5ubu.png'];
-        const correctMatches = [2, 4, -1]; // Messi matches kit3, Ronaldo matches kit5, Neymar no match
-        let currentSlot = 0;
-        let currentAttempt = 0;
-        const maxAttempts = 4;
+        const kits = [
+   'Gemini_Generated_Image_5ubuja5ubuja5ubu (2).png', 
+   'Gemini_Generated_Image_5ubuja5ubuja5ubu (1).png', 
+   'Gemini_Generated_Image_5ubuja5ubuja5ubu (1).png', 
+   'Gemini_Generated_Image_5ubuja5ubuja5ubu (2).png', 
+   'Gemini_Generated_Image_5ubuja5ubuja5ubu.png', 
+   'Gemini_Generated_Image_5ubuja5ubuja5ubu.png'
+];
 
-        function createConfetti(slotId) {
-            const confettiContainer = document.getElementById(`confetti${slotId}`);
-            confettiContainer.innerHTML = '';
-            
-            for (let i = 0; i < 25; i++) {
-                const piece = document.createElement('div');
-                piece.className = 'confetti-piece';
-                piece.style.left = Math.random() * 100 + '%';
-                piece.style.animationDelay = Math.random() * 0.5 + 's';
-                piece.style.animationDuration = (Math.random() * 2 + 1) + 's';
-                piece.style.animation = `confettiFall ${piece.style.animationDuration} ${piece.style.animationDelay} ease-out forwards`;
-                confettiContainer.appendChild(piece);
-            }
-        }
+const players = [
+   { name: 'Messi', correctKit: 2, face: 'messi-face.png' },
+   { name: 'Ronaldo', correctKit: 4, face: 'ronaldo-face.png' },
+   { name: 'Neymar', correctKit: 0, face: 'neymar-face.png' }
+];
 
-        function animateFace(faceId, isCorrect) {
-            const face = document.getElementById(`face${faceId}`);
-            if (isCorrect) {
-                face.classList.add('drop-animation');
-                setTimeout(() => {
-                    face.classList.remove('drop-animation');
-                }, 1500);
-            } else {
-                face.classList.add('drop-animation');
-                setTimeout(() => {
-                    face.classList.remove('drop-animation');
-                }, 800);
-            }
-        }
+let currentSlot = 0;
+let currentAttempt = 0;
+const maxAttempts = 6;
+let gameState = 'playing';
 
-        function slideInBody(slotId, kitIndex) {
-            const slot = document.getElementById(`slot${slotId}`);
-            const img = document.createElement('img');
-            img.src = kits[kitIndex];
-            img.className = 'body-img';
-            img.alt = `Kit ${kitIndex + 1}`;
-            slot.appendChild(img);
+function createConfetti(slotId) {
+   const confettiContainer = document.getElementById(`confetti${slotId}`);
+   if (!confettiContainer) return;
+   
+   confettiContainer.innerHTML = '';
+   
+   for (let i = 0; i < 30; i++) {
+       const piece = document.createElement('div');
+       piece.className = 'confetti-piece';
+       piece.style.left = Math.random() * 100 + '%';
+       piece.style.animationDelay = Math.random() * 0.8 + 's';
+       piece.style.animationDuration = (Math.random() * 2 + 1.5) + 's';
+       piece.style.backgroundColor = `hsl(${Math.random() * 360}, 70%, 60%)`;
+       piece.style.width = Math.random() * 8 + 4 + 'px';
+       piece.style.height = piece.style.width;
+       
+       const keyframes = `
+           @keyframes confettiFall${i} {
+               0% { 
+                   transform: translateY(-100vh) rotateZ(0deg);
+                   opacity: 1;
+               }
+               100% { 
+                   transform: translateY(100vh) rotateZ(360deg);
+                   opacity: 0;
+               }
+           }
+       `;
+       
+       if (!document.getElementById(`confetti-style-${i}`)) {
+           const style = document.createElement('style');
+           style.id = `confetti-style-${i}`;
+           style.textContent = keyframes;
+           document.head.appendChild(style);
+       }
+       
+       piece.style.animation = `confettiFall${i} ${piece.style.animationDuration} ${piece.style.animationDelay} ease-out forwards`;
+       confettiContainer.appendChild(piece);
+   }
+   
+   setTimeout(() => {
+       confettiContainer.innerHTML = '';
+   }, 4000);
+}
 
-            // Animate corresponding face
-            animateFace(slotId, false);
+function animateFaceToNeck(slotId, isCorrect) {
+   const face = document.getElementById(`face${slotId}`);
+   const bodyContainer = document.getElementById(`body-container${slotId}`);
+   
+   if (!face || !bodyContainer) return;
+   
+   face.style.transition = 'all 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+   
+   if (isCorrect) {
+       // Smooth drop to neck position
+       face.style.transform = 'translateY(140px) scale(1.1)';
+       face.style.zIndex = '10';
+       
+       // Add glow effect
+       face.style.boxShadow = '0 0 30px rgba(255, 215, 0, 0.8)';
+       face.style.filter = 'brightness(1.2)';
+       
+       setTimeout(() => {
+           face.style.transform = 'translateY(140px) scale(1)';
+           face.style.boxShadow = '0 0 15px rgba(255, 215, 0, 0.5)';
+       }, 600);
+       
+   } else {
+       // Bounce animation for wrong match
+       face.style.transform = 'translateY(80px) scale(0.9)';
+       setTimeout(() => {
+           face.style.transform = 'translateY(0) scale(1)';
+       }, 400);
+   }
+}
 
-            setTimeout(() => {
-                img.classList.add('slide-in');
-            }, 100);
+function slideInBody(slotId, kitIndex) {
+   const bodyContainer = document.getElementById(`body-container${slotId}`);
+   if (!bodyContainer) return null;
+   
+   // Clear previous body
+   bodyContainer.innerHTML = '';
+   
+   const img = document.createElement('img');
+   img.src = kits[kitIndex];
+   img.className = 'body-img';
+   img.alt = `Kit ${kitIndex + 1}`;
+   img.style.cssText = `
+       width: 100%;
+       height: 100%;
+       object-fit: cover;
+       border-radius: 15px;
+       transform: translateX(-100%);
+       opacity: 0;
+       transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+   `;
+   
+   bodyContainer.appendChild(img);
+   
+   // Trigger slide-in animation
+   setTimeout(() => {
+       img.style.transform = 'translateX(0)';
+       img.style.opacity = '1';
+   }, 100);
+   
+   return img;
+}
 
-            return img;
-        }
+function slideOutBody(img) {
+   if (!img) return;
+   
+   img.style.transform = 'translateX(100%) rotate(10deg)';
+   img.style.opacity = '0';
+   img.style.filter = 'blur(2px)';
+   
+   setTimeout(() => {
+       if (img.parentNode) {
+           img.parentNode.removeChild(img);
+       }
+   }, 800);
+}
 
-        function slideOutBody(img) {
-            img.classList.remove('slide-in');
-            img.classList.add('slide-out');
-            setTimeout(() => {
-                img.remove();
-            }, 500);
-        }
+function showOverlay(overlayId, duration = 1000) {
+   const overlay = document.getElementById(overlayId);
+   if (!overlay) return;
+   
+   overlay.style.cssText = `
+       position: absolute;
+       top: 0;
+       left: 0;
+       width: 100%;
+       height: 100%;
+       display: flex;
+       align-items: center;
+       justify-content: center;
+       font-size: 4rem;
+       font-weight: bold;
+       color: white;
+       text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+       background: rgba(0, 0, 0, 0.3);
+       border-radius: 15px;
+       backdrop-filter: blur(5px);
+       z-index: 100;
+       opacity: 0;
+       transform: scale(0.5);
+       transition: all 0.3s ease-out;
+   `;
+   
+   // Show overlay
+   setTimeout(() => {
+       overlay.style.opacity = '1';
+       overlay.style.transform = 'scale(1)';
+   }, 50);
+   
+   // Hide overlay
+   setTimeout(() => {
+       overlay.style.opacity = '0';
+       overlay.style.transform = 'scale(0.5)';
+   }, duration);
+}
 
-        function showOverlay(overlayId, duration = 800) {
-            const overlay = document.getElementById(overlayId);
-            overlay.classList.add('show');
-            setTimeout(() => {
-                overlay.classList.remove('show');
-            }, duration);
-        }
+function createSuccessEffect(slotId) {
+   const slot = document.getElementById(`slot${slotId}`);
+   if (!slot) return;
+   
+   // Add success glow to entire slot
+   slot.style.boxShadow = '0 0 50px rgba(0, 255, 0, 0.5)';
+   slot.style.transform = 'scale(1.05)';
+   
+   setTimeout(() => {
+       slot.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.2)';
+       slot.style.transform = 'scale(1)';
+   }, 1500);
+}
 
-        function processSlot(slotId) {
-            if (currentAttempt >= maxAttempts) {
-                // Move to next slot
-                currentSlot++;
-                currentAttempt = 0;
-                if (currentSlot < 3) {
-                    setTimeout(() => processSlot(currentSlot + 1), 1000);
-                }
-                return;
-            }
+function processSlot(slotId) {
+   if (currentAttempt >= maxAttempts) {
+       // Move to next slot
+       currentSlot++;
+       currentAttempt = 0;
+       if (currentSlot < 3) {
+           setTimeout(() => processSlot(currentSlot + 1), 1200);
+       } else {
+           gameState = 'finished';
+           showGameComplete();
+       }
+       return;
+   }
+   
+   const player = players[slotId - 1];
+   const correctKit = player.correctKit;
+   const isCorrect = correctKit === currentAttempt;
+   
+   // Show current kit
+   const img = slideInBody(slotId, currentAttempt);
+   
+   // Animate face
+   setTimeout(() => {
+       animateFaceToNeck(slotId, isCorrect);
+   }, 400);
+   
+   setTimeout(() => {
+       if (isCorrect) {
+           // Correct match found
+           const checkOverlay = document.getElementById(`checkOverlay${slotId}`);
+           if (checkOverlay) {
+               checkOverlay.innerHTML = '✓ PERFECT!';
+               checkOverlay.style.color = '#00ff00';
+               checkOverlay.style.background = 'rgba(0, 255, 0, 0.1)';
+           }
+           
+           showOverlay(`checkOverlay${slotId}`, 1500);
+           createSuccessEffect(slotId);
+           createConfetti(slotId);
+           
+           // Keep the correct match and move to next slot
+           setTimeout(() => {
+               currentSlot++;
+               currentAttempt = 0;
+               if (currentSlot < 3) {
+                   setTimeout(() => processSlot(currentSlot + 1), 800);
+               } else {
+                   gameState = 'finished';
+                   showGameComplete();
+               }
+           }, 2000);
+           
+       } else {
+           // Wrong match
+           const overlay = document.getElementById(`overlay${slotId}`);
+           if (overlay) {
+               overlay.innerHTML = '✗ TRY AGAIN';
+               overlay.style.color = '#ff6b6b';
+               overlay.style.background = 'rgba(255, 107, 107, 0.1)';
+           }
+           
+           showOverlay(`overlay${slotId}`, 800);
+           
+           setTimeout(() => {
+               slideOutBody(img);
+               currentAttempt++;
+               
+               // Reset face position
+               const face = document.getElementById(`face${slotId}`);
+               if (face) {
+                   face.style.transform = 'translateY(0) scale(1)';
+                   face.style.boxShadow = 'none';
+                   face.style.filter = 'none';
+               }
+               
+               setTimeout(() => processSlot(slotId), 1000);
+           }, 1000);
+       }
+   }, 1000);
+}
 
-            const correctKit = correctMatches[slotId - 1];
-            const isCorrect = correctKit === currentAttempt && correctKit !== -1;
-            const isLastAttempt = currentAttempt === maxAttempts - 1;
-            
-            // For Neymar (slot 3), never show correct match
-            const kitIndex = slotId === 3 ? (currentAttempt + 1) % kits.length : currentAttempt;
-            
-            const img = slideInBody(slotId, kitIndex);
+function showGameComplete() {
+   const gameContainer = document.querySelector('.game-container');
+   if (!gameContainer) return;
+   
+   const completeOverlay = document.createElement('div');
+   completeOverlay.style.cssText = `
+       position: fixed;
+       top: 0;
+       left: 0;
+       width: 100%;
+       height: 100%;
+       background: rgba(0, 0, 0, 0.8);
+       display: flex;
+       flex-direction: column;
+       align-items: center;
+       justify-content: center;
+       color: white;
+       font-size: 3rem;
+       font-weight: bold;
+       z-index: 1000;
+       opacity: 0;
+       transition: all 0.5s ease-out;
+   `;
+   
+   completeOverlay.innerHTML = `
+       <div style="text-align: center;">
+           <div style="font-size: 4rem; margin-bottom: 20px;">🏆</div>
+           <div style="background: linear-gradient(45deg, #FFD700, #FFA500); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+               GAME COMPLETE!
+           </div>
+           <div style="font-size: 1.5rem; margin-top: 20px; opacity: 0.8;">
+               All players matched with their kits!
+           </div>
+       </div>
+   `;
+   
+   document.body.appendChild(completeOverlay);
+   
+   setTimeout(() => {
+       completeOverlay.style.opacity = '1';
+   }, 100);
+   
+   // Create final confetti celebration
+   setTimeout(() => {
+       for (let i = 1; i <= 3; i++) {
+           createConfetti(i);
+       }
+   }, 500);
+}
 
-            setTimeout(() => {
-                if (isCorrect) {
-                    // Correct match - animate face drop
-                    animateFace(slotId, true);
-                    showOverlay(`checkOverlay${slotId}`, 1200);
-                    createConfetti(slotId);
-                    
-                    // Move to next slot after celebration
-                    setTimeout(() => {
-                        currentSlot++;
-                        currentAttempt = 0;
-                        if (currentSlot < 3) {
-                            setTimeout(() => processSlot(currentSlot + 1), 500);
-                        }
-                    }, 1500);
-                } else {
-                    // Wrong match
-                    showOverlay(`overlay${slotId}`, 600);
-                    setTimeout(() => {
-                        slideOutBody(img);
-                        currentAttempt++;
-                        setTimeout(() => processSlot(slotId), 800);
-                    }, 800);
-                }
-            }, 1200);
-        }
+function restartGame() {
+   currentSlot = 0;
+   currentAttempt = 0;
+   gameState = 'playing';
+   
+   // Reset all faces
+   for (let i = 1; i <= 3; i++) {
+       const face = document.getElementById(`face${i}`);
+       const bodyContainer = document.getElementById(`body-container${i}`);
+       
+       if (face) {
+           face.style.transform = 'translateY(0) scale(1)';
+           face.style.boxShadow = 'none';
+           face.style.filter = 'none';
+       }
+       
+       if (bodyContainer) {
+           bodyContainer.innerHTML = '';
+       }
+   }
+   
+   // Start the game
+   setTimeout(() => {
+       processSlot(1);
+   }, 500);
+}
 
-        // Start the animation sequence
-        setTimeout(() => {
-            processSlot(1);
-        }, 1000);
+// Initialize the game when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+   // Add restart button functionality if it exists
+   const restartBtn = document.getElementById('restartBtn');
+   if (restartBtn) {
+       restartBtn.addEventListener('click', restartGame);
+   }
+   
+   // Start the animation sequence
+   setTimeout(() => {
+       processSlot(1);
+   }, 1000);
+});
+
+// Auto-start if DOM is already loaded
+if (document.readyState === 'loading') {
+   document.addEventListener('DOMContentLoaded', function() {
+       setTimeout(() => {
+           processSlot(1);
+       }, 1000);
+   });
+} else {
+   setTimeout(() => {
+       processSlot(1);
+   }, 1000);
+}
     </script>
 </body>
 </html>
