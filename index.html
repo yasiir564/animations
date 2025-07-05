@@ -26,11 +26,35 @@
         .container {
             width: 375px;
             height: 667px;
-            background: url('background.png') center/cover;
+            background: linear-gradient(180deg, #87CEEB 0%, #32CD32 40%, #228B22 100%);
             position: relative;
             border-radius: 20px;
             overflow: hidden;
             box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        /* Cartoon ground elements */
+        .container::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 200px;
+            background: linear-gradient(180deg, rgba(34, 139, 34, 0.3) 0%, rgba(34, 139, 34, 0.8) 100%);
+            border-radius: 0 0 20px 20px;
+        }
+
+        .container::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background: radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.3) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.4) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 40%, rgba(255, 255, 255, 0.2) 0%, transparent 50%);
         }
 
         .faces-container {
@@ -42,6 +66,7 @@
             justify-content: space-around;
             align-items: center;
             padding: 0 20px;
+            z-index: 5;
         }
 
         .face-section {
@@ -56,19 +81,30 @@
             height: 80px;
             border-radius: 50%;
             border: 4px solid #fff;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
             object-fit: cover;
             background: #f0f0f0;
+            transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 10;
+        }
+
+        .face-img.drop-animation {
+            transform: translateY(120px) scale(0.8);
+            opacity: 0.7;
         }
 
         .face-name {
-            font-size: 14px;
+            font-size: 16px;
             font-weight: 900;
             color: #fff;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.6);
             margin-top: 8px;
             text-transform: uppercase;
             letter-spacing: 1px;
+            background: rgba(0,0,0,0.2);
+            padding: 4px 12px;
+            border-radius: 15px;
+            backdrop-filter: blur(5px);
         }
 
         .bodies-container {
@@ -80,15 +116,18 @@
             justify-content: space-around;
             align-items: flex-start;
             padding: 0 20px;
+            z-index: 1;
         }
 
         .body-slot {
             width: 80px;
             height: 120px;
             position: relative;
-            border: 3px dashed rgba(255,255,255,0.5);
-            border-radius: 10px;
+            border: 3px dashed rgba(255,255,255,0.6);
+            border-radius: 15px;
             overflow: hidden;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
         }
 
         .body-img {
@@ -101,6 +140,7 @@
             transform: translateY(100%);
             transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
             background: #e0e0e0;
+            border-radius: 12px;
         }
 
         .body-img.slide-in {
@@ -113,17 +153,19 @@
 
         .overlay {
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 120px;
+            height: 120px;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 40px;
+            font-size: 60px;
             opacity: 0;
-            z-index: 10;
+            z-index: 20;
             pointer-events: none;
+            border-radius: 50%;
         }
 
         .overlay.show {
@@ -132,15 +174,15 @@
         }
 
         .x-overlay {
-            background: rgba(255, 0, 0, 0.8);
+            background: linear-gradient(135deg, #ff4757 0%, #ff3838 100%);
             color: white;
-            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(255, 71, 87, 0.4);
         }
 
         .check-overlay {
-            background: rgba(0, 255, 0, 0.8);
+            background: linear-gradient(135deg, #2ed573 0%, #1dd1a1 100%);
             color: white;
-            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(46, 213, 115, 0.4);
         }
 
         .confetti {
@@ -155,10 +197,11 @@
 
         .confetti-piece {
             position: absolute;
-            width: 6px;
-            height: 6px;
+            width: 8px;
+            height: 8px;
             background: #FFD700;
             opacity: 0;
+            border-radius: 50%;
         }
 
         .confetti-piece:nth-child(2n) { background: #FF6B6B; }
@@ -167,9 +210,18 @@
         .confetti-piece:nth-child(5n) { background: #96CEB4; }
 
         @keyframes overlayPulse {
-            0% { transform: scale(0.8); opacity: 0; }
-            50% { transform: scale(1.2); opacity: 1; }
-            100% { transform: scale(1); opacity: 1; }
+            0% { 
+                transform: translate(-50%, -50%) scale(0.5); 
+                opacity: 0; 
+            }
+            50% { 
+                transform: translate(-50%, -50%) scale(1.3); 
+                opacity: 1; 
+            }
+            100% { 
+                transform: translate(-50%, -50%) scale(1); 
+                opacity: 1; 
+            }
         }
 
         @keyframes confettiFall {
@@ -183,53 +235,50 @@
             }
         }
 
-        .final-message {
+        /* Ground decoration elements */
+        .ground-decoration {
             position: absolute;
-            bottom: 50px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 24px;
-            font-weight: 900;
-            color: #fff;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-            opacity: 0;
-            text-align: center;
-            background: rgba(0,0,0,0.3);
-            padding: 15px 30px;
-            border-radius: 25px;
-            backdrop-filter: blur(10px);
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            height: 30px;
+            background: linear-gradient(90deg, #2ECC71 0%, #27AE60 50%, #2ECC71 100%);
+            border-radius: 15px;
+            opacity: 0.6;
         }
 
-        .final-message.show {
-            opacity: 1;
-            animation: slideUpFade 1s ease-out;
-        }
-
-        @keyframes slideUpFade {
-            0% {
-                transform: translateX(-50%) translateY(50px);
-                opacity: 0;
-            }
-            100% {
-                transform: translateX(-50%) translateY(0);
-                opacity: 1;
-            }
+        .grass-pattern {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 80px;
+            background: repeating-linear-gradient(
+                90deg,
+                rgba(46, 204, 113, 0.3) 0px,
+                rgba(46, 204, 113, 0.3) 2px,
+                transparent 2px,
+                transparent 8px
+            );
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <div class="ground-decoration"></div>
+        <div class="grass-pattern"></div>
+        
         <div class="faces-container">
             <div class="face-section">
-                <img src="Gemini_Generated_Image_rtgbfurtgbfurtgb.png" alt="Messi" class="face-img">
+                <img src="Gemini_Generated_Image_rtgbfurtgbfurtgb.png" alt="Messi" class="face-img" id="face1">
                 <div class="face-name">Messi</div>
             </div>
             <div class="face-section">
-                <img src="Gemini_Generated_Image_7yg3s37yg3s37yg3.png" alt="Ronaldo" class="face-img">
+                <img src="Gemini_Generated_Image_7yg3s37yg3s37yg3.png" alt="Ronaldo" class="face-img" id="face2">
                 <div class="face-name">Ronaldo</div>
             </div>
             <div class="face-section">
-                <img src="Gemini_Generated_Image_jj12lzjj12lzjj12.png" alt="Neymar" class="face-img">
+                <img src="Gemini_Generated_Image_jj12lzjj12lzjj12.png" alt="Neymar" class="face-img" id="face3">
                 <div class="face-name">Neymar</div>
             </div>
         </div>
@@ -251,10 +300,6 @@
                 <div class="confetti" id="confetti3"></div>
             </div>
         </div>
-
-        <div class="final-message" id="finalMessage">
-            Challenge Complete! 🎉
-        </div>
     </div>
 
     <script>
@@ -268,7 +313,7 @@
             const confettiContainer = document.getElementById(`confetti${slotId}`);
             confettiContainer.innerHTML = '';
             
-            for (let i = 0; i < 20; i++) {
+            for (let i = 0; i < 25; i++) {
                 const piece = document.createElement('div');
                 piece.className = 'confetti-piece';
                 piece.style.left = Math.random() * 100 + '%';
@@ -279,6 +324,21 @@
             }
         }
 
+        function animateFace(faceId, isCorrect) {
+            const face = document.getElementById(`face${faceId}`);
+            if (isCorrect) {
+                face.classList.add('drop-animation');
+                setTimeout(() => {
+                    face.classList.remove('drop-animation');
+                }, 1500);
+            } else {
+                face.classList.add('drop-animation');
+                setTimeout(() => {
+                    face.classList.remove('drop-animation');
+                }, 800);
+            }
+        }
+
         function slideInBody(slotId, kitIndex) {
             const slot = document.getElementById(`slot${slotId}`);
             const img = document.createElement('img');
@@ -286,6 +346,9 @@
             img.className = 'body-img';
             img.alt = `Kit ${kitIndex + 1}`;
             slot.appendChild(img);
+
+            // Animate corresponding face
+            animateFace(slotId, false);
 
             setTimeout(() => {
                 img.classList.add('slide-in');
@@ -317,11 +380,6 @@
                 currentAttempt = 0;
                 if (currentSlot < 3) {
                     setTimeout(() => processSlot(currentSlot + 1), 1000);
-                } else {
-                    // Show final message
-                    setTimeout(() => {
-                        document.getElementById('finalMessage').classList.add('show');
-                    }, 1000);
                 }
                 return;
             }
@@ -337,7 +395,8 @@
 
             setTimeout(() => {
                 if (isCorrect) {
-                    // Correct match
+                    // Correct match - animate face drop
+                    animateFace(slotId, true);
                     showOverlay(`checkOverlay${slotId}`, 1200);
                     createConfetti(slotId);
                     
@@ -347,11 +406,6 @@
                         currentAttempt = 0;
                         if (currentSlot < 3) {
                             setTimeout(() => processSlot(currentSlot + 1), 500);
-                        } else {
-                            // Show final message
-                            setTimeout(() => {
-                                document.getElementById('finalMessage').classList.add('show');
-                            }, 1000);
                         }
                     }, 1500);
                 } else {
