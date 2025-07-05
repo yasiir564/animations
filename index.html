@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Face to Body Matching Challenge</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800;900&display=swap');
         
         * {
             margin: 0;
@@ -15,58 +15,70 @@
 
         body {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            overflow: hidden;
-            height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
         }
 
         .container {
-            width: 375px;
-            height: 667px;
-            background: linear-gradient(180deg, #87CEEB 0%, #32CD32 40%, #228B22 100%);
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(180deg, #87CEEB 0%, #98FB98 30%, #32CD32 60%, #228B22 100%);
             position: relative;
-            border-radius: 20px;
+            border-radius: 25px;
             overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+            max-width: 1200px;
+            max-height: 800px;
         }
 
-        /* Cartoon ground elements */
-        .container::before {
-            content: '';
+        /* Enhanced background elements */
+        .bg-clouds {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 150px;
+            background: 
+                radial-gradient(circle at 15% 20%, rgba(255, 255, 255, 0.8) 0%, transparent 40%),
+                radial-gradient(circle at 85% 15%, rgba(255, 255, 255, 0.6) 0%, transparent 35%),
+                radial-gradient(circle at 45% 25%, rgba(255, 255, 255, 0.7) 0%, transparent 30%),
+                radial-gradient(circle at 70% 35%, rgba(255, 255, 255, 0.5) 0%, transparent 25%);
+            animation: cloudFloat 20s infinite linear;
+        }
+
+        .bg-stadium {
             position: absolute;
             bottom: 0;
             left: 0;
             right: 0;
             height: 200px;
-            background: linear-gradient(180deg, rgba(34, 139, 34, 0.3) 0%, rgba(34, 139, 34, 0.8) 100%);
-            border-radius: 0 0 20px 20px;
-        }
-
-        .container::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 100px;
-            background: radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.3) 0%, transparent 50%),
-                        radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.4) 0%, transparent 50%),
-                        radial-gradient(circle at 40% 40%, rgba(255, 255, 255, 0.2) 0%, transparent 50%);
+            background: 
+                linear-gradient(180deg, rgba(34, 139, 34, 0.2) 0%, rgba(34, 139, 34, 0.9) 100%),
+                repeating-linear-gradient(
+                    90deg,
+                    rgba(46, 204, 113, 0.3) 0px,
+                    rgba(46, 204, 113, 0.3) 4px,
+                    transparent 4px,
+                    transparent 20px
+                );
+            border-radius: 0 0 25px 25px;
         }
 
         .faces-container {
             position: absolute;
-            top: 80px;
+            top: 15%;
             left: 0;
             right: 0;
             display: flex;
             justify-content: space-around;
             align-items: center;
-            padding: 0 20px;
-            z-index: 5;
+            padding: 0 5%;
+            z-index: 10;
         }
 
         .face-section {
@@ -77,57 +89,81 @@
         }
 
         .face-img {
-            width: 80px;
-            height: 80px;
+            width: 150px;
+            height: 150px;
             border-radius: 50%;
-            border: 4px solid #fff;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+            border: 6px solid #fff;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
             object-fit: cover;
-            background: #f0f0f0;
-            transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            z-index: 10;
+            background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%);
+            transition: all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 15;
+            cursor: pointer;
+        }
+
+        .face-img:hover {
+            transform: scale(1.05);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        .face-img.matching {
+            animation: matchingPulse 1s ease-in-out;
         }
 
         .face-img.drop-animation {
-            transform: translateY(120px) scale(0.8);
-            opacity: 0.7;
+            transform: translateY(200px) scale(0.9);
+            opacity: 0.8;
+            z-index: 25;
         }
 
         .face-name {
-            font-size: 16px;
+            font-size: 24px;
             font-weight: 900;
             color: #fff;
-            text-shadow: 3px 3px 6px rgba(0,0,0,0.6);
-            margin-top: 8px;
+            text-shadow: 4px 4px 8px rgba(0,0,0,0.7);
+            margin-top: 15px;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            background: rgba(0,0,0,0.2);
-            padding: 4px 12px;
-            border-radius: 15px;
-            backdrop-filter: blur(5px);
+            letter-spacing: 2px;
+            background: rgba(0,0,0,0.3);
+            padding: 8px 20px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255,255,255,0.2);
         }
 
         .bodies-container {
             position: absolute;
-            top: 200px;
+            top: 55%;
             left: 0;
             right: 0;
             display: flex;
             justify-content: space-around;
-            align-items: flex-start;
-            padding: 0 20px;
-            z-index: 1;
+            align-items: center;
+            padding: 0 5%;
+            z-index: 5;
         }
 
         .body-slot {
-            width: 80px;
-            height: 120px;
+            width: 150px;
+            height: 200px;
             position: relative;
-            border: 3px dashed rgba(255,255,255,0.6);
-            border-radius: 15px;
+            border: 4px dashed rgba(255,255,255,0.8);
+            border-radius: 20px;
             overflow: hidden;
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(10px);
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(15px);
+            transition: all 0.3s ease;
+        }
+
+        .body-slot:hover {
+            border-color: rgba(255,255,255,1);
+            background: rgba(255,255,255,0.2);
+        }
+
+        .body-slot.matched {
+            border-color: #2ed573;
+            background: rgba(46, 213, 115, 0.2);
+            box-shadow: 0 0 30px rgba(46, 213, 115, 0.4);
         }
 
         .body-img {
@@ -138,9 +174,9 @@
             top: 0;
             left: 0;
             transform: translateY(100%);
-            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            background: #e0e0e0;
-            border-radius: 12px;
+            transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            background: linear-gradient(135deg, #e0e0e0 0%, #d0d0d0 100%);
+            border-radius: 16px;
         }
 
         .body-img.slide-in {
@@ -151,38 +187,43 @@
             transform: translateY(-100%);
         }
 
+        .body-img.matched {
+            border: 4px solid #2ed573;
+        }
+
         .overlay {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 120px;
-            height: 120px;
+            width: 100px;
+            height: 100px;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 60px;
+            font-size: 50px;
             opacity: 0;
-            z-index: 20;
+            z-index: 30;
             pointer-events: none;
             border-radius: 50%;
+            font-weight: 900;
         }
 
         .overlay.show {
             opacity: 1;
-            animation: overlayPulse 0.8s ease-in-out;
+            animation: overlayPulse 1s ease-in-out;
         }
 
         .x-overlay {
             background: linear-gradient(135deg, #ff4757 0%, #ff3838 100%);
             color: white;
-            box-shadow: 0 10px 30px rgba(255, 71, 87, 0.4);
+            box-shadow: 0 15px 40px rgba(255, 71, 87, 0.5);
         }
 
         .check-overlay {
             background: linear-gradient(135deg, #2ed573 0%, #1dd1a1 100%);
             color: white;
-            box-shadow: 0 10px 30px rgba(46, 213, 115, 0.4);
+            box-shadow: 0 15px 40px rgba(46, 213, 115, 0.5);
         }
 
         .confetti {
@@ -192,13 +233,13 @@
             right: 0;
             bottom: 0;
             pointer-events: none;
-            z-index: 15;
+            z-index: 20;
         }
 
         .confetti-piece {
             position: absolute;
-            width: 8px;
-            height: 8px;
+            width: 12px;
+            height: 12px;
             background: #FFD700;
             opacity: 0;
             border-radius: 50%;
@@ -208,14 +249,66 @@
         .confetti-piece:nth-child(3n) { background: #4ECDC4; }
         .confetti-piece:nth-child(4n) { background: #45B7D1; }
         .confetti-piece:nth-child(5n) { background: #96CEB4; }
+        .confetti-piece:nth-child(6n) { background: #FFA07A; }
+        .confetti-piece:nth-child(7n) { background: #98D8E8; }
+
+        .connection-line {
+            position: absolute;
+            background: linear-gradient(90deg, #2ed573 0%, #1dd1a1 100%);
+            height: 6px;
+            border-radius: 3px;
+            transform-origin: left center;
+            opacity: 0;
+            z-index: 12;
+            box-shadow: 0 0 20px rgba(46, 213, 115, 0.6);
+        }
+
+        .connection-line.animate {
+            opacity: 1;
+            animation: drawLine 1s ease-in-out;
+        }
+
+        .success-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #2ed573 0%, #1dd1a1 100%);
+            color: white;
+            font-size: 36px;
+            font-weight: 900;
+            padding: 30px 60px;
+            border-radius: 25px;
+            box-shadow: 0 20px 50px rgba(46, 213, 115, 0.4);
+            z-index: 40;
+            opacity: 0;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-align: center;
+        }
+
+        .success-message.show {
+            opacity: 1;
+            animation: successBounce 1.5s ease-in-out;
+        }
+
+        @keyframes cloudFloat {
+            0% { transform: translateX(-100px); }
+            100% { transform: translateX(100px); }
+        }
+
+        @keyframes matchingPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
 
         @keyframes overlayPulse {
             0% { 
-                transform: translate(-50%, -50%) scale(0.5); 
+                transform: translate(-50%, -50%) scale(0.3); 
                 opacity: 0; 
             }
             50% { 
-                transform: translate(-50%, -50%) scale(1.3); 
+                transform: translate(-50%, -50%) scale(1.4); 
                 opacity: 1; 
             }
             100% { 
@@ -226,47 +319,69 @@
 
         @keyframes confettiFall {
             0% {
-                transform: translateY(-100px) rotate(0deg);
+                transform: translateY(-150px) rotate(0deg);
                 opacity: 1;
             }
             100% {
-                transform: translateY(200px) rotate(360deg);
+                transform: translateY(300px) rotate(720deg);
                 opacity: 0;
             }
         }
 
-        /* Ground decoration elements */
-        .ground-decoration {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
-            right: 20px;
-            height: 30px;
-            background: linear-gradient(90deg, #2ECC71 0%, #27AE60 50%, #2ECC71 100%);
-            border-radius: 15px;
-            opacity: 0.6;
+        @keyframes drawLine {
+            0% { 
+                transform: scaleX(0); 
+                opacity: 0; 
+            }
+            100% { 
+                transform: scaleX(1); 
+                opacity: 1; 
+            }
         }
 
-        .grass-pattern {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 80px;
-            background: repeating-linear-gradient(
-                90deg,
-                rgba(46, 204, 113, 0.3) 0px,
-                rgba(46, 204, 113, 0.3) 2px,
-                transparent 2px,
-                transparent 8px
-            );
+        @keyframes successBounce {
+            0% { 
+                transform: translate(-50%, -50%) scale(0.5); 
+                opacity: 0; 
+            }
+            60% { 
+                transform: translate(-50%, -50%) scale(1.2); 
+                opacity: 1; 
+            }
+            100% { 
+                transform: translate(-50%, -50%) scale(1); 
+                opacity: 1; 
+            }
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .face-img {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .body-slot {
+                width: 100px;
+                height: 140px;
+            }
+            
+            .face-name {
+                font-size: 16px;
+                padding: 6px 12px;
+            }
+            
+            .success-message {
+                font-size: 24px;
+                padding: 20px 40px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="ground-decoration"></div>
-        <div class="grass-pattern"></div>
+        <div class="bg-clouds"></div>
+        <div class="bg-stadium"></div>
         
         <div class="faces-container">
             <div class="face-section">
@@ -300,55 +415,110 @@
                 <div class="confetti" id="confetti3"></div>
             </div>
         </div>
+
+        <div class="success-message" id="successMessage">
+            🎉 Perfect Match! 🎉
+        </div>
     </div>
 
     <script>
-        const kits = ['Gemini_Generated_Image_5ubuja5ubuja5ubu (2).png', 'Gemini_Generated_Image_5ubuja5ubuja5ubu (1).png', 'Gemini_Generated_Image_5ubuja5ubuja5ubu (1).png', 'Gemini_Generated_Image_5ubuja5ubuja5ubu (2).png', 'Gemini_Generated_Image_5ubuja5ubuja5ubu.png', 'Gemini_Generated_Image_5ubuja5ubuja5ubu.png'];
-        const correctMatches = [2, 4, -1]; // Messi matches kit3, Ronaldo matches kit5, Neymar no match
+        const kits = [
+            'Gemini_Generated_Image_5ubuja5ubuja5ubu.png',
+            'Gemini_Generated_Image_5ubuja5ubuja5ubu (1).png', 
+            'Gemini_Generated_Image_5ubuja5ubuja5ubu (2).png',
+            'Gemini_Generated_Image_5ubuja5ubuja5ubu.png',
+            'Gemini_Generated_Image_5ubuja5ubuja5ubu (1).png',
+            'Gemini_Generated_Image_5ubuja5ubuja5ubu (2).png'
+        ];
+        
+        // Updated to ensure all players get matched
+        const correctMatches = [0, 1, 2]; // Messi=kit1, Ronaldo=kit2, Neymar=kit3
         let currentSlot = 0;
         let currentAttempt = 0;
         const maxAttempts = 4;
+        let completedMatches = 0;
 
         function createConfetti(slotId) {
             const confettiContainer = document.getElementById(`confetti${slotId}`);
             confettiContainer.innerHTML = '';
             
-            for (let i = 0; i < 25; i++) {
+            for (let i = 0; i < 40; i++) {
                 const piece = document.createElement('div');
                 piece.className = 'confetti-piece';
                 piece.style.left = Math.random() * 100 + '%';
-                piece.style.animationDelay = Math.random() * 0.5 + 's';
-                piece.style.animationDuration = (Math.random() * 2 + 1) + 's';
+                piece.style.top = Math.random() * 50 + '%';
+                piece.style.animationDelay = Math.random() * 0.8 + 's';
+                piece.style.animationDuration = (Math.random() * 3 + 2) + 's';
                 piece.style.animation = `confettiFall ${piece.style.animationDuration} ${piece.style.animationDelay} ease-out forwards`;
                 confettiContainer.appendChild(piece);
             }
         }
 
+        function createConnectionLine(faceId, slotId) {
+            const face = document.getElementById(`face${faceId}`);
+            const slot = document.getElementById(`slot${slotId}`);
+            const line = document.createElement('div');
+            line.className = 'connection-line';
+            
+            const faceRect = face.getBoundingClientRect();
+            const slotRect = slot.getBoundingClientRect();
+            const containerRect = document.querySelector('.container').getBoundingClientRect();
+            
+            const startX = faceRect.left + faceRect.width / 2 - containerRect.left;
+            const startY = faceRect.bottom - containerRect.top;
+            const endX = slotRect.left + slotRect.width / 2 - containerRect.left;
+            const endY = slotRect.top - containerRect.top;
+            
+            const length = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
+            const angle = Math.atan2(endY - startY, endX - startX) * 180 / Math.PI;
+            
+            line.style.left = startX + 'px';
+            line.style.top = startY + 'px';
+            line.style.width = length + 'px';
+            line.style.transform = `rotate(${angle}deg)`;
+            
+            document.querySelector('.container').appendChild(line);
+            
+            setTimeout(() => {
+                line.classList.add('animate');
+            }, 100);
+            
+            return line;
+        }
+
         function animateFace(faceId, isCorrect) {
             const face = document.getElementById(`face${faceId}`);
+            
             if (isCorrect) {
+                face.classList.add('matching');
                 face.classList.add('drop-animation');
+                
                 setTimeout(() => {
                     face.classList.remove('drop-animation');
-                }, 1500);
+                    face.classList.remove('matching');
+                }, 2000);
             } else {
-                face.classList.add('drop-animation');
+                face.classList.add('matching');
                 setTimeout(() => {
-                    face.classList.remove('drop-animation');
-                }, 800);
+                    face.classList.remove('matching');
+                }, 600);
             }
         }
 
         function slideInBody(slotId, kitIndex) {
             const slot = document.getElementById(`slot${slotId}`);
+            
+            // Remove any existing body image
+            const existingImg = slot.querySelector('.body-img');
+            if (existingImg) {
+                existingImg.remove();
+            }
+            
             const img = document.createElement('img');
             img.src = kits[kitIndex];
             img.className = 'body-img';
             img.alt = `Kit ${kitIndex + 1}`;
             slot.appendChild(img);
-
-            // Animate corresponding face
-            animateFace(slotId, false);
 
             setTimeout(() => {
                 img.classList.add('slide-in');
@@ -362,15 +532,42 @@
             img.classList.add('slide-out');
             setTimeout(() => {
                 img.remove();
-            }, 500);
+            }, 600);
         }
 
-        function showOverlay(overlayId, duration = 800) {
+        function showOverlay(overlayId, duration = 1000) {
             const overlay = document.getElementById(overlayId);
             overlay.classList.add('show');
             setTimeout(() => {
                 overlay.classList.remove('show');
             }, duration);
+        }
+
+        function markAsMatched(slotId, img) {
+            const slot = document.getElementById(`slot${slotId}`);
+            slot.classList.add('matched');
+            img.classList.add('matched');
+            
+            // Create connection line
+            const line = createConnectionLine(slotId, slotId);
+            
+            completedMatches++;
+            
+            if (completedMatches === 3) {
+                setTimeout(() => {
+                    showSuccessMessage();
+                }, 1000);
+            }
+        }
+
+        function showSuccessMessage() {
+            const successMessage = document.getElementById('successMessage');
+            successMessage.classList.add('show');
+            
+            // Create global confetti
+            for (let i = 1; i <= 3; i++) {
+                createConfetti(i);
+            }
         }
 
         function processSlot(slotId) {
@@ -385,45 +582,44 @@
             }
 
             const correctKit = correctMatches[slotId - 1];
-            const isCorrect = correctKit === currentAttempt && correctKit !== -1;
-            const isLastAttempt = currentAttempt === maxAttempts - 1;
+            const isCorrect = correctKit === currentAttempt;
             
-            // For Neymar (slot 3), never show correct match
-            const kitIndex = slotId === 3 ? (currentAttempt + 1) % kits.length : currentAttempt;
+            // Animate face
+            animateFace(slotId, isCorrect);
             
-            const img = slideInBody(slotId, kitIndex);
+            const img = slideInBody(slotId, currentAttempt);
 
             setTimeout(() => {
                 if (isCorrect) {
-                    // Correct match - animate face drop
-                    animateFace(slotId, true);
-                    showOverlay(`checkOverlay${slotId}`, 1200);
+                    // Correct match
+                    showOverlay(`checkOverlay${slotId}`, 1500);
                     createConfetti(slotId);
+                    markAsMatched(slotId, img);
                     
                     // Move to next slot after celebration
                     setTimeout(() => {
                         currentSlot++;
                         currentAttempt = 0;
                         if (currentSlot < 3) {
-                            setTimeout(() => processSlot(currentSlot + 1), 500);
+                            setTimeout(() => processSlot(currentSlot + 1), 800);
                         }
-                    }, 1500);
+                    }, 2000);
                 } else {
                     // Wrong match
-                    showOverlay(`overlay${slotId}`, 600);
+                    showOverlay(`overlay${slotId}`, 800);
                     setTimeout(() => {
                         slideOutBody(img);
                         currentAttempt++;
-                        setTimeout(() => processSlot(slotId), 800);
-                    }, 800);
+                        setTimeout(() => processSlot(slotId), 1000);
+                    }, 1000);
                 }
-            }, 1200);
+            }, 1500);
         }
 
         // Start the animation sequence
         setTimeout(() => {
             processSlot(1);
-        }, 1000);
+        }, 1500);
     </script>
 </body>
 </html>
