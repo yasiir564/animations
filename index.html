@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Football Player Matching Game</title>
+    <title>Football Player Matching Animation</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap');
         
@@ -24,8 +24,8 @@
         }
 
         .game-container {
-            width: 400px;
-            height: 720px;
+            width: 720px;
+            height: 1280px;
             background: linear-gradient(180deg, #87CEEB 0%, #98FB98 25%, #32CD32 50%, #228B22 75%, #006400 100%);
             position: relative;
             border-radius: 20px;
@@ -60,8 +60,8 @@
             background: 
                 linear-gradient(90deg, transparent 48%, rgba(255,255,255,0.3) 49%, rgba(255,255,255,0.3) 51%, transparent 52%),
                 linear-gradient(0deg, transparent 48%, rgba(255,255,255,0.2) 49%, rgba(255,255,255,0.2) 51%, transparent 52%),
-                radial-gradient(circle at 50% 50%, rgba(255,255,255,0.2) 68px, transparent 70px);
-            background-size: 100% 100%, 100% 100%, 200px 200px;
+                radial-gradient(circle at 50% 50%, rgba(255,255,255,0.2) 100px, transparent 105px);
+            background-size: 100% 100%, 100% 100%, 300px 300px;
             background-position: center, center, center;
         }
 
@@ -70,21 +70,55 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 80px;
+            height: 120px;
             background: linear-gradient(180deg, rgba(0,0,0,0.3) 0%, transparent 100%);
             border-radius: 20px 20px 0 0;
         }
 
+        /* Countdown */
+        .countdown {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 120px;
+            font-weight: 900;
+            color: #fff;
+            text-shadow: 4px 4px 8px rgba(0,0,0,0.8);
+            z-index: 100;
+            opacity: 0;
+            animation: countdownPulse 1s ease-in-out;
+        }
+
+        .countdown.show {
+            opacity: 1;
+        }
+
+        .title-overlay {
+            position: absolute;
+            top: 150px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 48px;
+            font-weight: 900;
+            color: #fff;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.8);
+            text-align: center;
+            z-index: 50;
+            opacity: 0;
+            animation: titleSlide 2s ease-out forwards;
+        }
+
         .faces-section {
             position: absolute;
-            top: 80px;
+            top: 250px;
             left: 0;
             right: 0;
-            height: 200px;
+            height: 300px;
             display: flex;
             justify-content: space-around;
             align-items: center;
-            padding: 0 20px;
+            padding: 0 40px;
             z-index: 10;
         }
 
@@ -93,73 +127,78 @@
             flex-direction: column;
             align-items: center;
             transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(-50px);
+        }
+
+        .player-card.appear {
+            opacity: 1;
+            transform: translateY(0);
+            animation: playerAppear 0.8s ease-out;
         }
 
         .face-img {
-            width: 80px;
-            height: 80px;
+            width: 140px;
+            height: 140px;
             border-radius: 50%;
-            border: 4px solid #fff;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+            border: 6px solid #fff;
+            box-shadow: 0 12px 35px rgba(0,0,0,0.4);
             object-fit: cover;
             background: #f0f0f0;
             transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            cursor: pointer;
             position: relative;
             z-index: 15;
         }
 
-        .face-img:hover {
-            transform: scale(1.1);
-            box-shadow: 0 12px 30px rgba(0,0,0,0.5);
-        }
-
         .face-img.selected {
             animation: playerPulse 0.8s ease-in-out;
-            transform: scale(1.15);
+            transform: scale(1.2);
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.8);
         }
 
         .face-img.correct-match {
-            animation: successGlow 1.2s ease-in-out;
+            animation: successGlow 1.5s ease-in-out;
+            border-color: #00ff88;
         }
 
         .face-img.wrong-match {
-            animation: errorShake 0.6s ease-in-out;
+            animation: errorShake 0.8s ease-in-out;
+            border-color: #ff4757;
         }
 
         .player-name {
-            font-size: 16px;
+            font-size: 28px;
             font-weight: 800;
             color: #fff;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-            margin-top: 10px;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.8);
+            margin-top: 15px;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
             background: rgba(0,0,0,0.4);
-            padding: 6px 12px;
-            border-radius: 15px;
+            padding: 10px 20px;
+            border-radius: 20px;
             backdrop-filter: blur(10px);
         }
 
         .bodies-section {
             position: absolute;
-            top: 320px;
+            top: 650px;
             left: 0;
             right: 0;
-            height: 320px;
+            height: 480px;
             display: flex;
             justify-content: space-around;
             align-items: center;
-            padding: 0 20px;
+            padding: 0 40px;
             z-index: 5;
         }
 
         .body-slot {
-            width: 90px;
-            height: 140px;
+            width: 160px;
+            height: 220px;
             position: relative;
-            border: 3px dashed rgba(255,255,255,0.6);
-            border-radius: 15px;
+            border: 4px dashed rgba(255,255,255,0.6);
+            border-radius: 20px;
             overflow: hidden;
             background: rgba(255,255,255,0.1);
             backdrop-filter: blur(10px);
@@ -167,33 +206,37 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            opacity: 0;
+            transform: translateY(50px);
         }
 
-        .body-slot:hover {
-            border-color: rgba(255,255,255,0.9);
-            background: rgba(255,255,255,0.2);
+        .body-slot.appear {
+            opacity: 1;
+            transform: translateY(0);
+            animation: slotAppear 0.8s ease-out;
         }
 
         .body-slot.matched {
             border-color: #00ff88;
             background: rgba(0, 255, 136, 0.2);
-            box-shadow: 0 0 25px rgba(0, 255, 136, 0.4);
+            box-shadow: 0 0 35px rgba(0, 255, 136, 0.6);
+            animation: slotSuccess 1s ease-in-out;
         }
 
         .body-slot.wrong {
             border-color: #ff4757;
             background: rgba(255, 71, 87, 0.2);
-            animation: slotShake 0.5s ease-in-out;
+            animation: slotShake 0.8s ease-in-out;
         }
 
         .body-img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            border-radius: 12px;
-            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border-radius: 16px;
+            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             opacity: 0;
-            transform: scale(0.5) rotate(10deg);
+            transform: scale(0.3) rotate(15deg);
         }
 
         .body-img.appear {
@@ -202,13 +245,8 @@
         }
 
         .body-img.matched {
-            border: 3px solid #00ff88;
-            box-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
-        }
-
-        .body-img.disappear {
-            opacity: 0;
-            transform: scale(0.3) rotate(-10deg);
+            border: 4px solid #00ff88;
+            box-shadow: 0 0 25px rgba(0, 255, 136, 0.7);
         }
 
         .feedback-overlay {
@@ -216,13 +254,13 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 60px;
-            height: 60px;
+            width: 80px;
+            height: 80px;
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 30px;
+            font-size: 40px;
             font-weight: 900;
             opacity: 0;
             z-index: 30;
@@ -231,35 +269,35 @@
 
         .feedback-overlay.show {
             opacity: 1;
-            animation: feedbackPop 1s ease-in-out;
+            animation: feedbackPop 1.2s ease-in-out;
         }
 
         .success-feedback {
             background: linear-gradient(135deg, #00ff88 0%, #00d4aa 100%);
             color: white;
-            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.5);
+            box-shadow: 0 15px 40px rgba(0, 255, 136, 0.6);
         }
 
         .error-feedback {
             background: linear-gradient(135deg, #ff4757 0%, #ff3838 100%);
             color: white;
-            box-shadow: 0 10px 30px rgba(255, 71, 87, 0.5);
+            box-shadow: 0 15px 40px rgba(255, 71, 87, 0.6);
         }
 
         .connection-line {
             position: absolute;
             background: linear-gradient(90deg, #00ff88 0%, #00d4aa 100%);
-            height: 4px;
-            border-radius: 2px;
+            height: 6px;
+            border-radius: 3px;
             transform-origin: left center;
             opacity: 0;
             z-index: 12;
-            box-shadow: 0 0 15px rgba(0, 255, 136, 0.6);
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.8);
         }
 
         .connection-line.draw {
             opacity: 1;
-            animation: drawConnection 1s ease-in-out;
+            animation: drawConnection 1.2s ease-in-out;
         }
 
         .victory-screen {
@@ -275,28 +313,28 @@
             align-items: center;
             opacity: 0;
             z-index: 50;
-            backdrop-filter: blur(15px);
+            backdrop-filter: blur(20px);
             border-radius: 20px;
         }
 
         .victory-screen.show {
             opacity: 1;
-            animation: victoryFade 1.5s ease-in-out;
+            animation: victoryFade 2s ease-in-out;
         }
 
         .victory-text {
-            font-size: 32px;
+            font-size: 64px;
             font-weight: 900;
             color: #fff;
-            text-shadow: 3px 3px 6px rgba(0,0,0,0.5);
+            text-shadow: 4px 4px 8px rgba(0,0,0,0.5);
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
         }
 
         .victory-emoji {
-            font-size: 80px;
+            font-size: 120px;
             animation: bounce 2s infinite;
         }
 
@@ -312,26 +350,37 @@
 
         .particle {
             position: absolute;
-            width: 6px;
-            height: 6px;
+            width: 8px;
+            height: 8px;
             background: #ffd700;
             border-radius: 50%;
             opacity: 0;
         }
 
         .particle.celebrate {
-            animation: particleCelebrate 2s ease-out forwards;
+            animation: particleCelebrate 3s ease-out forwards;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            opacity: 0;
+        }
+
+        .confetti.fall {
+            animation: confettiFall 4s ease-out forwards;
         }
 
         .progress-bar {
             position: absolute;
-            top: 50px;
+            top: 80px;
             left: 50%;
             transform: translateX(-50%);
-            width: 200px;
-            height: 6px;
+            width: 300px;
+            height: 8px;
             background: rgba(255,255,255,0.3);
-            border-radius: 3px;
+            border-radius: 4px;
             overflow: hidden;
             z-index: 20;
         }
@@ -340,37 +389,64 @@
             height: 100%;
             background: linear-gradient(90deg, #00ff88 0%, #00d4aa 100%);
             width: 0%;
-            transition: width 0.5s ease;
-            border-radius: 3px;
+            transition: width 0.8s ease;
+            border-radius: 4px;
         }
 
         /* Enhanced animations */
+        @keyframes countdownPulse {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
+        }
+
+        @keyframes titleSlide {
+            0% { opacity: 0; transform: translateX(-50%) translateY(-30px); }
+            100% { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+
+        @keyframes playerAppear {
+            0% { opacity: 0; transform: translateY(-50px) scale(0.8); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes slotAppear {
+            0% { opacity: 0; transform: translateY(50px) scale(0.8); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
         @keyframes playerPulse {
-            0%, 100% { transform: scale(1.15); }
-            50% { transform: scale(1.25); }
+            0%, 100% { transform: scale(1.2); }
+            50% { transform: scale(1.3); }
         }
 
         @keyframes successGlow {
-            0% { transform: scale(1.15); box-shadow: 0 8px 25px rgba(0,0,0,0.4); }
-            50% { transform: scale(1.3); box-shadow: 0 15px 40px rgba(0, 255, 136, 0.8); }
-            100% { transform: scale(1.15); box-shadow: 0 8px 25px rgba(0,0,0,0.4); }
+            0% { transform: scale(1.2); box-shadow: 0 12px 35px rgba(0,0,0,0.4); }
+            50% { transform: scale(1.4); box-shadow: 0 20px 50px rgba(0, 255, 136, 0.8); }
+            100% { transform: scale(1.2); box-shadow: 0 12px 35px rgba(0,0,0,0.4); }
         }
 
         @keyframes errorShake {
             0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
         }
 
         @keyframes slotShake {
             0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-3px); }
-            75% { transform: translateX(3px); }
+            25% { transform: translateX(-6px); }
+            75% { transform: translateX(6px); }
+        }
+
+        @keyframes slotSuccess {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
 
         @keyframes feedbackPop {
             0% { transform: translate(-50%, -50%) scale(0.3); opacity: 0; }
-            50% { transform: translate(-50%, -50%) scale(1.3); opacity: 1; }
+            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
             100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
         }
 
@@ -386,8 +462,8 @@
 
         @keyframes bounce {
             0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-            40% { transform: translateY(-20px); }
-            60% { transform: translateY(-10px); }
+            40% { transform: translateY(-30px); }
+            60% { transform: translateY(-15px); }
         }
 
         @keyframes particleCelebrate {
@@ -396,77 +472,93 @@
                 opacity: 1;
             }
             100% {
-                transform: translateY(-200px) rotate(360deg);
+                transform: translateY(-300px) rotate(360deg);
                 opacity: 0;
             }
         }
 
-        /* Game UI */
-        .game-ui {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            right: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 30;
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(-100px) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(1400px) rotate(720deg);
+                opacity: 0;
+            }
         }
 
-        .score-display {
-            background: rgba(0,0,0,0.4);
-            color: #fff;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-weight: 800;
-            font-size: 14px;
-            backdrop-filter: blur(10px);
-        }
-
-        .restart-btn {
-            background: linear-gradient(135deg, #ff4757 0%, #ff3838 100%);
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-weight: 800;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .restart-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 5px 15px rgba(255, 71, 87, 0.4);
+        /* Mobile optimization */
+        @media (max-width: 768px) {
+            .game-container {
+                width: 100vw;
+                height: 100vh;
+                border-radius: 0;
+                border: none;
+            }
+            
+            .title-overlay {
+                font-size: 36px;
+            }
+            
+            .face-img {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .player-name {
+                font-size: 20px;
+            }
+            
+            .body-slot {
+                width: 120px;
+                height: 180px;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Background Music -->
+    <audio id="bgMusic" loop>
+        <source src="background_music.mp3" type="audio/mpeg">
+        <source src="background_music.ogg" type="audio/ogg">
+    </audio>
+
+    <!-- Sound Effects -->
+    <audio id="successSound" preload="auto">
+        <source src="success.mp3" type="audio/mpeg">
+        <source src="success.ogg" type="audio/ogg">
+    </audio>
+
+    <audio id="failSound" preload="auto">
+        <source src="fail.mp3" type="audio/mpeg">
+        <source src="fail.ogg" type="audio/ogg">
+    </audio>
+
     <div class="game-container">
         <div class="stadium-bg"></div>
         <div class="field-lines"></div>
         <div class="crowd-effect"></div>
         
-        <div class="game-ui">
-            <div class="score-display">Score: <span id="score">0</span>/3</div>
-            <button class="restart-btn" onclick="restartGame()">Restart</button>
-        </div>
+        <div class="title-overlay">MATCH THE PLAYERS!</div>
+        
+        <div class="countdown" id="countdown">3</div>
         
         <div class="progress-bar">
             <div class="progress-fill" id="progressFill"></div>
         </div>
         
         <div class="faces-section">
-            <div class="player-card">
-                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iNDAiIGN5PSI0MCIgcj0iNDAiIGZpbGw9IiNGRkI4N0EiLz4KPGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iNCIgZmlsbD0iIzMzMzMzMyIvPgo8Y2lyY2xlIGN4PSI1MCIgY3k9IjMwIiByPSI0IiBmaWxsPSIjMzMzMzMzIi8+CjxwYXRoIGQ9Ik0zNSA1MEMzNSA1MiAzNyA1NCA0MCA1NEMzNCA1NCA0NSA1MiA0NSA1MFoiIGZpbGw9IiMzMzMzMzMiLz4KPHBhdGggZD0iTTI1IDIwQzI1IDE1IDMwIDEwIDQwIDEwQzUwIDEwIDU1IDE1IDU1IDIwVjM1SDI1VjIwWiIgZmlsbD0iIzMzMzMzMyIvPgo8L3N2Zz4K" alt="Messi" class="face-img" id="face1">
+            <div class="player-card" id="playerCard1">
+                <img src="face_messi.png" alt="Messi" class="face-img" id="face1">
                 <div class="player-name">Messi</div>
             </div>
-            <div class="player-card">
-                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iNDAiIGN5PSI0MCIgcj0iNDAiIGZpbGw9IiNGRkI4N0EiLz4KPGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iNCIgZmlsbD0iIzMzMzMzMyIvPgo8Y2lyY2xlIGN4PSI1MCIgY3k9IjMwIiByPSI0IiBmaWxsPSIjMzMzMzMzIi8+CjxwYXRoIGQ9Ik0zNSA1MEMzNSA1MiAzNyA1NCA0MCA1NEMzNCA1NCA0NSA1MiA0NSA1MFoiIGZpbGw9IiMzMzMzMzMiLz4KPHBhdGggZD0iTTI1IDIwQzI1IDE1IDMwIDEwIDQwIDEwQzUwIDEwIDU1IDE1IDU1IDIwVjM1SDI1VjIwWiIgZmlsbD0iIzMzMzMzMyIvPgo8L3N2Zz4K" alt="Ronaldo" class="face-img" id="face2">
+            <div class="player-card" id="playerCard2">
+                <img src="face_ronaldo.png" alt="Ronaldo" class="face-img" id="face2">
                 <div class="player-name">Ronaldo</div>
             </div>
-            <div class="player-card">
-                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iNDAiIGN5PSI0MCIgcj0iNDAiIGZpbGw9IiNGRkI4N0EiLz4KPGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iNCIgZmlsbD0iIzMzMzMzMyIvPgo8Y2lyY2xlIGN4PSI1MCIgY3k9IjMwIiByPSI0IiBmaWxsPSIjMzMzMzMzIi8+CjxwYXRoIGQ9Ik0zNSA1MEMzNSA1MiAzNyA1NCA0MCA1NEMzNCA1NCA0NSA1MiA0NSA1MFoiIGZpbGw9IiMzMzMzMzMiLz4KPHBhdGggZD0iTTI1IDIwQzI1IDE1IDMwIDEwIDQwIDEwQzUwIDEwIDU1IDE1IDU1IDIwVjM1SDI1VjIwWiIgZmlsbD0iIzMzMzMzMyIvPgo8L3N2Zz4K" alt="Neymar" class="face-img" id="face3">
+            <div class="player-card" id="playerCard3">
+                <img src="face_neymar.png" alt="Neymar" class="face-img" id="face3">
                 <div class="player-name">Neymar</div>
             </div>
         </div>
@@ -495,44 +587,57 @@
     </div>
 
     <script>
-        const kits = [
-            'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iOTAiIGhlaWdodD0iMTQwIiB2aWV3Qm94PSIwIDAgOTAgMTQwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cmVjdCB3aWR0aD0iOTAiIGhlaWdodD0iODAiIGZpbGw9IiMwMDMzRkYiLz4KPHN0cmlwZSB4MT0iMCIgeTE9IjIwIiB4Mj0iOTAiIHkyPSIyMCIgc3Ryb2tlPSIjRkZGIiBzdHJva2Utd2lkdGg9IjQiLz4KPHN0cmlwZSB4MT0iMCIgeTE9IjQwIiB4Mj0iOTAiIHkyPSI0MCIgc3Ryb2tlPSIjRkZGIiBzdHJva2Utd2lkdGg9IjQiLz4KPHN0cmlwZSB4MT0iMCIgeTE9IjYwIiB4Mj0iOTAiIHkyPSI2MCIgc3Ryb2tlPSIjRkZGIiBzdHJva2Utd2lkdGg9IjQiLz4KPHJlY3QgeT0iODAiIHdpZHRoPSI5MCIgaGVpZ2h0PSI2MCIgZmlsbD0iIzAwMzNGRiIvPgo8L3N2Zz4K',
-            'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iOTAiIGhlaWdodD0iMTQwIiB2aWV3Qm94PSIwIDAgOTAgMTQwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cmVjdCB3aWR0aD0iOTAiIGhlaWdodD0iODAiIGZpbGw9IiNGRkZGRkYiLz4KPHN0cmlwZSB4MT0iMCIgeTE9IjIwIiB4Mj0iOTAiIHkyPSIyMCIgc3Ryb2tlPSIjRkZENzAwIiBzdHJva2Utd2lkdGg9IjQiLz4KPHN0cmlwZSB4MT0iMCIgeTE9IjQwIiB4Mj0iOTAiIHkyPSI0MCIgc3Ryb2tlPSIjRkZENzAwIiBzdHJva2Utd2lkdGg9IjQiLz4KPHN0cmlwZSB4MT0iMCIgeTE9IjYwIiB4Mj0iOTAiIHkyPSI2MCIgc3Ryb2tlPSIjRkZENzAwIiBzdHJva2Utd2lkdGg9IjQiLz4KPHJlY3QgeT0iODAiIHdpZHRoPSI5MCIgaGVpZ2h0PSI2MCIgZmlsbD0iI0ZGRkZGRiIvPgo8L3N2Zz4K',
-            'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iOTAiIGhlaWdodD0iMTQwIiB2aWV3Qm94PSIwIDAgOTAgMTQwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cmVjdCB3aWR0aD0iOTAiIGhlaWdodD0iODAiIGZpbGw9IiNGRkZGRkYiLz4KPHN0cmlwZSB4MT0iMCIgeTE9IjIwIiB4Mj0iOTAiIHkyPSIyMCIgc3Ryb2tlPSIjRkYwMDAwIiBzdHJva2Utd2lkdGg9IjQiLz4KPHN0cmlwZSB4MT0iMCIgeTE9IjQwIiB4Mj0iOTAiIHkyPSI0MCIgc3Ryb2tlPSIjRkYwMDAwIiBzdHJva2Utd2lkdGg9IjQiLz4KPHN0cmlwZSB4MT0iMCIgeTE9IjYwIiB4Mj0iOTAiIHkyPSI2MCIgc3Ryb2tlPSIjRkYwMDAwIiBzdHJva2Utd2lkdGg9IjQiLz4KPHJlY3QgeT0iODAiIHdpZHRoPSI5MCIgaGVpZ2h0PSI2MCIgZmlsbD0iI0ZGRkZGRiIvPgo8L3N2Zz4K'
-        ];
-        
-        const correctMatches = [0, 1, 2]; // Messi=kit1, Ronaldo=kit2, Neymar=kit3
+        // Game state
         let gameState = {
-            currentSlot: 0,
+            currentPlayer: 0, // 0: Messi, 1: Ronaldo, 2: Neymar
             currentAttempt: 0,
-            maxAttempts: 3,
             score: 0,
             isPlaying: false,
-            selectedFace: null,
             matches: [false, false, false],
-            usedKits: []
+            playerOrder: [0, 1, 2], // Messi, Ronaldo, Neymar
+            bodyImages: [
+                'body_messi.png',    // Messi with Barca kit
+                'body_ronaldo.png',  // Ronaldo with Real Madrid kit
+                'body_neymar.png'    // Neymar with Brazil kit
+            ],
+            correctMatches: [0, 1, 2], // Each player matches with their respective body
+            wrongSlots: [
+                [1, 2], // Messi wrong slots
+                [0, 2], // Ronaldo wrong slots  
+                [0, 1]  // Neymar wrong slots
+            ]
         };
+
+        // Audio elements
+        const bgMusic = document.getElementById('bgMusic');
+        const successSound = document.getElementById('successSound');
+        const failSound = document.getElementById('failSound');
+
+        function playSound(sound) {
+            sound.currentTime = 0;
+            sound.play().catch(e => console.log('Audio play failed:', e));
+        }
+
+        function startBackgroundMusic() {
+            bgMusic.volume = 0.3;
+            bgMusic.play().catch(e => console.log('Background music play failed:', e));
+        }
 
         function updateProgress() {
             const progress = (gameState.score / 3) * 100;
             document.getElementById('progressFill').style.width = progress + '%';
         }
 
-        function updateScore() {
-            document.getElementById('score').textContent = gameState.score;
-            updateProgress();
-        }
-
-        function createParticles(x, y) {
+        function createParticles(x, y, count = 15) {
             const particleSystem = document.getElementById('particleSystem');
-            for (let i = 0; i < 20; i++) {
+            for (let i = 0; i < count; i++) {
                 const particle = document.createElement('div');
                 particle.className = 'particle';
-                particle.style.left = x + 'px';
-                particle.style.top = y + 'px';
+                particle.style.left = (x - 50 + Math.random() * 100) + 'px';
+                particle.style.top = (y - 50 + Math.random() * 100) + 'px';
                 particle.style.background = ['#ffd700', '#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4'][Math.floor(Math.random() * 5)];
                 particle.style.animationDelay = Math.random() * 0.5 + 's';
-                particle.style.animationDuration = Math.random() * 1.5 + 1 + 's';
+                particle.style.animationDuration = Math.random() * 2 + 2 + 's';
                 
                 particleSystem.appendChild(particle);
                 particle.classList.add('celebrate');
@@ -541,17 +646,30 @@
                     if (particle.parentNode) {
                         particle.parentNode.removeChild(particle);
                     }
-                }, 2000);
+                }, 4000);
             }
         }
 
-        function shuffleArray(array) {
-            const shuffled = [...array];
-            for (let i = shuffled.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        function createConfetti() {
+            const particleSystem = document.getElementById('particleSystem');
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 720 + 'px';
+                confetti.style.top = '-50px';
+                confetti.style.background = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#ffd700', '#ff9ff3'][Math.floor(Math.random() * 6)];
+                confetti.style.animationDelay = Math.random() * 2 + 's';
+                confetti.style.animationDuration = Math.random() * 2 + 3 + 's';
+                
+                particleSystem.appendChild(confetti);
+                confetti.classList.add('fall');
+                
+                setTimeout(() => {
+                    if (confetti.parentNode) {
+                        confetti.parentNode.removeChild(confetti);
+                    }
+                }, 6000);
             }
-            return shuffled;
         }
 
         function drawConnectionLine(fromElement, toElement) {
@@ -579,7 +697,7 @@
             
             setTimeout(() => {
                 line.classList.add('draw');
-            }, 100);
+            }, 200);
             
             return line;
         }
@@ -591,114 +709,148 @@
             feedback.classList.add('show');
             setTimeout(() => {
                 feedback.classList.remove('show');
-            }, 1000);
+            }, 1200);
         }
 
-        function placeKitInSlot(slotIndex, kitIndex) {
+        function placeBodyInSlot(slotIndex, bodyIndex) {
             const slot = document.getElementById(`slot${slotIndex + 1}`);
             const existingImg = slot.querySelector('.body-img');
             
             if (existingImg) {
-                existingImg.classList.add('disappear');
-                setTimeout(() => {
-                    existingImg.remove();
-                }, 300);
+                existingImg.remove();
             }
             
+            const img = document.createElement('img');
+            img.src = gameState.bodyImages[bodyIndex];
+            img.className = 'body-img';
+            img.alt = `Body ${bodyIndex + 1}`;
+            slot.appendChild(img);
+            
             setTimeout(() => {
-                const img = document.createElement('img');
-                img.src = kits[kitIndex];
-                img.className = 'body-img';
-                img.alt = `Kit ${kitIndex + 1}`;
-                slot.appendChild(img);
-                
-                setTimeout(() => {
-                    img.classList.add('appear');
-                }, 50);
-            }, existingImg ? 300 : 0);
+                img.classList.add('appear');
+            }, 100);
+            
+            return img;
         }
 
-        function handleMatch(faceIndex, slotIndex) {
-            const isCorrect = correctMatches[faceIndex] === slotIndex;
-            const face = document.getElementById(`face${faceIndex + 1}`);
+        function tryMatch(playerIndex, slotIndex) {
+            const isCorrect = gameState.correctMatches[playerIndex] === slotIndex;
+            const face = document.getElementById(`face${playerIndex + 1}`);
             const slot = document.getElementById(`slot${slotIndex + 1}`);
             
-            if (isCorrect) {
-                // Correct match
-                gameState.matches[faceIndex] = true;
-                gameState.score++;
-                gameState.usedKits.push(slotIndex);
-                
-                face.classList.add('correct-match');
-                slot.classList.add('matched');
-                
-                placeKitInSlot(slotIndex, slotIndex);
-                
-                const connectionLine = drawConnectionLine(face, slot);
-                showFeedback(slotIndex, true);
-                
-                setTimeout(() => {
-                    const img = slot.querySelector('.body-img');
-                    if (img) {
-                        img.classList.add('matched');
-                    }
-                }, 500);
-                
-                createParticles(
-                    slot.getBoundingClientRect().left + slot.offsetWidth / 2 - document.querySelector('.game-container').getBoundingClientRect().left,
-                    slot.getBoundingClientRect().top + slot.offsetHeight / 2 - document.querySelector('.game-container').getBoundingClientRect().top
-                );
-                
-                updateScore();
-                
-                if (gameState.score === 3) {
+            // Select the face
+            face.classList.add('selected');
+            
+            setTimeout(() => {
+                if (isCorrect) {
+                    // Correct match
+                    gameState.matches[playerIndex] = true;
+                    gameState.score++;
+                    
+                    face.classList.remove('selected');
+                    face.classList.add('correct-match');
+                    slot.classList.add('matched');
+                    
+                    const img = placeBodyInSlot(slotIndex, playerIndex);
+                    
                     setTimeout(() => {
-                        showVictory();
-                    }, 1500);
+                        const connectionLine = drawConnectionLine(face, slot);
+                        showFeedback(slotIndex, true);
+                        playSound(successSound);
+                        
+                        setTimeout(() => {
+                            img.classList.add('matched');
+                        }, 500);
+                        
+                        createParticles(
+                            slot.getBoundingClientRect().left + slot.offsetWidth / 2 - document.querySelector('.game-container').getBoundingClientRect().left,
+                            slot.getBoundingClientRect().top + slot.offsetHeight / 2 - document.querySelector('.game-container').getBoundingClientRect().top,
+                            20
+                        );
+                        
+                        updateProgress();
+                        
+                        // Move to next player after delay
+                        setTimeout(() => {
+                            face.classList.remove('correct-match');
+                            if (gameState.score === 3) {
+                                showVictory();
+                            } else {
+                                gameState.currentPlayer++;
+                                gameState.currentAttempt = 0;
+                                setTimeout(() => {
+                                    animateNextPlayer();
+                                }, 1000);
+                            }
+                        }, 1500);
+                    }, 300);
+                } else {
+                    // Wrong match
+                    face.classList.remove('selected');
+                    face.classList.add('wrong-match');
+                    slot.classList.add('wrong');
+                    
+                    showFeedback(slotIndex, false);
+                    playSound(failSound);
+                    
+                    setTimeout(() => {
+                        face.classList.remove('wrong-match');
+                        slot.classList.remove('wrong');
+                        
+                        // Try next slot after delay
+                        setTimeout(() => {
+                            gameState.currentAttempt++;
+                            animateNextPlayer();
+                        }, 800);
+                    }, 800);
                 }
+            }, 1000);
+        }
+
+        function animateNextPlayer() {
+            if (gameState.currentPlayer >= 3) return;
+            
+            const playerIndex = gameState.playerOrder[gameState.currentPlayer];
+            const wrongSlots = gameState.wrongSlots[playerIndex];
+            
+            // Determine which slot to try
+            let slotIndex;
+            if (gameState.currentAttempt < wrongSlots.length) {
+                // Try wrong slot first
+                slotIndex = wrongSlots[gameState.currentAttempt];
             } else {
-                // Wrong match
-                face.classList.add('wrong-match');
-                slot.classList.add('wrong');
-                
-                showFeedback(slotIndex, false);
-                
-                setTimeout(() => {
-                    face.classList.remove('wrong-match');
-                    slot.classList.remove('wrong');
-                }, 600);
+                // Try correct slot
+                slotIndex = gameState.correctMatches[playerIndex];
             }
             
-            // Reset face selection
-            setTimeout(() => {
-                face.classList.remove('selected', 'correct-match', 'wrong-match');
-                gameState.selectedFace = null;
-            }, 1000);
+            tryMatch(playerIndex, slotIndex);
         }
 
         function showVictory() {
             const victoryScreen = document.getElementById('victoryScreen');
             victoryScreen.classList.add('show');
             
-            // Create victory particles
-            createParticles(200, 300);
-            setTimeout(() => createParticles(150, 250), 300);
-            setTimeout(() => createParticles(250, 350), 600);
+            createConfetti();
+            
+            // Reset game after 5 seconds
+            setTimeout(() => {
+                resetGame();
+            }, 5000);
         }
 
         function resetGame() {
-            gameState = {
-                currentSlot: 0,
-                currentAttempt: 0,
-                maxAttempts: 3,
-                score: 0,
-                isPlaying: false,
-                selectedFace: null,
-                matches: [false, false, false],
-                usedKits: []
-            };
+            // Reset game state
+            gameState.currentPlayer = 0;
+            gameState.currentAttempt = 0;
+            gameState.score = 0;
+            gameState.matches = [false, false, false];
+            gameState.isPlaying = false;
             
-            // Clear all slots
+            // Remove victory screen
+            const victoryScreen = document.getElementById('victoryScreen');
+            victoryScreen.classList.remove('show');
+            
+            // Clear all body images
             for (let i = 1; i <= 3; i++) {
                 const slot = document.getElementById(`slot${i}`);
                 const img = slot.querySelector('.body-img');
@@ -708,58 +860,110 @@
                 slot.classList.remove('matched', 'wrong');
             }
             
-            // Clear all faces
+            // Reset face animations
             for (let i = 1; i <= 3; i++) {
                 const face = document.getElementById(`face${i}`);
                 face.classList.remove('selected', 'correct-match', 'wrong-match');
             }
             
-            // Clear connection lines
+            // Remove all connection lines
             const lines = document.querySelectorAll('.connection-line');
             lines.forEach(line => line.remove());
             
-            // Hide victory screen
-            document.getElementById('victoryScreen').classList.remove('show');
+            // Clear particles
+            const particleSystem = document.getElementById('particleSystem');
+            particleSystem.innerHTML = '';
             
-            // Reset score and progress
-            updateScore();
+            // Reset progress
+            updateProgress();
+            
+            // Start new game after delay
+            setTimeout(() => {
+                startGame();
+            }, 2000);
         }
 
-        function restartGame() {
-            resetGame();
-        }
-
-        // Initialize game when page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            updateScore();
+        function startCountdown() {
+            const countdown = document.getElementById('countdown');
+            let count = 3;
             
-            // Add click handlers for faces
-            for (let i = 1; i <= 3; i++) {
-                const face = document.getElementById(`face${i}`);
-                face.addEventListener('click', function() {
-                    if (gameState.matches[i - 1]) return; // Already matched
+            function showCount() {
+                countdown.textContent = count;
+                countdown.classList.add('show');
+                
+                setTimeout(() => {
+                    countdown.classList.remove('show');
+                    count--;
                     
-                    // Deselect previous face
-                    if (gameState.selectedFace !== null) {
-                        const prevFace = document.getElementById(`face${gameState.selectedFace + 1}`);
-                        prevFace.classList.remove('selected');
+                    if (count > 0) {
+                        setTimeout(showCount, 500);
+                    } else {
+                        setTimeout(() => {
+                            countdown.textContent = 'GO!';
+                            countdown.classList.add('show');
+                            
+                            setTimeout(() => {
+                                countdown.classList.remove('show');
+                                gameState.isPlaying = true;
+                                startBackgroundMusic();
+                                showPlayersAndSlots();
+                            }, 1000);
+                        }, 500);
                     }
-                    
-                    // Select new face
-                    gameState.selectedFace = i - 1;
-                    face.classList.add('selected');
-                });
+                }, 1000);
             }
             
-            // Add click handlers for slots
-            for (let i = 1; i <= 3; i++) {
-                const slot = document.getElementById(`slot${i}`);
-                slot.addEventListener('click', function() {
-                    if (gameState.selectedFace === null) return;
-                    if (gameState.usedKits.includes(i - 1)) return; // Slot already used
-                    
-                    handleMatch(gameState.selectedFace, i - 1);
-                });
+            showCount();
+        }
+
+        function showPlayersAndSlots() {
+            // Show player cards
+            const playerCards = document.querySelectorAll('.player-card');
+            playerCards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.classList.add('appear');
+                }, index * 200);
+            });
+            
+            // Show body slots
+            const bodySlots = document.querySelectorAll('.body-slot');
+            bodySlots.forEach((slot, index) => {
+                setTimeout(() => {
+                    slot.classList.add('appear');
+                }, 1000 + index * 200);
+            });
+            
+            // Start the matching sequence
+            setTimeout(() => {
+                animateNextPlayer();
+            }, 2500);
+        }
+
+        function startGame() {
+            // Reset all elements
+            const playerCards = document.querySelectorAll('.player-card');
+            const bodySlots = document.querySelectorAll('.body-slot');
+            
+            playerCards.forEach(card => card.classList.remove('appear'));
+            bodySlots.forEach(slot => slot.classList.remove('appear'));
+            
+            // Start countdown
+            setTimeout(() => {
+                startCountdown();
+            }, 1000);
+        }
+
+        // Auto-start the game when page loads
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                startGame();
+            }, 1000);
+        });
+
+        // Handle audio interaction requirement
+        document.addEventListener('click', () => {
+            if (bgMusic.paused && gameState.isPlaying) {
+                startBackgroundMusic();
             }
         });
     </script>
