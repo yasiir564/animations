@@ -3,937 +3,597 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Football Player Matching - YouTube Short</title>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <title>Squid Game: Red Light, Green Light - Scene 1</title>
     <style>
-       * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-body {
-    font-family: 'Inter', 'Nunito', system-ui, -apple-system, sans-serif;
-    background: linear-gradient(180deg, #1a5f1a 0%, #2d8f2d 30%, #4CAF50 70%, #66BB6A 100%);
-    min-height: 100vh;
-    overflow-x: hidden;
-    position: relative;
-    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
-}
+        body {
+            width: 720px;
+            height: 1280px;
+            overflow: hidden;
+            position: relative;
+            background: #1a1a1a;
+            font-family: 'Arial', sans-serif;
+        }
 
-/* Stadium Background Effects */
-.stadium-bg {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-}
+        #scene-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
 
-.field-lines {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0.15;
-}
+        #three-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
 
-.field-lines::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, white, transparent);
-    transform: translateY(-50%);
-    box-shadow: 0 0 20px rgba(255,255,255,0.3);
-}
+        .ui-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            pointer-events: none;
+        }
 
-.field-lines::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 150px;
-    height: 150px;
-    border: 2px solid white;
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 0 0 30px rgba(255,255,255,0.2);
-}
+        .atmospheric-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 5;
+            pointer-events: none;
+        }
 
-.crowd-lights {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 120px;
-    background: linear-gradient(180deg, 
-        rgba(255,255,255,0.4) 0%, 
-        rgba(255,255,255,0.15) 50%, 
-        transparent 100%);
-    animation: crowdPulse 4s ease-in-out infinite;
-}
+        .dust-particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            opacity: 0;
+        }
 
-@keyframes crowdPulse {
-    0%, 100% { opacity: 0.7; }
-    50% { opacity: 1; }
-}
+        .player-nameplate {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 14px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            opacity: 0;
+            transform: translateY(20px);
+        }
 
-/* Main Container */
-.container {
-    width: 100%;
-    max-width: 390px;
-    margin: 0 auto;
-    padding: 20px;
-    min-height: 100vh;
-    position: relative;
-    z-index: 1;
-}
+        .nameplate-messi {
+            bottom: 25%;
+            left: 12%;
+            color: #ff6b6b;
+            border-color: #ff6b6b;
+        }
 
-/* Progress Bar */
-.progress-container {
-    width: 100%;
-    height: 12px;
-    background: rgba(255,255,255,0.15);
-    border-radius: 20px;
-    margin-bottom: 30px;
-    overflow: hidden;
-    box-shadow: 
-        0 4px 20px rgba(0,0,0,0.2),
-        inset 0 2px 4px rgba(0,0,0,0.1);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255,255,255,0.1);
-}
+        .nameplate-ronaldo {
+            bottom: 25%;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            color: #4ecdc4;
+            border-color: #4ecdc4;
+        }
 
-.progress-bar {
-    height: 100%;
-    background: linear-gradient(90deg, 
-        #4CAF50 0%, 
-        #66BB6A 50%, 
-        #81C784 100%);
-    width: 0%;
-    transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
-    border-radius: 20px;
-    box-shadow: 
-        0 0 30px rgba(76,175,80,0.6),
-        inset 0 1px 2px rgba(255,255,255,0.3);
-    position: relative;
-    overflow: hidden;
-}
+        .nameplate-neymar {
+            bottom: 25%;
+            right: 12%;
+            color: #feca57;
+            border-color: #feca57;
+        }
 
-.progress-bar::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, 
-        transparent, 
-        rgba(255,255,255,0.4), 
-        transparent);
-    animation: progressShimmer 2s infinite;
-}
+        .tension-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 80%, rgba(255, 0, 0, 0.05) 0%, transparent 60%);
+            z-index: 2;
+            opacity: 0;
+        }
 
-@keyframes progressShimmer {
-    0% { left: -100%; }
-    100% { left: 100%; }
-}
+        .wind-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 3;
+            pointer-events: none;
+        }
 
-/* Title */
-.title {
-    text-align: center;
-    color: white;
-    font-size: 28px;
-    font-weight: 900;
-    margin-bottom: 30px;
-    text-shadow: 
-        0 2px 10px rgba(0,0,0,0.7),
-        0 0 20px rgba(255,255,255,0.2);
-    letter-spacing: 2px;
-    background: linear-gradient(135deg, 
-        #ffffff 0%, 
-        #f0f0f0 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
-}
-
-/* Faces Section */
-.faces-container {
-    display: flex;
-    justify-content: space-around;
-    margin-bottom: 60px;
-    padding: 0 20px;
-}
-
-.face-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    cursor: pointer;
-}
-
-.face-item:hover {
-    transform: translateY(-5px);
-}
-
-.face-item.active {
-    transform: scale(1.15) translateY(-8px);
-    filter: brightness(1.2) saturate(1.1);
-}
-
-.face-circle {
-    width: 85px;
-    height: 85px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, 
-        #FFD700 0%, 
-        #FFA500 50%, 
-        #FF8C00 100%);
-    border: 3px solid white;
-    box-shadow: 
-        0 8px 25px rgba(0,0,0,0.25),
-        0 0 25px rgba(255,215,0,0.4),
-        inset 0 1px 2px rgba(255,255,255,0.2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 12px;
-    overflow: hidden;
-    position: relative;
-    backdrop-filter: blur(5px);
-}
-
-.face-circle::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: conic-gradient(
-        from 0deg,
-        transparent 0deg,
-        rgba(255,255,255,0.1) 90deg,
-        transparent 180deg
-    );
-    animation: rotate 3s linear infinite;
-}
-
-@keyframes rotate {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-}
-
-.face-circle img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 50%;
-    position: relative;
-    z-index: 1;
-}
-
-.face-name {
-    color: white;
-    font-weight: 800;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    text-shadow: 
-        0 2px 8px rgba(0,0,0,0.8),
-        0 0 10px rgba(255,255,255,0.1);
-    background: linear-gradient(135deg, 
-        #ffffff 0%, 
-        #e0e0e0 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));
-}
-
-/* Bodies Section */
-.bodies-container {
-    display: flex;
-    justify-content: space-around;
-    margin-bottom: 40px;
-    padding: 0 20px;
-}
-
-.body-slot {
-    width: 95px;
-    height: 125px;
-    border: 3px dashed rgba(255,255,255,0.4);
-    border-radius: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    background: rgba(255,255,255,0.08);
-    backdrop-filter: blur(10px);
-    box-shadow: 
-        0 4px 15px rgba(0,0,0,0.1),
-        inset 0 1px 2px rgba(255,255,255,0.1);
-}
-
-.body-slot::before {
-    content: '';
-    position: absolute;
-    top: -2px;
-    left: -2px;
-    right: -2px;
-    bottom: -2px;
-    background: linear-gradient(135deg, 
-        transparent, 
-        rgba(255,255,255,0.1), 
-        transparent);
-    border-radius: 22px;
-    z-index: -1;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.body-slot:hover::before {
-    opacity: 1;
-}
-
-.body-slot.glow {
-    border-color: #FFD700;
-    box-shadow: 
-        0 0 40px rgba(255,215,0,0.6),
-        0 0 80px rgba(255,215,0,0.3);
-    animation: slotGlow 0.6s ease-in-out;
-    background: rgba(255,215,0,0.1);
-}
-
-.body-slot.correct {
-    border-color: #4CAF50;
-    background: rgba(76,175,80,0.15);
-    box-shadow: 
-        0 0 40px rgba(76,175,80,0.6),
-        0 0 80px rgba(76,175,80,0.3);
-    animation: correctPulse 1.2s ease-in-out;
-}
-
-.body-slot.wrong {
-    border-color: #f44336;
-    background: rgba(244,67,54,0.15);
-    box-shadow: 
-        0 0 40px rgba(244,67,54,0.6),
-        0 0 80px rgba(244,67,54,0.3);
-    animation: wrongShake 0.6s ease-in-out;
-}
-
-@keyframes slotGlow {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.08); }
-}
-
-@keyframes correctPulse {
-    0% { transform: scale(1); }
-    30% { transform: scale(1.12); }
-    60% { transform: scale(1.05); }
-    100% { transform: scale(1); }
-}
-
-@keyframes wrongShake {
-    0%, 100% { transform: translateX(0); }
-    20% { transform: translateX(-8px); }
-    40% { transform: translateX(8px); }
-    60% { transform: translateX(-8px); }
-    80% { transform: translateX(8px); }
-}
-
-.body-image {
-    width: 85px;
-    height: 115px;
-    object-fit: cover;
-    border-radius: 15px;
-    opacity: 0;
-    transform: scale(0.7) rotate(5deg);
-    transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    box-shadow: 0 5px 20px rgba(0,0,0,0.3);
-}
-
-.body-image.show {
-    opacity: 1;
-    transform: scale(1) rotate(0deg);
-}
-
-/* Status Icons */
-.status-icon {
-    position: absolute;
-    top: -18px;
-    right: -18px;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    font-weight: 900;
-    opacity: 0;
-    transform: scale(0) rotate(180deg);
-    transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    z-index: 10;
-    border: 2px solid white;
-}
-
-.status-icon.show {
-    opacity: 1;
-    transform: scale(1) rotate(0deg);
-}
-
-.status-icon.correct {
-    background: linear-gradient(135deg, #4CAF50, #66BB6A);
-    color: white;
-    box-shadow: 
-        0 0 25px rgba(76,175,80,0.8),
-        0 4px 15px rgba(0,0,0,0.3);
-}
-
-.status-icon.wrong {
-    background: linear-gradient(135deg, #f44336, #ef5350);
-    color: white;
-    box-shadow: 
-        0 0 25px rgba(244,67,54,0.8),
-        0 4px 15px rgba(0,0,0,0.3);
-}
-
-/* Connection Lines */
-.connection-line {
-    position: absolute;
-    height: 4px;
-    background: linear-gradient(90deg, 
-        #4CAF50 0%, 
-        #66BB6A 50%, 
-        #81C784 100%);
-    border-radius: 3px;
-    opacity: 0;
-    transform-origin: left;
-    transform: scaleX(0);
-    transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 
-        0 0 15px rgba(76,175,80,0.6),
-        0 2px 8px rgba(0,0,0,0.2);
-}
-
-.connection-line::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, 
-        transparent, 
-        rgba(255,255,255,0.4), 
-        transparent);
-    border-radius: 3px;
-    animation: connectionPulse 2s infinite;
-}
-
-@keyframes connectionPulse {
-    0%, 100% { opacity: 0; }
-    50% { opacity: 1; }
-}
-
-.connection-line.show {
-    opacity: 1;
-    transform: scaleX(1);
-}
-
-/* Victory Screen */
-.victory-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.85);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 1000;
-    backdrop-filter: blur(15px);
-}
-
-.victory-overlay.show {
-    opacity: 1;
-    visibility: visible;
-}
-
-.victory-content {
-    text-align: center;
-    color: white;
-    animation: victoryBounce 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-}
-
-.victory-trophy {
-    font-size: 100px;
-    margin-bottom: 25px;
-    animation: trophyFloat 3s ease-in-out infinite;
-    filter: drop-shadow(0 10px 20px rgba(255,215,0,0.3));
-}
-
-.victory-title {
-    font-size: 36px;
-    font-weight: 900;
-    margin-bottom: 15px;
-    text-shadow: 
-        0 4px 15px rgba(0,0,0,0.7),
-        0 0 30px rgba(255,215,0,0.3);
-    background: linear-gradient(135deg, 
-        #FFD700 0%, 
-        #FFA500 50%, 
-        #FF8C00 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    letter-spacing: 2px;
-}
-
-.victory-subtitle {
-    font-size: 18px;
-    opacity: 0.9;
-    font-weight: 500;
-    letter-spacing: 1px;
-}
-
-@keyframes victoryBounce {
-    0% { 
-        transform: scale(0.3) rotate(-10deg); 
-        opacity: 0; 
-    }
-    50% { 
-        transform: scale(1.15) rotate(5deg); 
-    }
-    100% { 
-        transform: scale(1) rotate(0deg); 
-        opacity: 1; 
-    }
-}
-
-@keyframes trophyFloat {
-    0%, 100% { 
-        transform: translateY(0px) rotate(0deg); 
-    }
-    25% { 
-        transform: translateY(-15px) rotate(2deg); 
-    }
-    50% { 
-        transform: translateY(0px) rotate(0deg); 
-    }
-    75% { 
-        transform: translateY(-10px) rotate(-2deg); 
-    }
-}
-
-/* Particles */
-.particle {
-    position: fixed;
-    width: 8px;
-    height: 8px;
-    background: radial-gradient(circle, #FFD700, #FFA500);
-    border-radius: 50%;
-    opacity: 0;
-    z-index: 999;
-    animation: particleFall 4s linear infinite;
-    box-shadow: 0 0 10px rgba(255,215,0,0.5);
-}
-
-@keyframes particleFall {
-    0% {
-        opacity: 1;
-        transform: translateY(-100vh) rotate(0deg) scale(0.5);
-    }
-    50% {
-        opacity: 1;
-        transform: translateY(50vh) rotate(180deg) scale(1);
-    }
-    100% {
-        opacity: 0;
-        transform: translateY(100vh) rotate(360deg) scale(0.5);
-    }
-}
-
-/* Micro Interactions */
-.face-item:active {
-    transform: scale(0.95);
-}
-
-.body-slot:active {
-    transform: scale(0.95);
-}
-
-/* Enhanced Glassmorphism Effects */
-.glass-effect {
-    background: rgba(255,255,255,0.1);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255,255,255,0.2);
-    box-shadow: 
-        0 8px 32px rgba(0,0,0,0.1),
-        inset 0 1px 2px rgba(255,255,255,0.1);
-}
-
-/* Responsive Design */
-@media (max-width: 375px) {
-    .face-circle {
-        width: 75px;
-        height: 75px;
-    }
-    
-    .body-slot {
-        width: 85px;
-        height: 115px;
-    }
-    
-    .body-image {
-        width: 75px;
-        height: 105px;
-    }
-    
-    .title {
-        font-size: 24px;
-    }
-    
-    .victory-title {
-        font-size: 30px;
-    }
-    
-    .victory-trophy {
-        font-size: 80px;
-    }
-}
-
-@media (max-width: 320px) {
-    .container {
-        padding: 15px;
-    }
-    
-    .faces-container,
-    .bodies-container {
-        padding: 0 10px;
-    }
-}
-
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
-    .progress-container {
-        background: rgba(255,255,255,0.1);
-    }
-    
-    .body-slot {
-        background: rgba(255,255,255,0.05);
-    }
-}
-
-/* Reduced motion support */
-@media (prefers-reduced-motion: reduce) {
-    * {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-    }
-}
+        .wind-line {
+            position: absolute;
+            height: 1px;
+            background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.1) 50%, transparent 100%);
+            opacity: 0;
+        }
     </style>
 </head>
 <body>
-    <div class="stadium-bg">
-        <div class="field-lines"></div>
-        <div class="crowd-lights"></div>
+    <div id="scene-container">
+        <canvas id="three-canvas"></canvas>
+        
+        <div class="ui-overlay">
+            <div class="player-nameplate nameplate-messi">MESSI 🇦🇷</div>
+            <div class="player-nameplate nameplate-ronaldo">RONALDO 🇵🇹</div>
+            <div class="player-nameplate nameplate-neymar">NEYMAR 🇧🇷</div>
+        </div>
+        
+        <div class="atmospheric-particles"></div>
+        
+        <div class="tension-overlay"></div>
+        
+        <div class="wind-lines"></div>
     </div>
 
-    <div class="container">
-        <div class="progress-container">
-            <div class="progress-bar" id="progressBar"></div>
-        </div>
+    <!-- External Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.9/dat.gui.min.js"></script>
 
-        <div class="title">⚽ MATCH THE PLAYERS ⚽</div>
+    <script>
+        // Global variables
+        let scene, camera, renderer, clock;
+        let players = [];
+        let ground, doll, particles = [];
+        let dustParticles = [];
+        let windLines = [];
 
-        <div class="faces-container">
-            <div class="face-item" data-player="0">
-                <div class="face-circle">
-                    <img src="Gemini_Generated_Image_rtgbfurtgbfurtgb.png" alt="Messi" onerror="this.style.display='none'">
-                </div>
-                <div class="face-name">MESSI</div>
-            </div>
-            <div class="face-item" data-player="1">
-                <div class="face-circle">
-                    <img src="Gemini_Generated_Image_7yg3s37yg3s37yg3.png" alt="Ronaldo" onerror="this.style.display='none'">
-                </div>
-                <div class="face-name">RONALDO</div>
-            </div>
-            <div class="face-item" data-player="2">
-                <div class="face-circle">
-                    <img src="Gemini_Generated_Image_jj12lzjj12lzjj12.png" alt="Neymar" onerror="this.style.display='none'">
-                </div>
-                <div class="face-name">NEYMAR</div>
-            </div>
-        </div>
+        // Scene setup
+        function initScene() {
+            // Create scene
+            scene = new THREE.Scene();
+            scene.fog = new THREE.Fog(0xa8b8c8, 10, 100);
 
-        <div class="bodies-container">
-            <div class="body-slot" data-slot="0">
-                <img class="body-image" src="Gemini_Generated_Image_5ubuja5ubuja5ubu (1).png" alt="Messi Body" onerror="this.style.display='none'">
-                <div class="status-icon"></div>
-            </div>
-            <div class="body-slot" data-slot="1">
-                <img class="body-image" src="Gemini_Generated_Image_5ubuja5ubuja5ubu.png" alt="Ronaldo Body" onerror="this.style.display='none'">
-                <div class="status-icon"></div>
-            </div>
-            <div class="body-slot" data-slot="2">
-                <img class="body-image" src="Gemini_Generated_Image_5ubuja5ubuja5ubu (2).png" alt="Neymar Body" onerror="this.style.display='none'">
-                <div class="status-icon"></div>
-            </div>
-        </div>
-    </div>
+            // Create camera
+            camera = new THREE.PerspectiveCamera(45, 720 / 1280, 0.1, 1000);
+            camera.position.set(0, 8, 20);
+            camera.lookAt(0, 0, 0);
 
-    <div class="victory-overlay" id="victoryOverlay">
-        <div class="victory-content">
-            <div class="victory-trophy">🏆</div>
-            <div class="victory-title">PERFECT MATCH!</div>
-            <div class="victory-subtitle">All players matched successfully!</div>
-        </div>
-    </div>
-    <audio id="successSound" src="success.mp3" preload="auto"></audio>
-<audio id="failSound" src="fail.mp3" preload="auto"></audio>
-<audio id="victorySound" src="victory.mp3" preload="auto"></audio>
+            // Create renderer
+            renderer = new THREE.WebGLRenderer({ 
+                canvas: document.getElementById('three-canvas'),
+                antialias: true,
+                alpha: true
+            });
+            renderer.setSize(720, 1280);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            renderer.setClearColor(0xa8b8c8, 1);
 
+            // Clock for animations
+            clock = new THREE.Clock();
 
-        <script>
-        class FootballMatchingGame {
-            constructor() {
-                this.players = ['Messi', 'Ronaldo', 'Neymar'];
-                this.correctMatches = [0, 1, 2]; // Correct slot for each player
-                this.currentPlayer = 0;
-                this.matchedPlayers = 0;
-                this.connectionLines = [];
-                
-                // Initialize sound effects
-                this.sounds = {
-                    success: new Audio('success.mp3'),
-                    fail: new Audio('fail.mp3'),
-                    victory: new Audio('victory.mp3')
-                };
-                
-                this.init();
+            // Lighting
+            setupLighting();
+            
+            // Create environment
+            createGround();
+            createDoll();
+            createStartingLine();
+            
+            // Create players
+            createPlayers();
+            
+            // Create particle systems
+            createParticleSystem();
+            
+            // Create atmospheric effects
+            createAtmosphericEffects();
+            
+            // Start animations
+            startAnimations();
+            
+            // Render loop
+            animate();
+        }
+
+        function setupLighting() {
+            // Ambient light
+            const ambientLight = new THREE.AmbientLight(0x404040, 0.4);
+            scene.add(ambientLight);
+
+            // Main directional light
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(10, 20, 10);
+            directionalLight.castShadow = true;
+            directionalLight.shadow.mapSize.width = 2048;
+            directionalLight.shadow.mapSize.height = 2048;
+            directionalLight.shadow.camera.near = 0.5;
+            directionalLight.shadow.camera.far = 50;
+            directionalLight.shadow.camera.left = -20;
+            directionalLight.shadow.camera.right = 20;
+            directionalLight.shadow.camera.top = 20;
+            directionalLight.shadow.camera.bottom = -20;
+            scene.add(directionalLight);
+
+            // Atmospheric light
+            const atmosphericLight = new THREE.DirectionalLight(0xffa500, 0.3);
+            atmosphericLight.position.set(-10, 10, -10);
+            scene.add(atmosphericLight);
+
+            // Point light for drama
+            const pointLight = new THREE.PointLight(0xff4444, 0.5, 30);
+            pointLight.position.set(0, 5, -15);
+            scene.add(pointLight);
+        }
+
+        function createGround() {
+            // Ground geometry
+            const groundGeometry = new THREE.PlaneGeometry(50, 50, 100, 100);
+            
+            // Ground material with texture-like appearance
+            const groundMaterial = new THREE.MeshLambertMaterial({
+                color: 0xd4c4a8,
+                transparent: true,
+                opacity: 0.9
+            });
+
+            ground = new THREE.Mesh(groundGeometry, groundMaterial);
+            ground.rotation.x = -Math.PI / 2;
+            ground.position.y = -1;
+            ground.receiveShadow = true;
+            scene.add(ground);
+
+            // Add ground texture variation
+            const vertices = ground.geometry.attributes.position.array;
+            for (let i = 0; i < vertices.length; i += 3) {
+                vertices[i + 2] += (Math.random() - 0.5) * 0.1;
             }
+            ground.geometry.attributes.position.needsUpdate = true;
+        }
 
-            init() {
-                setTimeout(() => {
-                    this.startGame();
-                }, 1000);
-            }
+        function createDoll() {
+            // Doll silhouette in background
+            const dollGeometry = new THREE.CylinderGeometry(0.8, 1.2, 4, 8);
+            const dollMaterial = new THREE.MeshLambertMaterial({
+                color: 0xff6b6b,
+                transparent: true,
+                opacity: 0.3
+            });
+            
+            doll = new THREE.Mesh(dollGeometry, dollMaterial);
+            doll.position.set(8, 2, -20);
+            doll.castShadow = true;
+            scene.add(doll);
 
-            startGame() {
-                this.tryMatchPlayer(this.currentPlayer);
-            }
+            // Doll head
+            const headGeometry = new THREE.SphereGeometry(0.6, 8, 8);
+            const headMaterial = new THREE.MeshLambertMaterial({
+                color: 0xff8e8e,
+                transparent: true,
+                opacity: 0.3
+            });
+            
+            const head = new THREE.Mesh(headGeometry, headMaterial);
+            head.position.set(0, 2.5, 0);
+            doll.add(head);
+        }
 
-            tryMatchPlayer(playerIndex) {
-                const faceItem = document.querySelector(`[data-player="${playerIndex}"]`);
-                faceItem.classList.add('active');
+        function createStartingLine() {
+            const lineGeometry = new THREE.BoxGeometry(20, 0.1, 0.2);
+            const lineMaterial = new THREE.MeshLambertMaterial({ color: 0xffffff });
+            
+            const startingLine = new THREE.Mesh(lineGeometry, lineMaterial);
+            startingLine.position.set(0, 0, 8);
+            startingLine.castShadow = true;
+            scene.add(startingLine);
+        }
 
-                // Generate random attempts (including wrong ones first)
-                const attempts = this.generateAttempts(playerIndex);
+        function createPlayers() {
+            const playerColors = [0xff6b6b, 0x4ecdc4, 0xfeca57];
+            const playerPositions = [-6, 0, 6];
+            const playerNames = ['Messi', 'Ronaldo', 'Neymar'];
+
+            for (let i = 0; i < 3; i++) {
+                // Player body
+                const bodyGeometry = new THREE.BoxGeometry(1, 2, 0.5);
+                const bodyMaterial = new THREE.MeshLambertMaterial({ color: playerColors[i] });
+                const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+                body.position.set(playerPositions[i], 1, 8);
+                body.castShadow = true;
+                body.receiveShadow = true;
                 
-                this.executeAttempts(playerIndex, attempts, 0);
-            }
+                // Player head
+                const headGeometry = new THREE.SphereGeometry(0.4, 8, 8);
+                const headMaterial = new THREE.MeshLambertMaterial({ color: 0xfdbcb4 });
+                const head = new THREE.Mesh(headGeometry, headMaterial);
+                head.position.set(0, 1.4, 0);
+                head.castShadow = true;
+                body.add(head);
 
-            generateAttempts(playerIndex) {
-                const correctSlot = this.correctMatches[playerIndex];
-                const wrongSlots = [0, 1, 2].filter(slot => slot !== correctSlot);
+                // Player arms
+                const armGeometry = new THREE.CylinderGeometry(0.1, 0.1, 1.2);
+                const armMaterial = new THREE.MeshLambertMaterial({ color: playerColors[i] });
                 
-                // Random wrong attempts first, then correct
-                const wrongAttempts = wrongSlots.sort(() => Math.random() - 0.5).slice(0, Math.floor(Math.random() * 2) + 1);
+                const leftArm = new THREE.Mesh(armGeometry, armMaterial);
+                leftArm.position.set(-0.7, 0.3, 0);
+                leftArm.rotation.z = 0.3;
+                leftArm.castShadow = true;
+                body.add(leftArm);
                 
-                return [...wrongAttempts, correctSlot];
-            }
+                const rightArm = new THREE.Mesh(armGeometry, armMaterial);
+                rightArm.position.set(0.7, 0.3, 0);
+                rightArm.rotation.z = -0.3;
+                rightArm.castShadow = true;
+                body.add(rightArm);
 
-            executeAttempts(playerIndex, attempts, attemptIndex) {
-                if (attemptIndex >= attempts.length) {
-                    this.finishPlayerTurn(playerIndex);
-                    return;
-                }
-
-                const slotIndex = attempts[attemptIndex];
-                const isCorrect = slotIndex === this.correctMatches[playerIndex];
+                // Player legs
+                const legGeometry = new THREE.CylinderGeometry(0.15, 0.15, 1.5);
+                const legMaterial = new THREE.MeshLambertMaterial({ color: 0x333333 });
                 
-                this.animateAttempt(playerIndex, slotIndex, isCorrect, () => {
-                    if (isCorrect) {
-                        this.handleCorrectMatch(playerIndex, slotIndex);
-                        this.finishPlayerTurn(playerIndex);
-                    } else {
-                        setTimeout(() => {
-                            this.executeAttempts(playerIndex, attempts, attemptIndex + 1);
-                        }, 1000);
-                    }
+                const leftLeg = new THREE.Mesh(legGeometry, legMaterial);
+                leftLeg.position.set(-0.3, -1.25, 0);
+                leftLeg.castShadow = true;
+                body.add(leftLeg);
+                
+                const rightLeg = new THREE.Mesh(legGeometry, legMaterial);
+                rightLeg.position.set(0.3, -1.25, 0);
+                rightLeg.castShadow = true;
+                body.add(rightLeg);
+
+                scene.add(body);
+                players.push({
+                    body: body,
+                    head: head,
+                    leftArm: leftArm,
+                    rightArm: rightArm,
+                    name: playerNames[i],
+                    originalY: body.position.y
                 });
-            }
-
-            animateAttempt(playerIndex, slotIndex, isCorrect, callback) {
-                const slot = document.querySelector(`[data-slot="${slotIndex}"]`);
-                const bodyImage = slot.querySelector('.body-image');
-                const statusIcon = slot.querySelector('.status-icon');
-
-                // Glow effect
-                slot.classList.add('glow');
-                
-                setTimeout(() => {
-                    slot.classList.remove('glow');
-                    
-                    // Show body image
-                    bodyImage.classList.add('show');
-                    
-                    setTimeout(() => {
-                        if (isCorrect) {
-                            slot.classList.add('correct');
-                            statusIcon.innerHTML = '✅';
-                            statusIcon.classList.add('correct', 'show');
-                            
-                            // Play success sound
-                            this.sounds.success.currentTime = 0;
-                            this.sounds.success.play();
-                        } else {
-                            slot.classList.add('wrong');
-                            statusIcon.innerHTML = '❌';
-                            statusIcon.classList.add('wrong', 'show');
-                            
-                            // Play fail sound
-                            this.sounds.fail.currentTime = 0;
-                            this.sounds.fail.play();
-                            
-                            // Remove wrong attempt after delay
-                            setTimeout(() => {
-                                bodyImage.classList.remove('show');
-                                statusIcon.classList.remove('show');
-                                slot.classList.remove('wrong');
-                                
-                                setTimeout(() => {
-                                    statusIcon.classList.remove('wrong');
-                                    callback();
-                                }, 300);
-                            }, 1000);
-                            return;
-                        }
-                        
-                        callback();
-                    }, 500);
-                }, 500);
-            }
-
-            handleCorrectMatch(playerIndex, slotIndex) {
-                this.matchedPlayers++;
-                this.updateProgressBar();
-                this.drawConnectionLine(playerIndex, slotIndex);
-                
-                if (this.matchedPlayers === 3) {
-                    setTimeout(() => {
-                        this.showVictory();
-                    }, 1000);
-                }
-            }
-
-            finishPlayerTurn(playerIndex) {
-                const faceItem = document.querySelector(`[data-player="${playerIndex}"]`);
-                faceItem.classList.remove('active');
-                
-                if (this.currentPlayer < 2) {
-                    this.currentPlayer++;
-                    setTimeout(() => {
-                        this.tryMatchPlayer(this.currentPlayer);
-                    }, 1500);
-                }
-            }
-
-            updateProgressBar() {
-                const progressBar = document.getElementById('progressBar');
-                const percentage = (this.matchedPlayers / 3) * 100;
-                progressBar.style.width = percentage + '%';
-            }
-
-            drawConnectionLine(playerIndex, slotIndex) {
-                const faceItem = document.querySelector(`[data-player="${playerIndex}"]`);
-                const slot = document.querySelector(`[data-slot="${slotIndex}"]`);
-                
-                const faceRect = faceItem.getBoundingClientRect();
-                const slotRect = slot.getBoundingClientRect();
-                
-                const line = document.createElement('div');
-                line.className = 'connection-line';
-                
-                const startX = faceRect.left + faceRect.width / 2;
-                const startY = faceRect.bottom;
-                const endX = slotRect.left + slotRect.width / 2;
-                const endY = slotRect.top;
-                
-                const length = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
-                const angle = Math.atan2(endY - startY, endX - startX) * 180 / Math.PI;
-                
-                line.style.width = length + 'px';
-                line.style.left = startX + 'px';
-                line.style.top = startY + 'px';
-                line.style.transform = `rotate(${angle}deg)`;
-                line.style.transformOrigin = '0 50%';
-                
-                document.body.appendChild(line);
-                
-                setTimeout(() => {
-                    line.classList.add('show');
-                }, 100);
-                
-                this.connectionLines.push(line);
-            }
-
-            showVictory() {
-                const overlay = document.getElementById('victoryOverlay');
-                overlay.classList.add('show');
-                
-                // Play victory sound
-                this.sounds.victory.currentTime = 0;
-                this.sounds.victory.play();
-                
-                // Create particles
-                this.createParticles();
-            }
-
-            createParticles() {
-                for (let i = 0; i < 50; i++) {
-                    setTimeout(() => {
-                        const particle = document.createElement('div');
-                        particle.className = 'particle';
-                        particle.style.left = Math.random() * 100 + '%';
-                        particle.style.animationDelay = Math.random() * 2 + 's';
-                        particle.style.animationDuration = (Math.random() * 3 + 2) + 's';
-                        
-                        const colors = ['#FFD700', '#FFA500', '#FF6B6B', '#4ECDC4', '#45B7D1'];
-                        particle.style.background = colors[Math.floor(Math.random() * colors.length)];
-                        
-                        document.body.appendChild(particle);
-                        
-                        setTimeout(() => {
-                            particle.remove();
-                        }, 5000);
-                    }, i * 100);
-                }
             }
         }
 
-        // Initialize the game when the page loads
-        document.addEventListener('DOMContentLoaded', () => {
-            new FootballMatchingGame();
+        function createParticleSystem() {
+            // Atmospheric particles
+            const particleCount = 50;
+            const particleGeometry = new THREE.BufferGeometry();
+            const particlePositions = new Float32Array(particleCount * 3);
+            const particleVelocities = [];
+
+            for (let i = 0; i < particleCount; i++) {
+                particlePositions[i * 3] = (Math.random() - 0.5) * 50;
+                particlePositions[i * 3 + 1] = Math.random() * 20;
+                particlePositions[i * 3 + 2] = (Math.random() - 0.5) * 50;
+                
+                particleVelocities.push({
+                    x: (Math.random() - 0.5) * 0.02,
+                    y: Math.random() * 0.01,
+                    z: (Math.random() - 0.5) * 0.02
+                });
+            }
+
+            particleGeometry.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
+            
+            const particleMaterial = new THREE.PointsMaterial({
+                color: 0xffffff,
+                size: 0.1,
+                transparent: true,
+                opacity: 0.6
+            });
+
+            const particleSystem = new THREE.Points(particleGeometry, particleMaterial);
+            scene.add(particleSystem);
+            
+            particles.push({
+                system: particleSystem,
+                velocities: particleVelocities,
+                geometry: particleGeometry
+            });
+        }
+
+        function createAtmosphericEffects() {
+            // Create dust particles in DOM
+            const particleContainer = document.querySelector('.atmospheric-particles');
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'dust-particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particleContainer.appendChild(particle);
+                dustParticles.push(particle);
+            }
+
+            // Create wind lines
+            const windContainer = document.querySelector('.wind-lines');
+            for (let i = 0; i < 10; i++) {
+                const line = document.createElement('div');
+                line.className = 'wind-line';
+                line.style.width = Math.random() * 200 + 100 + 'px';
+                line.style.top = Math.random() * 100 + '%';
+                line.style.left = '-200px';
+                windContainer.appendChild(line);
+                windLines.push(line);
+            }
+        }
+
+        function startAnimations() {
+            // Player breathing animation
+            players.forEach((player, index) => {
+                gsap.to(player.body.position, {
+                    y: player.originalY + 0.1,
+                    duration: 2 + index * 0.5,
+                    repeat: -1,
+                    yoyo: true,
+                    ease: "sine.inOut"
+                });
+
+                // Head subtle movement
+                gsap.to(player.head.rotation, {
+                    y: 0.1,
+                    duration: 3 + index * 0.3,
+                    repeat: -1,
+                    yoyo: true,
+                    ease: "sine.inOut"
+                });
+
+                // Arm sway
+                gsap.to(player.leftArm.rotation, {
+                    z: 0.4,
+                    duration: 2.5 + index * 0.2,
+                    repeat: -1,
+                    yoyo: true,
+                    ease: "sine.inOut"
+                });
+
+                gsap.to(player.rightArm.rotation, {
+                    z: -0.4,
+                    duration: 2.3 + index * 0.2,
+                    repeat: -1,
+                    yoyo: true,
+                    ease: "sine.inOut"
+                });
+            });
+
+            // Doll subtle movement
+            gsap.to(doll.rotation, {
+                y: 0.05,
+                duration: 8,
+                repeat: -1,
+                yoyo: true,
+                ease: "sine.inOut"
+            });
+
+            // Camera subtle movement
+            gsap.to(camera.position, {
+                y: 8.5,
+                duration: 6,
+                repeat: -1,
+                yoyo: true,
+                ease: "sine.inOut"
+            });
+
+            gsap.to(camera.position, {
+                x: 0.5,
+                duration: 8,
+                repeat: -1,
+                yoyo: true,
+                ease: "sine.inOut"
+            });
+
+            // Animate nameplates
+            gsap.to('.player-nameplate', {
+                opacity: 1,
+                y: 0,
+                duration: 2,
+                delay: 1,
+                stagger: 0.3,
+                ease: "back.out(1.7)"
+            });
+
+            // Tension overlay pulse
+            gsap.to('.tension-overlay', {
+                opacity: 0.3,
+                duration: 4,
+                repeat: -1,
+                yoyo: true,
+                ease: "sine.inOut"
+            });
+
+            // Animate dust particles
+            dustParticles.forEach((particle, index) => {
+                gsap.set(particle, { opacity: 0, y: 20 });
+                gsap.to(particle, {
+                    opacity: 1,
+                    y: -20,
+                    x: Math.random() * 100 - 50,
+                    duration: 10 + Math.random() * 5,
+                    repeat: -1,
+                    delay: index * 0.5,
+                    ease: "none"
+                });
+            });
+
+            // Animate wind lines
+            windLines.forEach((line, index) => {
+                gsap.set(line, { x: -200, opacity: 0 });
+                gsap.to(line, {
+                    x: 920,
+                    opacity: 0.3,
+                    duration: 3 + Math.random() * 2,
+                    repeat: -1,
+                    delay: index * 0.8,
+                    ease: "none",
+                    onComplete: function() {
+                        gsap.set(line, { x: -200, opacity: 0 });
+                    }
+                });
+            });
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const deltaTime = clock.getDelta();
+            const elapsedTime = clock.getElapsedTime();
+
+            // Update particles
+            particles.forEach(particleObj => {
+                const positions = particleObj.geometry.attributes.position.array;
+                const velocities = particleObj.velocities;
+
+                for (let i = 0; i < positions.length; i += 3) {
+                    positions[i] += velocities[i / 3].x;
+                    positions[i + 1] += velocities[i / 3].y;
+                    positions[i + 2] += velocities[i / 3].z;
+
+                    // Reset particles that go out of bounds
+                    if (positions[i] > 25) positions[i] = -25;
+                    if (positions[i] < -25) positions[i] = 25;
+                    if (positions[i + 1] > 20) positions[i + 1] = 0;
+                    if (positions[i + 2] > 25) positions[i + 2] = -25;
+                    if (positions[i + 2] < -25) positions[i + 2] = 25;
+                }
+
+                particleObj.geometry.attributes.position.needsUpdate = true;
+            });
+
+            // Subtle ground wave
+            const groundVertices = ground.geometry.attributes.position.array;
+            for (let i = 0; i < groundVertices.length; i += 3) {
+                groundVertices[i + 2] = Math.sin(elapsedTime * 0.5 + groundVertices[i] * 0.1) * 0.05;
+            }
+            ground.geometry.attributes.position.needsUpdate = true;
+
+            // Update camera look at with slight sway
+            camera.lookAt(
+                Math.sin(elapsedTime * 0.2) * 0.5,
+                Math.cos(elapsedTime * 0.3) * 0.2,
+                0
+            );
+
+            renderer.render(scene, camera);
+        }
+
+        // Initialize scene when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Initializing Squid Game Scene 1 with Three.js...');
+            initScene();
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            camera.aspect = 720 / 1280;
+            camera.updateProjectionMatrix();
+            renderer.setSize(720, 1280);
         });
     </script>
 </body>
