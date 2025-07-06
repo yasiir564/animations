@@ -709,7 +709,7 @@ body {
         </div>
     </div>
 
-    <script>
+        <script>
         class FootballMatchingGame {
             constructor() {
                 this.players = ['Messi', 'Ronaldo', 'Neymar'];
@@ -717,6 +717,14 @@ body {
                 this.currentPlayer = 0;
                 this.matchedPlayers = 0;
                 this.connectionLines = [];
+                
+                // Initialize sound effects
+                this.sounds = {
+                    success: new Audio('success.mp3'),
+                    fail: new Audio('fail.mp3'),
+                    victory: new Audio('victory.mp3')
+                };
+                
                 this.init();
             }
 
@@ -790,10 +798,18 @@ body {
                             slot.classList.add('correct');
                             statusIcon.innerHTML = '✅';
                             statusIcon.classList.add('correct', 'show');
+                            
+                            // Play success sound
+                            this.sounds.success.currentTime = 0;
+                            this.sounds.success.play();
                         } else {
                             slot.classList.add('wrong');
                             statusIcon.innerHTML = '❌';
                             statusIcon.classList.add('wrong', 'show');
+                            
+                            // Play fail sound
+                            this.sounds.fail.currentTime = 0;
+                            this.sounds.fail.play();
                             
                             // Remove wrong attempt after delay
                             setTimeout(() => {
@@ -880,6 +896,10 @@ body {
             showVictory() {
                 const overlay = document.getElementById('victoryOverlay');
                 overlay.classList.add('show');
+                
+                // Play victory sound
+                this.sounds.victory.currentTime = 0;
+                this.sounds.victory.play();
                 
                 // Create particles
                 this.createParticles();
