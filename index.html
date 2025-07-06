@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Squid Game: Red Light, Green Light - Footballers Edition</title>
+    <title>Football Legends Trophy Match</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -12,380 +13,460 @@
         }
 
         body {
-            background: linear-gradient(180deg, #8B9DC3 0%, #DDB892 100%);
+            font-family: 'Poppins', sans-serif;
             overflow: hidden;
-            font-family: 'Arial', sans-serif;
-            height: 100vh;
+            background: linear-gradient(135deg, #1a2a4a 0%, #2d4a7a 50%, #1a2a4a 100%);
+            position: relative;
             width: 100vw;
+            height: 100vh;
         }
 
-        #container {
+        .container {
+            width: 1080px;
+            height: 1920px;
+            position: relative;
+            margin: 0 auto;
+            background: linear-gradient(135deg, #1a2a4a 0%, #2d4a7a 30%, #3a5a8a 60%, #2d4a7a 100%);
+            overflow: hidden;
+        }
+
+        .stadium-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            position: relative;
-            background: radial-gradient(ellipse at center, #DDB892 0%, #C69C6D 100%);
+            background: 
+                radial-gradient(ellipse at center top, rgba(255,255,255,0.1) 0%, transparent 70%),
+                radial-gradient(ellipse at center bottom, rgba(34,139,34,0.2) 0%, transparent 50%),
+                linear-gradient(180deg, rgba(26,42,74,0.9) 0%, rgba(45,74,122,0.8) 50%, rgba(26,42,74,0.9) 100%);
         }
 
-        #title {
+        .spotlight {
             position: absolute;
-            top: 50px;
+            top: 50%;
+            left: 50%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+            transform: translate(-50%, -50%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.3; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 0.6; transform: translate(-50%, -50%) scale(1.1); }
+        }
+
+        .faces-container {
+            position: absolute;
+            top: 200px;
             left: 50%;
             transform: translateX(-50%);
-            color: #FF4444;
-            font-size: 24px;
-            font-weight: bold;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-            z-index: 100;
-            text-align: center;
-            animation: titleGlow 2s ease-in-out infinite alternate;
+            display: flex;
+            justify-content: space-between;
+            width: 800px;
+            z-index: 10;
         }
 
-        @keyframes titleGlow {
-            0% { text-shadow: 2px 2px 4px rgba(0,0,0,0.8), 0 0 10px rgba(255,68,68,0.3); }
-            100% { text-shadow: 2px 2px 4px rgba(0,0,0,0.8), 0 0 20px rgba(255,68,68,0.6); }
-        }
-
-        .dust-particle {
-            position: absolute;
-            width: 2px;
-            height: 2px;
-            background: rgba(221, 184, 146, 0.6);
+        .face {
+            width: 200px;
+            height: 200px;
             border-radius: 50%;
-            animation: dustFloat 8s linear infinite;
+            background: linear-gradient(145deg, #f0f0f0, #d0d0d0);
+            border: 4px solid rgba(255,255,255,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            opacity: 0;
+            transform: translateY(-100px);
+            transition: all 0.5s ease;
+            position: relative;
+            overflow: hidden;
         }
 
-        @keyframes dustFloat {
-            0% {
-                transform: translateY(100vh) translateX(0);
-                opacity: 0;
+        .face::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(145deg, rgba(255,255,255,0.1), transparent);
+            border-radius: 50%;
+        }
+
+        .face.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .face.thinking {
+            animation: thinking 2s ease-in-out infinite;
+        }
+
+        .face.success {
+            animation: success 1s ease-in-out;
+            border-color: #4CAF50;
+        }
+
+        .face.failure {
+            animation: failure 1s ease-in-out;
+            border-color: #f44336;
+        }
+
+        .face.disappointed {
+            animation: disappointed 2s ease-in-out;
+            opacity: 0.6;
+        }
+
+        @keyframes thinking {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-10px) scale(1.05); }
+        }
+
+        @keyframes success {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes failure {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+            100% { transform: translateX(0); }
+        }
+
+        @keyframes disappointed {
+            0% { transform: scale(1); }
+            50% { transform: scale(0.95); }
+            100% { transform: scale(1); }
+        }
+
+        .trophies-container {
+            position: absolute;
+            top: 800px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            justify-content: space-between;
+            width: 800px;
+            z-index: 10;
+        }
+
+        .trophy {
+            width: 180px;
+            height: 220px;
+            background: linear-gradient(145deg, #FFD700, #FFA500);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+            opacity: 0;
+            transform: translateY(100px);
+            transition: all 0.5s ease;
+            position: relative;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .trophy::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(145deg, rgba(255,255,255,0.2), transparent);
+            border-radius: 20px;
+        }
+
+        .trophy.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .trophy.glow {
+            animation: glow 2s ease-in-out;
+            box-shadow: 0 0 50px rgba(76, 175, 80, 0.8);
+        }
+
+        .trophy.reject {
+            animation: reject 1s ease-in-out;
+            background: linear-gradient(145deg, #666, #444);
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 15px 40px rgba(0,0,0,0.4); }
+            50% { box-shadow: 0 0 50px rgba(76, 175, 80, 0.8), 0 15px 40px rgba(0,0,0,0.4); }
+        }
+
+        @keyframes reject {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0); }
+        }
+
+        .connection-line {
+            position: absolute;
+            width: 4px;
+            background: linear-gradient(to bottom, #4CAF50, transparent);
+            opacity: 0;
+            transform-origin: top;
+            transition: all 1s ease;
+            z-index: 5;
+        }
+
+        .connection-line.show {
+            opacity: 1;
+            transform: scaleY(1);
+        }
+
+        .check-mark, .x-mark {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            font-weight: bold;
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.5s ease;
+            z-index: 15;
+        }
+
+        .check-mark {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .x-mark {
+            background: #f44336;
+            color: white;
+        }
+
+        .check-mark.show, .x-mark.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .final-message {
+            position: absolute;
+            bottom: 200px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            color: white;
+            opacity: 0;
+            transition: all 1s ease;
+            z-index: 20;
+        }
+
+        .final-message.show {
+            opacity: 1;
+        }
+
+        .final-message h2 {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .final-message p {
+            font-size: 24px;
+            font-weight: 400;
+            color: #FFD700;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .ronaldo-walk {
+            animation: walkAway 3s ease-in-out forwards;
+        }
+
+        @keyframes walkAway {
+            0% { transform: translateX(0) scale(1); opacity: 1; }
+            50% { transform: translateX(-50px) scale(0.95); opacity: 0.8; }
+            100% { transform: translateX(-200px) scale(0.8); opacity: 0.3; }
+        }
+
+        /* Responsive scaling for different screen sizes */
+        @media (max-width: 1080px) {
+            .container {
+                transform: scale(0.8);
+                transform-origin: top center;
             }
-            10% {
-                opacity: 1;
-            }
-            90% {
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(-100px) translateX(50px);
-                opacity: 0;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                transform: scale(0.6);
+                transform-origin: top center;
             }
         }
     </style>
 </head>
 <body>
-    <div id="container">
-        <div id="title">
-            SQUID GAME<br>
-            <span style="font-size: 18px;">RED LIGHT, GREEN LIGHT</span><br>
-            <span style="font-size: 14px; color: #FFD700;">FOOTBALLERS EDITION</span>
+    <div class="container">
+        <div class="stadium-bg"></div>
+        <div class="spotlight"></div>
+        
+        <div class="faces-container">
+            <div class="face" id="messi">MESSI</div>
+            <div class="face" id="mbappe">MBAPPÉ</div>
+            <div class="face" id="ronaldo">RONALDO</div>
+        </div>
+        
+        <div class="trophies-container">
+            <div class="trophy" id="worldcup">WORLD CUP<br>🏆</div>
+            <div class="trophy" id="goldenboot">GOLDEN BOOT<br>👢</div>
+            <div class="trophy" id="emptytrophy">EMPTY SLOT<br>❌</div>
+        </div>
+        
+        <div class="connection-line" id="line1"></div>
+        <div class="connection-line" id="line2"></div>
+        
+        <div class="check-mark" id="check1">✓</div>
+        <div class="check-mark" id="check2">✓</div>
+        <div class="x-mark" id="x1">✗</div>
+        
+        <div class="final-message" id="finalMessage">
+            <h2>Some dreams remain unfinished...</h2>
+            <p>Like and Subscribe for more</p>
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
-        class SquidGameScene {
-            constructor() {
-                this.scene = null;
-                this.camera = null;
-                this.renderer = null;
-                this.characters = [];
-                this.doll = null;
-                this.dustParticles = [];
-                this.animationId = null;
-                
-                this.init();
-                this.createEnvironment();
-                this.createCharacters();
-                this.createDoll();
-                this.createDustEffect();
-                this.startCinematicSequence();
-                this.animate();
-            }
+        // Animation timeline
+        const timeline = [
+            { time: 500, action: () => showFaces() },
+            { time: 1500, action: () => showTrophies() },
+            { time: 3000, action: () => messiAttempt() },
+            { time: 5000, action: () => mbappeAttempt() },
+            { time: 7000, action: () => ronaldoAttempt() },
+            { time: 10000, action: () => showFinalMessage() }
+        ];
 
-            init() {
-                // Scene setup
-                this.scene = new THREE.Scene();
-                this.scene.fog = new THREE.Fog(0xDDB892, 50, 200);
-
-                // Camera setup for vertical format
-                this.camera = new THREE.PerspectiveCamera(
-                    45,
-                    window.innerWidth / window.innerHeight,
-                    0.1,
-                    1000
-                );
-                this.camera.position.set(0, 8, 25);
-                this.camera.lookAt(0, 0, 0);
-
-                // Renderer setup
-                this.renderer = new THREE.WebGLRenderer({ 
-                    antialias: true,
-                    alpha: true 
-                });
-                this.renderer.setSize(window.innerWidth, window.innerHeight);
-                this.renderer.setClearColor(0x8B9DC3, 1);
-                this.renderer.shadowMap.enabled = true;
-                this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-                
-                document.getElementById('container').appendChild(this.renderer.domElement);
-
-                // Lighting
-                const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-                this.scene.add(ambientLight);
-
-                const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-                directionalLight.position.set(10, 20, 10);
-                directionalLight.castShadow = true;
-                directionalLight.shadow.mapSize.width = 2048;
-                directionalLight.shadow.mapSize.height = 2048;
-                this.scene.add(directionalLight);
-
-                // Subtle red light for atmosphere
-                const redLight = new THREE.PointLight(0xff4444, 0.3, 100);
-                redLight.position.set(0, 10, -30);
-                this.scene.add(redLight);
-            }
-
-            createEnvironment() {
-                // Ground
-                const groundGeometry = new THREE.PlaneGeometry(100, 100);
-                const groundMaterial = new THREE.MeshLambertMaterial({ 
-                    color: 0xDDB892,
-                    transparent: true,
-                    opacity: 0.9
-                });
-                const ground = new THREE.Mesh(groundGeometry, groundMaterial);
-                ground.rotation.x = -Math.PI / 2;
-                ground.receiveShadow = true;
-                this.scene.add(ground);
-
-                // Starting line
-                const lineGeometry = new THREE.PlaneGeometry(20, 0.5);
-                const lineMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
-                const startLine = new THREE.Mesh(lineGeometry, lineMaterial);
-                startLine.rotation.x = -Math.PI / 2;
-                startLine.position.y = 0.01;
-                startLine.position.z = 8;
-                this.scene.add(startLine);
-
-                // Finish line (distant)
-                const finishLine = new THREE.Mesh(lineGeometry, lineMaterial);
-                finishLine.rotation.x = -Math.PI / 2;
-                finishLine.position.y = 0.01;
-                finishLine.position.z = -40;
-                this.scene.add(finishLine);
-            }
-
-            createCharacters() {
-                const characterPositions = [
-                    { x: -6, name: 'Messi', file: 'messi.png' },
-                    { x: 0, name: 'Ronaldo', file: 'ronaldo.png' },
-                    { x: 6, name: 'Neymar', file: 'neymar.png' }
-                ];
-
-                characterPositions.forEach((pos, index) => {
-                    // Create placeholder geometry for now
-                    const geometry = new THREE.BoxGeometry(2, 4, 0.5);
-                    const material = new THREE.MeshLambertMaterial({ 
-                        color: index === 0 ? 0x0066cc : index === 1 ? 0xffffff : 0x009900,
-                        transparent: true,
-                        opacity: 0.8
-                    });
-                    
-                    const character = new THREE.Mesh(geometry, material);
-                    character.position.set(pos.x, 2, 8);
-                    character.castShadow = true;
-                    character.userData = { 
-                        name: pos.name,
-                        originalY: 2,
-                        breatheOffset: Math.random() * Math.PI * 2
-                    };
-                    
-                    this.scene.add(character);
-                    this.characters.push(character);
-
-                    // Try to load actual PNG if available
-                    this.loadCharacterTexture(character, pos.file);
-                });
-            }
-
-            loadCharacterTexture(character, filename) {
-                const loader = new THREE.TextureLoader();
-                loader.load(
-                    filename,
-                    (texture) => {
-                        // Success - replace with sprite
-                        const spriteMaterial = new THREE.SpriteMaterial({ 
-                            map: texture,
-                            transparent: true
-                        });
-                        const sprite = new THREE.Sprite(spriteMaterial);
-                        sprite.position.copy(character.position);
-                        sprite.scale.set(4, 6, 1);
-                        sprite.userData = character.userData;
-                        
-                        this.scene.remove(character);
-                        this.scene.add(sprite);
-                        
-                        // Replace in characters array
-                        const index = this.characters.indexOf(character);
-                        if (index !== -1) {
-                            this.characters[index] = sprite;
-                        }
-                    },
-                    undefined,
-                    (error) => {
-                        console.log(`Could not load ${filename}, using placeholder`);
-                    }
-                );
-            }
-
-            createDoll() {
-                // Create placeholder doll
-                const dollGeometry = new THREE.CylinderGeometry(1, 1.5, 6, 8);
-                const dollMaterial = new THREE.MeshLambertMaterial({ 
-                    color: 0xff6666,
-                    transparent: true,
-                    opacity: 0.9
-                });
-                
-                this.doll = new THREE.Mesh(dollGeometry, dollMaterial);
-                this.doll.position.set(0, 3, -45);
-                this.doll.castShadow = true;
-                this.scene.add(this.doll);
-
-                // Try to load doll PNG
-                const loader = new THREE.TextureLoader();
-                loader.load(
-                    'doll.png',
-                    (texture) => {
-                        const spriteMaterial = new THREE.SpriteMaterial({ 
-                            map: texture,
-                            transparent: true
-                        });
-                        const sprite = new THREE.Sprite(spriteMaterial);
-                        sprite.position.copy(this.doll.position);
-                        sprite.scale.set(8, 10, 1);
-                        
-                        this.scene.remove(this.doll);
-                        this.scene.add(sprite);
-                        this.doll = sprite;
-                    },
-                    undefined,
-                    (error) => {
-                        console.log('Could not load doll.png, using placeholder');
-                    }
-                );
-            }
-
-            createDustEffect() {
-                // Create DOM dust particles
-                for (let i = 0; i < 15; i++) {
-                    setTimeout(() => {
-                        const dust = document.createElement('div');
-                        dust.className = 'dust-particle';
-                        dust.style.left = Math.random() * 100 + '%';
-                        dust.style.animationDelay = Math.random() * 8 + 's';
-                        dust.style.animationDuration = (6 + Math.random() * 4) + 's';
-                        document.getElementById('container').appendChild(dust);
-                        
-                        setTimeout(() => {
-                            dust.remove();
-                        }, 12000);
-                    }, i * 200);
-                }
-            }
-
-            startCinematicSequence() {
-                // Cinematic camera movement
-                const startPos = { x: 0, y: 15, z: 35 };
-                const endPos = { x: 0, y: 8, z: 25 };
-                const duration = 4000;
-                const startTime = Date.now();
-
-                const cinematicMove = () => {
-                    const elapsed = Date.now() - startTime;
-                    const progress = Math.min(elapsed / duration, 1);
-                    
-                    // Smooth easing
-                    const easeProgress = 1 - Math.pow(1 - progress, 3);
-                    
-                    this.camera.position.x = startPos.x + (endPos.x - startPos.x) * easeProgress;
-                    this.camera.position.y = startPos.y + (endPos.y - startPos.y) * easeProgress;
-                    this.camera.position.z = startPos.z + (endPos.z - startPos.z) * easeProgress;
-                    
-                    // Add subtle camera shake
-                    const shake = Math.sin(elapsed * 0.01) * 0.1;
-                    this.camera.position.x += shake;
-                    
-                    this.camera.lookAt(0, 2, 0);
-                    
-                    if (progress < 1) {
-                        requestAnimationFrame(cinematicMove);
-                    }
-                };
-                
-                cinematicMove();
-            }
-
-            animate() {
-                const time = Date.now() * 0.001;
-
-                // Animate characters (breathing/idle)
-                this.characters.forEach((character, index) => {
-                    if (character.userData) {
-                        const breathe = Math.sin(time * 2 + character.userData.breatheOffset) * 0.05;
-                        character.position.y = character.userData.originalY + breathe;
-                        
-                        // Slight sway
-                        const sway = Math.sin(time * 1.5 + index) * 0.02;
-                        character.position.x += sway;
-                    }
-                });
-
-                // Subtle doll animation
-                if (this.doll) {
-                    const dollBob = Math.sin(time * 0.5) * 0.1;
-                    this.doll.position.y = 3 + dollBob;
-                }
-
-                // Render
-                this.renderer.render(this.scene, this.camera);
-                this.animationId = requestAnimationFrame(() => this.animate());
-            }
-
-            dispose() {
-                if (this.animationId) {
-                    cancelAnimationFrame(this.animationId);
-                }
-                if (this.renderer) {
-                    this.renderer.dispose();
-                }
-            }
+        function showFaces() {
+            const faces = document.querySelectorAll('.face');
+            faces.forEach((face, index) => {
+                setTimeout(() => {
+                    face.classList.add('show');
+                }, index * 300);
+            });
         }
 
-        // Initialize the scene
-        let squidGameScene;
-        
-        window.addEventListener('load', () => {
-            squidGameScene = new SquidGameScene();
+        function showTrophies() {
+            const trophies = document.querySelectorAll('.trophy');
+            trophies.forEach((trophy, index) => {
+                setTimeout(() => {
+                    trophy.classList.add('show');
+                }, index * 300);
+            });
+        }
+
+        function messiAttempt() {
+            const messi = document.getElementById('messi');
+            const worldcup = document.getElementById('worldcup');
+            const line1 = document.getElementById('line1');
+            const check1 = document.getElementById('check1');
+            
+            messi.classList.add('thinking');
+            
+            setTimeout(() => {
+                messi.classList.remove('thinking');
+                messi.classList.add('success');
+                worldcup.classList.add('glow');
+                
+                // Position and show connection line
+                line1.style.left = '240px';
+                line1.style.top = '400px';
+                line1.style.height = '400px';
+                line1.classList.add('show');
+                
+                // Position and show check mark
+                check1.style.left = '490px';
+                check1.style.top = '580px';
+                check1.classList.add('show');
+            }, 1000);
+        }
+
+        function mbappeAttempt() {
+            const mbappe = document.getElementById('mbappe');
+            const goldenboot = document.getElementById('goldenboot');
+            const line2 = document.getElementById('line2');
+            const check2 = document.getElementById('check2');
+            
+            mbappe.classList.add('thinking');
+            
+            setTimeout(() => {
+                mbappe.classList.remove('thinking');
+                mbappe.classList.add('success');
+                goldenboot.classList.add('glow');
+                
+                // Position and show connection line
+                line2.style.left = '540px';
+                line2.style.top = '400px';
+                line2.style.height = '400px';
+                line2.classList.add('show');
+                
+                // Position and show check mark
+                check2.style.left = '790px';
+                check2.style.top = '580px';
+                check2.classList.add('show');
+            }, 1000);
+        }
+
+        function ronaldoAttempt() {
+            const ronaldo = document.getElementById('ronaldo');
+            const emptytrophy = document.getElementById('emptytrophy');
+            const x1 = document.getElementById('x1');
+            
+            ronaldo.classList.add('thinking');
+            
+            setTimeout(() => {
+                ronaldo.classList.remove('thinking');
+                ronaldo.classList.add('failure');
+                emptytrophy.classList.add('reject');
+                
+                // Position and show X mark
+                x1.style.left = '1090px';
+                x1.style.top = '580px';
+                x1.classList.add('show');
+                
+                setTimeout(() => {
+                    ronaldo.classList.remove('failure');
+                    ronaldo.classList.add('disappointed', 'ronaldo-walk');
+                }, 1000);
+            }, 1000);
+        }
+
+        function showFinalMessage() {
+            const finalMessage = document.getElementById('finalMessage');
+            finalMessage.classList.add('show');
+        }
+
+        // Start the animation sequence
+        timeline.forEach(({ time, action }) => {
+            setTimeout(action, time);
         });
 
-        // Handle window resize
-        window.addEventListener('resize', () => {
-            if (squidGameScene) {
-                squidGameScene.camera.aspect = window.innerWidth / window.innerHeight;
-                squidGameScene.camera.updateProjectionMatrix();
-                squidGameScene.renderer.setSize(window.innerWidth, window.innerHeight);
-            }
-        });
-
-        // Cleanup on page unload
-        window.addEventListener('beforeunload', () => {
-            if (squidGameScene) {
-                squidGameScene.dispose();
-            }
-        });
+        // Restart animation every 15 seconds
+        setInterval(() => {
+            location.reload();
+        }, 15000);
     </script>
 </body>
 </html>
