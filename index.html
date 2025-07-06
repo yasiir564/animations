@@ -12,408 +12,380 @@
         }
 
         body {
+            background: linear-gradient(180deg, #8B9DC3 0%, #DDB892 100%);
+            overflow: hidden;
             font-family: 'Arial', sans-serif;
-            background: linear-gradient(180deg, #87CEEB 0%, #D2B48C 100%);
-            overflow: hidden;
-            width: 100vw;
             height: 100vh;
+            width: 100vw;
         }
 
-        .container {
-            width: 1080px;
-            height: 1920px;
-            margin: 0 auto;
-            position: relative;
-            overflow: hidden;
-            background: linear-gradient(180deg, #87CEEB 0%, #D2B48C 100%);
-        }
-
-        #canvas {
+        #container {
             width: 100%;
             height: 100%;
-            display: block;
+            position: relative;
+            background: radial-gradient(ellipse at center, #DDB892 0%, #C69C6D 100%);
         }
 
-        .title-overlay {
+        #title {
             position: absolute;
-            top: 100px;
+            top: 50px;
             left: 50%;
             transform: translateX(-50%);
-            color: #ff4444;
-            font-size: 48px;
+            color: #FF4444;
+            font-size: 24px;
             font-weight: bold;
-            text-align: center;
-            text-shadow: 3px 3px 6px rgba(0,0,0,0.8);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
             z-index: 100;
-            opacity: 0;
-            animation: fadeInOut 5s ease-in-out;
+            text-align: center;
+            animation: titleGlow 2s ease-in-out infinite alternate;
         }
 
-        @keyframes fadeInOut {
-            0% { opacity: 0; transform: translateX(-50%) scale(0.8); }
-            20% { opacity: 1; transform: translateX(-50%) scale(1); }
-            80% { opacity: 1; transform: translateX(-50%) scale(1); }
-            100% { opacity: 0; transform: translateX(-50%) scale(0.8); }
+        @keyframes titleGlow {
+            0% { text-shadow: 2px 2px 4px rgba(0,0,0,0.8), 0 0 10px rgba(255,68,68,0.3); }
+            100% { text-shadow: 2px 2px 4px rgba(0,0,0,0.8), 0 0 20px rgba(255,68,68,0.6); }
         }
 
         .dust-particle {
             position: absolute;
             width: 2px;
             height: 2px;
-            background: rgba(210, 180, 140, 0.6);
+            background: rgba(221, 184, 146, 0.6);
             border-radius: 50%;
-            animation: dustFloat 8s infinite linear;
+            animation: dustFloat 8s linear infinite;
         }
 
         @keyframes dustFloat {
-            0% { transform: translateY(100vh) translateX(0px); opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { transform: translateY(-100px) translateX(50px); opacity: 0; }
-        }
-
-        .loading-text {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: white;
-            font-size: 24px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-            z-index: 200;
+            0% {
+                transform: translateY(100vh) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) translateX(50px);
+                opacity: 0;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <canvas id="canvas"></canvas>
-        <div class="title-overlay">
-            SQUID GAME:<br>
-            RED LIGHT, GREEN LIGHT<br>
-            <span style="font-size: 36px;">FOOTBALLERS EDITION</span>
+    <div id="container">
+        <div id="title">
+            SQUID GAME<br>
+            <span style="font-size: 18px;">RED LIGHT, GREEN LIGHT</span><br>
+            <span style="font-size: 14px; color: #FFD700;">FOOTBALLERS EDITION</span>
         </div>
-        <div class="loading-text" id="loadingText">Loading assets...</div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
-        // Global variables
-        let scene, camera, renderer, clock;
-        let players = [];
-        let doll;
-        let dustParticles = [];
-        let isAssetsLoaded = false;
-
-        // Initialize the scene
-        function init() {
-            // Create scene
-            scene = new THREE.Scene();
-            
-            // Create camera (perspective for 3D depth)
-            camera = new THREE.PerspectiveCamera(75, 1080/1920, 0.1, 1000);
-            camera.position.set(0, 3, 8);
-            camera.lookAt(0, 2, 0);
-
-            // Create renderer
-            const canvas = document.getElementById('canvas');
-            renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
-            renderer.setSize(1080, 1920);
-            renderer.setClearColor(0x87CEEB);
-            renderer.shadowMap.enabled = true;
-            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-
-            // Create clock for animations
-            clock = new THREE.Clock();
-
-            // Setup lighting
-            setupLighting();
-
-            // Create environment
-            createEnvironment();
-
-            // Load assets and create characters
-            loadAssets();
-
-            // Start animation loop
-            animate();
-        }
-
-        function setupLighting() {
-            // Ambient light
-            const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
-            scene.add(ambientLight);
-
-            // Directional light (sun)
-            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-            directionalLight.position.set(10, 20, 10);
-            directionalLight.castShadow = true;
-            directionalLight.shadow.mapSize.width = 2048;
-            directionalLight.shadow.mapSize.height = 2048;
-            scene.add(directionalLight);
-
-            // Point light for dramatic effect
-            const pointLight = new THREE.PointLight(0xff6666, 0.3, 50);
-            pointLight.position.set(0, 10, -20);
-            scene.add(pointLight);
-        }
-
-        function createEnvironment() {
-            // Create ground
-            const groundGeometry = new THREE.PlaneGeometry(50, 50);
-            const groundMaterial = new THREE.MeshLambertMaterial({ 
-                color: 0xD2B48C,
-                transparent: true,
-                opacity: 0.9
-            });
-            const ground = new THREE.Mesh(groundGeometry, groundMaterial);
-            ground.rotation.x = -Math.PI / 2;
-            ground.receiveShadow = true;
-            scene.add(ground);
-
-            // Create dust particles
-            createDustParticles();
-
-            // Create atmospheric fog
-            scene.fog = new THREE.Fog(0xD2B48C, 20, 50);
-        }
-
-        function createDustParticles() {
-            const dustGeometry = new THREE.SphereGeometry(0.02, 8, 8);
-            const dustMaterial = new THREE.MeshBasicMaterial({ 
-                color: 0xD2B48C,
-                transparent: true,
-                opacity: 0.4
-            });
-
-            for (let i = 0; i < 30; i++) {
-                const dust = new THREE.Mesh(dustGeometry, dustMaterial);
-                dust.position.set(
-                    (Math.random() - 0.5) * 30,
-                    Math.random() * 10,
-                    (Math.random() - 0.5) * 30
-                );
-                dust.userData.velocity = new THREE.Vector3(
-                    (Math.random() - 0.5) * 0.02,
-                    Math.random() * 0.01,
-                    (Math.random() - 0.5) * 0.02
-                );
-                dustParticles.push(dust);
-                scene.add(dust);
-            }
-        }
-
-        function loadAssets() {
-            const loader = new THREE.TextureLoader();
-            let loadedCount = 0;
-            const totalAssets = 4;
-
-            // Player configurations
-            const playerConfigs = [
-                { name: 'messi', position: { x: -3, y: 0, z: 0 }, file: 'messi.png' },
-                { name: 'ronaldo', position: { x: 0, y: 0, z: 0 }, file: 'ronaldo.png' },
-                { name: 'neymar', position: { x: 3, y: 0, z: 0 }, file: 'neymar.png' }
-            ];
-
-            // Function to handle asset loading completion
-            function onAssetLoaded() {
-                loadedCount++;
-                if (loadedCount === totalAssets) {
-                    isAssetsLoaded = true;
-                    document.getElementById('loadingText').style.display = 'none';
-                    startCinematicSequence();
-                }
+        class SquidGameScene {
+            constructor() {
+                this.scene = null;
+                this.camera = null;
+                this.renderer = null;
+                this.characters = [];
+                this.doll = null;
+                this.dustParticles = [];
+                this.animationId = null;
+                
+                this.init();
+                this.createEnvironment();
+                this.createCharacters();
+                this.createDoll();
+                this.createDustEffect();
+                this.startCinematicSequence();
+                this.animate();
             }
 
-            // Load player sprites
-            playerConfigs.forEach(config => {
-                loader.load(
-                    config.file,
-                    (texture) => {
-                        createPlayer(config, texture);
-                        onAssetLoaded();
-                    },
-                    undefined,
-                    (error) => {
-                        console.warn(`Could not load ${config.file}, using placeholder`);
-                        createPlayer(config, null);
-                        onAssetLoaded();
-                    }
+            init() {
+                // Scene setup
+                this.scene = new THREE.Scene();
+                this.scene.fog = new THREE.Fog(0xDDB892, 50, 200);
+
+                // Camera setup for vertical format
+                this.camera = new THREE.PerspectiveCamera(
+                    45,
+                    window.innerWidth / window.innerHeight,
+                    0.1,
+                    1000
                 );
-            });
+                this.camera.position.set(0, 8, 25);
+                this.camera.lookAt(0, 0, 0);
 
-            // Load doll
-            loader.load(
-                'doll.png',
-                (texture) => {
-                    createDoll(texture);
-                    onAssetLoaded();
-                },
-                undefined,
-                (error) => {
-                    console.warn('Could not load doll.png, using placeholder');
-                    createDoll(null);
-                    onAssetLoaded();
-                }
-            );
-        }
+                // Renderer setup
+                this.renderer = new THREE.WebGLRenderer({ 
+                    antialias: true,
+                    alpha: true 
+                });
+                this.renderer.setSize(window.innerWidth, window.innerHeight);
+                this.renderer.setClearColor(0x8B9DC3, 1);
+                this.renderer.shadowMap.enabled = true;
+                this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+                
+                document.getElementById('container').appendChild(this.renderer.domElement);
 
-        function createPlayer(config, texture) {
-            const geometry = new THREE.PlaneGeometry(2, 3);
-            let material;
-            
-            if (texture) {
-                material = new THREE.MeshLambertMaterial({ 
-                    map: texture,
-                    transparent: true,
-                    alphaTest: 0.5
-                });
-            } else {
-                // Placeholder colors for each player
-                const colors = { messi: 0x4CAF50, ronaldo: 0x2196F3, neymar: 0xFFEB3B };
-                material = new THREE.MeshLambertMaterial({ 
-                    color: colors[config.name] || 0x888888,
-                    transparent: true,
-                    opacity: 0.8
-                });
+                // Lighting
+                const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+                this.scene.add(ambientLight);
+
+                const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+                directionalLight.position.set(10, 20, 10);
+                directionalLight.castShadow = true;
+                directionalLight.shadow.mapSize.width = 2048;
+                directionalLight.shadow.mapSize.height = 2048;
+                this.scene.add(directionalLight);
+
+                // Subtle red light for atmosphere
+                const redLight = new THREE.PointLight(0xff4444, 0.3, 100);
+                redLight.position.set(0, 10, -30);
+                this.scene.add(redLight);
             }
 
-            const player = new THREE.Mesh(geometry, material);
-            player.position.set(config.position.x, config.position.y + 1.5, config.position.z);
-            player.castShadow = true;
-            player.userData = {
-                name: config.name,
-                originalY: player.position.y,
-                breathingOffset: Math.random() * Math.PI * 2
-            };
-            
-            players.push(player);
-            scene.add(player);
-        }
-
-        function createDoll(texture) {
-            const geometry = new THREE.PlaneGeometry(1.5, 2);
-            let material;
-            
-            if (texture) {
-                material = new THREE.MeshLambertMaterial({ 
-                    map: texture,
-                    transparent: true,
-                    alphaTest: 0.5
-                });
-            } else {
-                material = new THREE.MeshLambertMaterial({ 
-                    color: 0xff4444,
+            createEnvironment() {
+                // Ground
+                const groundGeometry = new THREE.PlaneGeometry(100, 100);
+                const groundMaterial = new THREE.MeshLambertMaterial({ 
+                    color: 0xDDB892,
                     transparent: true,
                     opacity: 0.9
                 });
+                const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+                ground.rotation.x = -Math.PI / 2;
+                ground.receiveShadow = true;
+                this.scene.add(ground);
+
+                // Starting line
+                const lineGeometry = new THREE.PlaneGeometry(20, 0.5);
+                const lineMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+                const startLine = new THREE.Mesh(lineGeometry, lineMaterial);
+                startLine.rotation.x = -Math.PI / 2;
+                startLine.position.y = 0.01;
+                startLine.position.z = 8;
+                this.scene.add(startLine);
+
+                // Finish line (distant)
+                const finishLine = new THREE.Mesh(lineGeometry, lineMaterial);
+                finishLine.rotation.x = -Math.PI / 2;
+                finishLine.position.y = 0.01;
+                finishLine.position.z = -40;
+                this.scene.add(finishLine);
             }
 
-            doll = new THREE.Mesh(geometry, material);
-            doll.position.set(0, 1, -25);
-            doll.castShadow = true;
-            scene.add(doll);
-        }
+            createCharacters() {
+                const characterPositions = [
+                    { x: -6, name: 'Messi', file: 'messi.png' },
+                    { x: 0, name: 'Ronaldo', file: 'ronaldo.png' },
+                    { x: 6, name: 'Neymar', file: 'neymar.png' }
+                ];
 
-        function startCinematicSequence() {
-            // Initial camera position (wide shot)
-            camera.position.set(0, 5, 12);
-            camera.lookAt(0, 2, 0);
+                characterPositions.forEach((pos, index) => {
+                    // Create placeholder geometry for now
+                    const geometry = new THREE.BoxGeometry(2, 4, 0.5);
+                    const material = new THREE.MeshLambertMaterial({ 
+                        color: index === 0 ? 0x0066cc : index === 1 ? 0xffffff : 0x009900,
+                        transparent: true,
+                        opacity: 0.8
+                    });
+                    
+                    const character = new THREE.Mesh(geometry, material);
+                    character.position.set(pos.x, 2, 8);
+                    character.castShadow = true;
+                    character.userData = { 
+                        name: pos.name,
+                        originalY: 2,
+                        breatheOffset: Math.random() * Math.PI * 2
+                    };
+                    
+                    this.scene.add(character);
+                    this.characters.push(character);
 
-            // Animate camera for cinematic effect
-            const startTime = clock.getElapsedTime();
-            
-            function cinematicAnimation() {
-                const elapsed = clock.getElapsedTime() - startTime;
+                    // Try to load actual PNG if available
+                    this.loadCharacterTexture(character, pos.file);
+                });
+            }
+
+            loadCharacterTexture(character, filename) {
+                const loader = new THREE.TextureLoader();
+                loader.load(
+                    filename,
+                    (texture) => {
+                        // Success - replace with sprite
+                        const spriteMaterial = new THREE.SpriteMaterial({ 
+                            map: texture,
+                            transparent: true
+                        });
+                        const sprite = new THREE.Sprite(spriteMaterial);
+                        sprite.position.copy(character.position);
+                        sprite.scale.set(4, 6, 1);
+                        sprite.userData = character.userData;
+                        
+                        this.scene.remove(character);
+                        this.scene.add(sprite);
+                        
+                        // Replace in characters array
+                        const index = this.characters.indexOf(character);
+                        if (index !== -1) {
+                            this.characters[index] = sprite;
+                        }
+                    },
+                    undefined,
+                    (error) => {
+                        console.log(`Could not load ${filename}, using placeholder`);
+                    }
+                );
+            }
+
+            createDoll() {
+                // Create placeholder doll
+                const dollGeometry = new THREE.CylinderGeometry(1, 1.5, 6, 8);
+                const dollMaterial = new THREE.MeshLambertMaterial({ 
+                    color: 0xff6666,
+                    transparent: true,
+                    opacity: 0.9
+                });
                 
-                if (elapsed < 5) {
-                    // Smooth zoom and pan
-                    const progress = elapsed / 5;
-                    const easeProgress = 1 - Math.pow(1 - progress, 3); // Ease out cubic
-                    
-                    // Camera movement
-                    camera.position.x = Math.sin(elapsed * 0.2) * 0.5;
-                    camera.position.y = 5 - easeProgress * 2;
-                    camera.position.z = 12 - easeProgress * 4;
-                    
-                    // Subtle camera shake
-                    camera.position.x += (Math.random() - 0.5) * 0.02;
-                    camera.position.y += (Math.random() - 0.5) * 0.02;
-                    
-                    camera.lookAt(0, 2, 0);
+                this.doll = new THREE.Mesh(dollGeometry, dollMaterial);
+                this.doll.position.set(0, 3, -45);
+                this.doll.castShadow = true;
+                this.scene.add(this.doll);
+
+                // Try to load doll PNG
+                const loader = new THREE.TextureLoader();
+                loader.load(
+                    'doll.png',
+                    (texture) => {
+                        const spriteMaterial = new THREE.SpriteMaterial({ 
+                            map: texture,
+                            transparent: true
+                        });
+                        const sprite = new THREE.Sprite(spriteMaterial);
+                        sprite.position.copy(this.doll.position);
+                        sprite.scale.set(8, 10, 1);
+                        
+                        this.scene.remove(this.doll);
+                        this.scene.add(sprite);
+                        this.doll = sprite;
+                    },
+                    undefined,
+                    (error) => {
+                        console.log('Could not load doll.png, using placeholder');
+                    }
+                );
+            }
+
+            createDustEffect() {
+                // Create DOM dust particles
+                for (let i = 0; i < 15; i++) {
+                    setTimeout(() => {
+                        const dust = document.createElement('div');
+                        dust.className = 'dust-particle';
+                        dust.style.left = Math.random() * 100 + '%';
+                        dust.style.animationDelay = Math.random() * 8 + 's';
+                        dust.style.animationDuration = (6 + Math.random() * 4) + 's';
+                        document.getElementById('container').appendChild(dust);
+                        
+                        setTimeout(() => {
+                            dust.remove();
+                        }, 12000);
+                    }, i * 200);
                 }
             }
 
-            // Store the cinematic function for use in animate loop
-            window.cinematicAnimation = cinematicAnimation;
-        }
+            startCinematicSequence() {
+                // Cinematic camera movement
+                const startPos = { x: 0, y: 15, z: 35 };
+                const endPos = { x: 0, y: 8, z: 25 };
+                const duration = 4000;
+                const startTime = Date.now();
 
-        function animate() {
-            requestAnimationFrame(animate);
-
-            const elapsedTime = clock.getElapsedTime();
-
-            // Update dust particles
-            dustParticles.forEach(dust => {
-                dust.position.add(dust.userData.velocity);
-                dust.position.y += 0.005;
+                const cinematicMove = () => {
+                    const elapsed = Date.now() - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+                    
+                    // Smooth easing
+                    const easeProgress = 1 - Math.pow(1 - progress, 3);
+                    
+                    this.camera.position.x = startPos.x + (endPos.x - startPos.x) * easeProgress;
+                    this.camera.position.y = startPos.y + (endPos.y - startPos.y) * easeProgress;
+                    this.camera.position.z = startPos.z + (endPos.z - startPos.z) * easeProgress;
+                    
+                    // Add subtle camera shake
+                    const shake = Math.sin(elapsed * 0.01) * 0.1;
+                    this.camera.position.x += shake;
+                    
+                    this.camera.lookAt(0, 2, 0);
+                    
+                    if (progress < 1) {
+                        requestAnimationFrame(cinematicMove);
+                    }
+                };
                 
-                // Reset particles that go too high
-                if (dust.position.y > 15) {
-                    dust.position.y = -2;
-                    dust.position.x = (Math.random() - 0.5) * 30;
-                    dust.position.z = (Math.random() - 0.5) * 30;
+                cinematicMove();
+            }
+
+            animate() {
+                const time = Date.now() * 0.001;
+
+                // Animate characters (breathing/idle)
+                this.characters.forEach((character, index) => {
+                    if (character.userData) {
+                        const breathe = Math.sin(time * 2 + character.userData.breatheOffset) * 0.05;
+                        character.position.y = character.userData.originalY + breathe;
+                        
+                        // Slight sway
+                        const sway = Math.sin(time * 1.5 + index) * 0.02;
+                        character.position.x += sway;
+                    }
+                });
+
+                // Subtle doll animation
+                if (this.doll) {
+                    const dollBob = Math.sin(time * 0.5) * 0.1;
+                    this.doll.position.y = 3 + dollBob;
                 }
-            });
 
-            // Animate players (breathing/idle animation)
-            players.forEach(player => {
-                const breathingSpeed = 2;
-                const breathingAmount = 0.05;
-                player.position.y = player.userData.originalY + 
-                    Math.sin(elapsedTime * breathingSpeed + player.userData.breathingOffset) * breathingAmount;
-                
-                // Slight side-to-side movement
-                player.position.x += Math.sin(elapsedTime * 0.5 + player.userData.breathingOffset) * 0.001;
-            });
-
-            // Animate doll (subtle sway)
-            if (doll) {
-                doll.rotation.z = Math.sin(elapsedTime * 0.3) * 0.02;
+                // Render
+                this.renderer.render(this.scene, this.camera);
+                this.animationId = requestAnimationFrame(() => this.animate());
             }
 
-            // Run cinematic animation if available
-            if (window.cinematicAnimation) {
-                window.cinematicAnimation();
+            dispose() {
+                if (this.animationId) {
+                    cancelAnimationFrame(this.animationId);
+                }
+                if (this.renderer) {
+                    this.renderer.dispose();
+                }
             }
-
-            // Render the scene
-            renderer.render(scene, camera);
         }
+
+        // Initialize the scene
+        let squidGameScene;
+        
+        window.addEventListener('load', () => {
+            squidGameScene = new SquidGameScene();
+        });
 
         // Handle window resize
         window.addEventListener('resize', () => {
-            camera.aspect = 1080 / 1920;
-            camera.updateProjectionMatrix();
-            renderer.setSize(1080, 1920);
+            if (squidGameScene) {
+                squidGameScene.camera.aspect = window.innerWidth / window.innerHeight;
+                squidGameScene.camera.updateProjectionMatrix();
+                squidGameScene.renderer.setSize(window.innerWidth, window.innerHeight);
+            }
         });
 
-        // Initialize the scene when page loads
-        window.addEventListener('load', init);
-
-        // Add some CSS dust particles for extra atmosphere
-        function addCSSParticles() {
-            for (let i = 0; i < 15; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'dust-particle';
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.animationDelay = Math.random() * 8 + 's';
-                particle.style.animationDuration = (8 + Math.random() * 4) + 's';
-                document.body.appendChild(particle);
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            if (squidGameScene) {
+                squidGameScene.dispose();
             }
-        }
-
-        // Add CSS particles after a short delay
-        setTimeout(addCSSParticles, 1000);
+        });
     </script>
 </body>
 </html>
