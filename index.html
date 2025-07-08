@@ -3,470 +3,938 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Football Legends Trophy Match</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>Football Player Matching - YouTube Short</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+       * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-        body {
-            font-family: 'Poppins', sans-serif;
-            overflow: hidden;
-            background: linear-gradient(135deg, #1a2a4a 0%, #2d4a7a 50%, #1a2a4a 100%);
-            position: relative;
-            width: 100vw;
-            height: 100vh;
-        }
+body {
+    font-family: 'Inter', 'Nunito', system-ui, -apple-system, sans-serif;
+    background: linear-gradient(180deg, #1a5f1a 0%, #2d8f2d 30%, #4CAF50 70%, #66BB6A 100%);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+}
 
-        .container {
-            width: 1080px;
-            height: 1920px;
-            position: relative;
-            margin: 0 auto;
-            background: linear-gradient(135deg, #1a2a4a 0%, #2d4a7a 30%, #3a5a8a 60%, #2d4a7a 100%);
-            overflow: hidden;
-        }
+/* Stadium Background Effects */
+.stadium-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
 
-        .stadium-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(ellipse at center top, rgba(255,255,255,0.1) 0%, transparent 70%),
-                radial-gradient(ellipse at center bottom, rgba(34,139,34,0.2) 0%, transparent 50%),
-                linear-gradient(180deg, rgba(26,42,74,0.9) 0%, rgba(45,74,122,0.8) 50%, rgba(26,42,74,0.9) 100%);
-        }
+.field-lines {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.15;
+}
 
-        .spotlight {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
-            transform: translate(-50%, -50%);
-            animation: pulse 4s ease-in-out infinite;
-        }
+.field-lines::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, white, transparent);
+    transform: translateY(-50%);
+    box-shadow: 0 0 20px rgba(255,255,255,0.3);
+}
 
-        @keyframes pulse {
-            0%, 100% { opacity: 0.3; transform: translate(-50%, -50%) scale(1); }
-            50% { opacity: 0.6; transform: translate(-50%, -50%) scale(1.1); }
-        }
+.field-lines::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 150px;
+    height: 150px;
+    border: 2px solid white;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 30px rgba(255,255,255,0.2);
+}
 
-        .faces-container {
-            position: absolute;
-            top: 200px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            justify-content: space-between;
-            width: 800px;
-            z-index: 10;
-        }
+.crowd-lights {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 120px;
+    background: linear-gradient(180deg, 
+        rgba(255,255,255,0.4) 0%, 
+        rgba(255,255,255,0.15) 50%, 
+        transparent 100%);
+    animation: crowdPulse 4s ease-in-out infinite;
+}
 
-        .face {
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
-            background: linear-gradient(145deg, #f0f0f0, #d0d0d0);
-            border: 4px solid rgba(255,255,255,0.3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            font-weight: 600;
-            color: #333;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            opacity: 0;
-            transform: translateY(-100px);
-            transition: all 0.5s ease;
-            position: relative;
-            overflow: hidden;
-        }
+@keyframes crowdPulse {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 1; }
+}
 
-        .face::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(145deg, rgba(255,255,255,0.1), transparent);
-            border-radius: 50%;
-        }
+/* Main Container */
+.container {
+    width: 100%;
+    max-width: 390px;
+    margin: 0 auto;
+    padding: 20px;
+    min-height: 100vh;
+    position: relative;
+    z-index: 1;
+}
 
-        .face.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
+/* Progress Bar */
+.progress-container {
+    width: 100%;
+    height: 12px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 20px;
+    margin-bottom: 30px;
+    overflow: hidden;
+    box-shadow: 
+        0 4px 20px rgba(0,0,0,0.2),
+        inset 0 2px 4px rgba(0,0,0,0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.1);
+}
 
-        .face.thinking {
-            animation: thinking 2s ease-in-out infinite;
-        }
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, 
+        #4CAF50 0%, 
+        #66BB6A 50%, 
+        #81C784 100%);
+    width: 0%;
+    transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 20px;
+    box-shadow: 
+        0 0 30px rgba(76,175,80,0.6),
+        inset 0 1px 2px rgba(255,255,255,0.3);
+    position: relative;
+    overflow: hidden;
+}
 
-        .face.success {
-            animation: success 1s ease-in-out;
-            border-color: #4CAF50;
-        }
+.progress-bar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        transparent, 
+        rgba(255,255,255,0.4), 
+        transparent);
+    animation: progressShimmer 2s infinite;
+}
 
-        .face.failure {
-            animation: failure 1s ease-in-out;
-            border-color: #f44336;
-        }
+@keyframes progressShimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
 
-        .face.disappointed {
-            animation: disappointed 2s ease-in-out;
-            opacity: 0.6;
-        }
+/* Title */
+.title {
+    text-align: center;
+    color: white;
+    font-size: 28px;
+    font-weight: 900;
+    margin-bottom: 30px;
+    text-shadow: 
+        0 2px 10px rgba(0,0,0,0.7),
+        0 0 20px rgba(255,255,255,0.2);
+    letter-spacing: 2px;
+    background: linear-gradient(135deg, 
+        #ffffff 0%, 
+        #f0f0f0 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
 
-        @keyframes thinking {
-            0%, 100% { transform: translateY(0) scale(1); }
-            50% { transform: translateY(-10px) scale(1.05); }
-        }
+/* Faces Section */
+.faces-container {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 60px;
+    padding: 0 20px;
+}
 
-        @keyframes success {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
+.face-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+}
 
-        @keyframes failure {
-            0% { transform: translateX(0); }
-            25% { transform: translateX(-10px); }
-            75% { transform: translateX(10px); }
-            100% { transform: translateX(0); }
-        }
+.face-item:hover {
+    transform: translateY(-5px);
+}
 
-        @keyframes disappointed {
-            0% { transform: scale(1); }
-            50% { transform: scale(0.95); }
-            100% { transform: scale(1); }
-        }
+.face-item.active {
+    transform: scale(1.15) translateY(-8px);
+    filter: brightness(1.2) saturate(1.1);
+}
 
-        .trophies-container {
-            position: absolute;
-            top: 800px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            justify-content: space-between;
-            width: 800px;
-            z-index: 10;
-        }
+.face-circle {
+    width: 85px;
+    height: 85px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, 
+        #FFD700 0%, 
+        #FFA500 50%, 
+        #FF8C00 100%);
+    border: 3px solid white;
+    box-shadow: 
+        0 8px 25px rgba(0,0,0,0.25),
+        0 0 25px rgba(255,215,0,0.4),
+        inset 0 1px 2px rgba(255,255,255,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+    overflow: hidden;
+    position: relative;
+    backdrop-filter: blur(5px);
+}
 
-        .trophy {
-            width: 180px;
-            height: 220px;
-            background: linear-gradient(145deg, #FFD700, #FFA500);
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            font-weight: 600;
-            color: #333;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
-            opacity: 0;
-            transform: translateY(100px);
-            transition: all 0.5s ease;
-            position: relative;
-            text-align: center;
-            padding: 20px;
-        }
+.face-circle::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(
+        from 0deg,
+        transparent 0deg,
+        rgba(255,255,255,0.1) 90deg,
+        transparent 180deg
+    );
+    animation: rotate 3s linear infinite;
+}
 
-        .trophy::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(145deg, rgba(255,255,255,0.2), transparent);
-            border-radius: 20px;
-        }
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
 
-        .trophy.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
+.face-circle img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    position: relative;
+    z-index: 1;
+}
 
-        .trophy.glow {
-            animation: glow 2s ease-in-out;
-            box-shadow: 0 0 50px rgba(76, 175, 80, 0.8);
-        }
+.face-name {
+    color: white;
+    font-weight: 800;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    text-shadow: 
+        0 2px 8px rgba(0,0,0,0.8),
+        0 0 10px rgba(255,255,255,0.1);
+    background: linear-gradient(135deg, 
+        #ffffff 0%, 
+        #e0e0e0 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));
+}
 
-        .trophy.reject {
-            animation: reject 1s ease-in-out;
-            background: linear-gradient(145deg, #666, #444);
-        }
+/* Bodies Section */
+.bodies-container {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 40px;
+    padding: 0 20px;
+}
 
-        @keyframes glow {
-            0%, 100% { box-shadow: 0 15px 40px rgba(0,0,0,0.4); }
-            50% { box-shadow: 0 0 50px rgba(76, 175, 80, 0.8), 0 15px 40px rgba(0,0,0,0.4); }
-        }
+.body-slot {
+    width: 95px;
+    height: 125px;
+    border: 3px dashed rgba(255,255,255,0.4);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(10px);
+    box-shadow: 
+        0 4px 15px rgba(0,0,0,0.1),
+        inset 0 1px 2px rgba(255,255,255,0.1);
+}
 
-        @keyframes reject {
-            0% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
-            100% { transform: translateY(0); }
-        }
+.body-slot::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(135deg, 
+        transparent, 
+        rgba(255,255,255,0.1), 
+        transparent);
+    border-radius: 22px;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
 
-        .connection-line {
-            position: absolute;
-            width: 4px;
-            background: linear-gradient(to bottom, #4CAF50, transparent);
-            opacity: 0;
-            transform-origin: top;
-            transition: all 1s ease;
-            z-index: 5;
-        }
+.body-slot:hover::before {
+    opacity: 1;
+}
 
-        .connection-line.show {
-            opacity: 1;
-            transform: scaleY(1);
-        }
+.body-slot.glow {
+    border-color: #FFD700;
+    box-shadow: 
+        0 0 40px rgba(255,215,0,0.6),
+        0 0 80px rgba(255,215,0,0.3);
+    animation: slotGlow 0.6s ease-in-out;
+    background: rgba(255,215,0,0.1);
+}
 
-        .check-mark, .x-mark {
-            position: absolute;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 30px;
-            font-weight: bold;
-            opacity: 0;
-            transform: scale(0);
-            transition: all 0.5s ease;
-            z-index: 15;
-        }
+.body-slot.correct {
+    border-color: #4CAF50;
+    background: rgba(76,175,80,0.15);
+    box-shadow: 
+        0 0 40px rgba(76,175,80,0.6),
+        0 0 80px rgba(76,175,80,0.3);
+    animation: correctPulse 1.2s ease-in-out;
+}
 
-        .check-mark {
-            background: #4CAF50;
-            color: white;
-        }
+.body-slot.wrong {
+    border-color: #f44336;
+    background: rgba(244,67,54,0.15);
+    box-shadow: 
+        0 0 40px rgba(244,67,54,0.6),
+        0 0 80px rgba(244,67,54,0.3);
+    animation: wrongShake 0.6s ease-in-out;
+}
 
-        .x-mark {
-            background: #f44336;
-            color: white;
-        }
+@keyframes slotGlow {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+}
 
-        .check-mark.show, .x-mark.show {
-            opacity: 1;
-            transform: scale(1);
-        }
+@keyframes correctPulse {
+    0% { transform: scale(1); }
+    30% { transform: scale(1.12); }
+    60% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
 
-        .final-message {
-            position: absolute;
-            bottom: 200px;
-            left: 50%;
-            transform: translateX(-50%);
-            text-align: center;
-            color: white;
-            opacity: 0;
-            transition: all 1s ease;
-            z-index: 20;
-        }
+@keyframes wrongShake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-8px); }
+    40% { transform: translateX(8px); }
+    60% { transform: translateX(-8px); }
+    80% { transform: translateX(8px); }
+}
 
-        .final-message.show {
-            opacity: 1;
-        }
+.body-image {
+    width: 85px;
+    height: 115px;
+    object-fit: cover;
+    border-radius: 15px;
+    opacity: 0;
+    transform: scale(0.7) rotate(5deg);
+    transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+}
 
-        .final-message h2 {
-            font-size: 36px;
-            font-weight: 700;
-            margin-bottom: 20px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-        }
+.body-image.show {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+}
 
-        .final-message p {
-            font-size: 24px;
-            font-weight: 400;
-            color: #FFD700;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-        }
+/* Status Icons */
+.status-icon {
+    position: absolute;
+    top: -18px;
+    right: -18px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 900;
+    opacity: 0;
+    transform: scale(0) rotate(180deg);
+    transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    z-index: 10;
+    border: 2px solid white;
+}
 
-        .ronaldo-walk {
-            animation: walkAway 3s ease-in-out forwards;
-        }
+.status-icon.show {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+}
 
-        @keyframes walkAway {
-            0% { transform: translateX(0) scale(1); opacity: 1; }
-            50% { transform: translateX(-50px) scale(0.95); opacity: 0.8; }
-            100% { transform: translateX(-200px) scale(0.8); opacity: 0.3; }
-        }
+.status-icon.correct {
+    background: linear-gradient(135deg, #4CAF50, #66BB6A);
+    color: white;
+    box-shadow: 
+        0 0 25px rgba(76,175,80,0.8),
+        0 4px 15px rgba(0,0,0,0.3);
+}
 
-        /* Responsive scaling for different screen sizes */
-        @media (max-width: 1080px) {
-            .container {
-                transform: scale(0.8);
-                transform-origin: top center;
-            }
-        }
+.status-icon.wrong {
+    background: linear-gradient(135deg, #f44336, #ef5350);
+    color: white;
+    box-shadow: 
+        0 0 25px rgba(244,67,54,0.8),
+        0 4px 15px rgba(0,0,0,0.3);
+}
 
-        @media (max-width: 768px) {
-            .container {
-                transform: scale(0.6);
-                transform-origin: top center;
-            }
-        }
+/* Connection Lines */
+.connection-line {
+    position: absolute;
+    height: 4px;
+    background: linear-gradient(90deg, 
+        #4CAF50 0%, 
+        #66BB6A 50%, 
+        #81C784 100%);
+    border-radius: 3px;
+    opacity: 0;
+    transform-origin: left;
+    transform: scaleX(0);
+    transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 
+        0 0 15px rgba(76,175,80,0.6),
+        0 2px 8px rgba(0,0,0,0.2);
+}
+
+.connection-line::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        transparent, 
+        rgba(255,255,255,0.4), 
+        transparent);
+    border-radius: 3px;
+    animation: connectionPulse 2s infinite;
+}
+
+@keyframes connectionPulse {
+    0%, 100% { opacity: 0; }
+    50% { opacity: 1; }
+}
+
+.connection-line.show {
+    opacity: 1;
+    transform: scaleX(1);
+}
+
+/* Victory Screen */
+.victory-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.85);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1000;
+    backdrop-filter: blur(15px);
+}
+
+.victory-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.victory-content {
+    text-align: center;
+    color: white;
+    animation: victoryBounce 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.victory-trophy {
+    font-size: 100px;
+    margin-bottom: 25px;
+    animation: trophyFloat 3s ease-in-out infinite;
+    filter: drop-shadow(0 10px 20px rgba(255,215,0,0.3));
+}
+
+.victory-title {
+    font-size: 36px;
+    font-weight: 900;
+    margin-bottom: 15px;
+    text-shadow: 
+        0 4px 15px rgba(0,0,0,0.7),
+        0 0 30px rgba(255,215,0,0.3);
+    background: linear-gradient(135deg, 
+        #FFD700 0%, 
+        #FFA500 50%, 
+        #FF8C00 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: 2px;
+}
+
+.victory-subtitle {
+    font-size: 18px;
+    opacity: 0.9;
+    font-weight: 500;
+    letter-spacing: 1px;
+}
+
+@keyframes victoryBounce {
+    0% { 
+        transform: scale(0.3) rotate(-10deg); 
+        opacity: 0; 
+    }
+    50% { 
+        transform: scale(1.15) rotate(5deg); 
+    }
+    100% { 
+        transform: scale(1) rotate(0deg); 
+        opacity: 1; 
+    }
+}
+
+@keyframes trophyFloat {
+    0%, 100% { 
+        transform: translateY(0px) rotate(0deg); 
+    }
+    25% { 
+        transform: translateY(-15px) rotate(2deg); 
+    }
+    50% { 
+        transform: translateY(0px) rotate(0deg); 
+    }
+    75% { 
+        transform: translateY(-10px) rotate(-2deg); 
+    }
+}
+
+/* Particles */
+.particle {
+    position: fixed;
+    width: 8px;
+    height: 8px;
+    background: radial-gradient(circle, #FFD700, #FFA500);
+    border-radius: 50%;
+    opacity: 0;
+    z-index: 999;
+    animation: particleFall 4s linear infinite;
+    box-shadow: 0 0 10px rgba(255,215,0,0.5);
+}
+
+@keyframes particleFall {
+    0% {
+        opacity: 1;
+        transform: translateY(-100vh) rotate(0deg) scale(0.5);
+    }
+    50% {
+        opacity: 1;
+        transform: translateY(50vh) rotate(180deg) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(100vh) rotate(360deg) scale(0.5);
+    }
+}
+
+/* Micro Interactions */
+.face-item:active {
+    transform: scale(0.95);
+}
+
+.body-slot:active {
+    transform: scale(0.95);
+}
+
+/* Enhanced Glassmorphism Effects */
+.glass-effect {
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.2);
+    box-shadow: 
+        0 8px 32px rgba(0,0,0,0.1),
+        inset 0 1px 2px rgba(255,255,255,0.1);
+}
+
+/* Responsive Design */
+@media (max-width: 375px) {
+    .face-circle {
+        width: 75px;
+        height: 75px;
+    }
+    
+    .body-slot {
+        width: 85px;
+        height: 115px;
+    }
+    
+    .body-image {
+        width: 75px;
+        height: 105px;
+    }
+    
+    .title {
+        font-size: 24px;
+    }
+    
+    .victory-title {
+        font-size: 30px;
+    }
+    
+    .victory-trophy {
+        font-size: 80px;
+    }
+}
+
+@media (max-width: 320px) {
+    .container {
+        padding: 15px;
+    }
+    
+    .faces-container,
+    .bodies-container {
+        padding: 0 10px;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .progress-container {
+        background: rgba(255,255,255,0.1);
+    }
+    
+    .body-slot {
+        background: rgba(255,255,255,0.05);
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
     </style>
 </head>
 <body>
+    <div class="stadium-bg">
+        <div class="field-lines"></div>
+        <div class="crowd-lights"></div>
+    </div>
+
     <div class="container">
-        <div class="stadium-bg"></div>
-        <div class="spotlight"></div>
-        
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <div class="title">⚽ MATCH THE PLAYERS ⚽</div>
+
         <div class="faces-container">
-            <div class="face" id="messi">MESSI</div>
-            <div class="face" id="mbappe">MBAPPÉ</div>
-            <div class="face" id="ronaldo">RONALDO</div>
+            <div class="face-item" data-player="0">
+                <div class="face-circle">
+                    <img src="Gemini_Generated_Image_rtgbfurtgbfurtgb.png" alt="Messi" onerror="this.style.display='none'">
+                </div>
+                <div class="face-name">MESSI</div>
+            </div>
+            <div class="face-item" data-player="1">
+                <div class="face-circle">
+                    <img src="Gemini_Generated_Image_7yg3s37yg3s37yg3.png" alt="Ronaldo" onerror="this.style.display='none'">
+                </div>
+                <div class="face-name">RONALDO</div>
+            </div>
+            <div class="face-item" data-player="2">
+                <div class="face-circle">
+                    <img src="Gemini_Generated_Image_jj12lzjj12lzjj12.png" alt="Neymar" onerror="this.style.display='none'">
+                </div>
+                <div class="face-name">NEYMAR</div>
+            </div>
         </div>
-        
-        <div class="trophies-container">
-            <div class="trophy" id="worldcup">WORLD CUP<br>🏆</div>
-            <div class="trophy" id="goldenboot">GOLDEN BOOT<br>👢</div>
-            <div class="trophy" id="emptytrophy">EMPTY SLOT<br>❌</div>
-        </div>
-        
-        <div class="connection-line" id="line1"></div>
-        <div class="connection-line" id="line2"></div>
-        
-        <div class="check-mark" id="check1">✓</div>
-        <div class="check-mark" id="check2">✓</div>
-        <div class="x-mark" id="x1">✗</div>
-        
-        <div class="final-message" id="finalMessage">
-            <h2>Some dreams remain unfinished...</h2>
-            <p>Like and Subscribe for more</p>
+
+        <div class="bodies-container">
+            <div class="body-slot" data-slot="0">
+                <img class="body-image" src="Gemini_Generated_Image_5ubuja5ubuja5ubu (1).png" alt="Messi Body" onerror="this.style.display='none'">
+                <div class="status-icon"></div>
+            </div>
+            <div class="body-slot" data-slot="1">
+                <img class="body-image" src="Gemini_Generated_Image_5ubuja5ubuja5ubu.png" alt="Ronaldo Body" onerror="this.style.display='none'">
+                <div class="status-icon"></div>
+            </div>
+            <div class="body-slot" data-slot="2">
+                <img class="body-image" src="Gemini_Generated_Image_5ubuja5ubuja5ubu (2).png" alt="Neymar Body" onerror="this.style.display='none'">
+                <div class="status-icon"></div>
+            </div>
         </div>
     </div>
 
-    <script>
-        // Animation timeline
-        const timeline = [
-            { time: 500, action: () => showFaces() },
-            { time: 1500, action: () => showTrophies() },
-            { time: 3000, action: () => messiAttempt() },
-            { time: 5000, action: () => mbappeAttempt() },
-            { time: 7000, action: () => ronaldoAttempt() },
-            { time: 10000, action: () => showFinalMessage() }
-        ];
+    <div class="victory-overlay" id="victoryOverlay">
+        <div class="victory-content">
+            <div class="victory-trophy">🏆</div>
+            <div class="victory-title">PERFECT MATCH!</div>
+            <div class="victory-subtitle">All players matched successfully!</div>
+        </div>
+    </div>
+    <audio id="successSound" src="success.mp3" preload="auto"></audio>
+<audio id="failSound" src="fail.mp3" preload="auto"></audio>
+<audio id="victorySound" src="victory.mp3" preload="auto"></audio>
 
-        function showFaces() {
-            const faces = document.querySelectorAll('.face');
-            faces.forEach((face, index) => {
+
+        <script>
+        class FootballMatchingGame {
+            constructor() {
+                this.players = ['Messi', 'Ronaldo', 'Neymar'];
+                this.correctMatches = [0, 1, 2]; // Correct slot for each player
+                this.currentPlayer = 0;
+                this.matchedPlayers = 0;
+                this.connectionLines = [];
+                
+                // Initialize sound effects
+                this.sounds = {
+                    success: new Audio('success.mp3'),
+                    fail: new Audio('fail.mp3'),
+                    victory: new Audio('victory.mp3')
+                };
+                
+                this.init();
+            }
+
+            init() {
                 setTimeout(() => {
-                    face.classList.add('show');
-                }, index * 300);
-            });
-        }
-
-        function showTrophies() {
-            const trophies = document.querySelectorAll('.trophy');
-            trophies.forEach((trophy, index) => {
-                setTimeout(() => {
-                    trophy.classList.add('show');
-                }, index * 300);
-            });
-        }
-
-        function messiAttempt() {
-            const messi = document.getElementById('messi');
-            const worldcup = document.getElementById('worldcup');
-            const line1 = document.getElementById('line1');
-            const check1 = document.getElementById('check1');
-            
-            messi.classList.add('thinking');
-            
-            setTimeout(() => {
-                messi.classList.remove('thinking');
-                messi.classList.add('success');
-                worldcup.classList.add('glow');
-                
-                // Position and show connection line
-                line1.style.left = '240px';
-                line1.style.top = '400px';
-                line1.style.height = '400px';
-                line1.classList.add('show');
-                
-                // Position and show check mark
-                check1.style.left = '490px';
-                check1.style.top = '580px';
-                check1.classList.add('show');
-            }, 1000);
-        }
-
-        function mbappeAttempt() {
-            const mbappe = document.getElementById('mbappe');
-            const goldenboot = document.getElementById('goldenboot');
-            const line2 = document.getElementById('line2');
-            const check2 = document.getElementById('check2');
-            
-            mbappe.classList.add('thinking');
-            
-            setTimeout(() => {
-                mbappe.classList.remove('thinking');
-                mbappe.classList.add('success');
-                goldenboot.classList.add('glow');
-                
-                // Position and show connection line
-                line2.style.left = '540px';
-                line2.style.top = '400px';
-                line2.style.height = '400px';
-                line2.classList.add('show');
-                
-                // Position and show check mark
-                check2.style.left = '790px';
-                check2.style.top = '580px';
-                check2.classList.add('show');
-            }, 1000);
-        }
-
-        function ronaldoAttempt() {
-            const ronaldo = document.getElementById('ronaldo');
-            const emptytrophy = document.getElementById('emptytrophy');
-            const x1 = document.getElementById('x1');
-            
-            ronaldo.classList.add('thinking');
-            
-            setTimeout(() => {
-                ronaldo.classList.remove('thinking');
-                ronaldo.classList.add('failure');
-                emptytrophy.classList.add('reject');
-                
-                // Position and show X mark
-                x1.style.left = '1090px';
-                x1.style.top = '580px';
-                x1.classList.add('show');
-                
-                setTimeout(() => {
-                    ronaldo.classList.remove('failure');
-                    ronaldo.classList.add('disappointed', 'ronaldo-walk');
+                    this.startGame();
                 }, 1000);
-            }, 1000);
+            }
+
+            startGame() {
+                this.tryMatchPlayer(this.currentPlayer);
+            }
+
+            tryMatchPlayer(playerIndex) {
+                const faceItem = document.querySelector(`[data-player="${playerIndex}"]`);
+                faceItem.classList.add('active');
+
+                // Generate random attempts (including wrong ones first)
+                const attempts = this.generateAttempts(playerIndex);
+                
+                this.executeAttempts(playerIndex, attempts, 0);
+            }
+
+            generateAttempts(playerIndex) {
+                const correctSlot = this.correctMatches[playerIndex];
+                const wrongSlots = [0, 1, 2].filter(slot => slot !== correctSlot);
+                
+                // Random wrong attempts first, then correct
+                const wrongAttempts = wrongSlots.sort(() => Math.random() - 0.5).slice(0, Math.floor(Math.random() * 2) + 1);
+                
+                return [...wrongAttempts, correctSlot];
+            }
+
+            executeAttempts(playerIndex, attempts, attemptIndex) {
+                if (attemptIndex >= attempts.length) {
+                    this.finishPlayerTurn(playerIndex);
+                    return;
+                }
+
+                const slotIndex = attempts[attemptIndex];
+                const isCorrect = slotIndex === this.correctMatches[playerIndex];
+                
+                this.animateAttempt(playerIndex, slotIndex, isCorrect, () => {
+                    if (isCorrect) {
+                        this.handleCorrectMatch(playerIndex, slotIndex);
+                        this.finishPlayerTurn(playerIndex);
+                    } else {
+                        setTimeout(() => {
+                            this.executeAttempts(playerIndex, attempts, attemptIndex + 1);
+                        }, 1000);
+                    }
+                });
+            }
+
+            animateAttempt(playerIndex, slotIndex, isCorrect, callback) {
+                const slot = document.querySelector(`[data-slot="${slotIndex}"]`);
+                const bodyImage = slot.querySelector('.body-image');
+                const statusIcon = slot.querySelector('.status-icon');
+
+                // Glow effect
+                slot.classList.add('glow');
+                
+                setTimeout(() => {
+                    slot.classList.remove('glow');
+                    
+                    // Show body image
+                    bodyImage.classList.add('show');
+                    
+                    setTimeout(() => {
+                        if (isCorrect) {
+                            slot.classList.add('correct');
+                            statusIcon.innerHTML = '✅';
+                            statusIcon.classList.add('correct', 'show');
+                            
+                            // Play success sound
+                            this.sounds.success.currentTime = 0;
+                            this.sounds.success.play();
+                        } else {
+                            slot.classList.add('wrong');
+                            statusIcon.innerHTML = '❌';
+                            statusIcon.classList.add('wrong', 'show');
+                            
+                            // Play fail sound
+                            this.sounds.fail.currentTime = 0;
+                            this.sounds.fail.play();
+                            
+                            // Remove wrong attempt after delay
+                            setTimeout(() => {
+                                bodyImage.classList.remove('show');
+                                statusIcon.classList.remove('show');
+                                slot.classList.remove('wrong');
+                                
+                                setTimeout(() => {
+                                    statusIcon.classList.remove('wrong');
+                                    callback();
+                                }, 300);
+                            }, 1000);
+                            return;
+                        }
+                        
+                        callback();
+                    }, 500);
+                }, 500);
+            }
+
+            handleCorrectMatch(playerIndex, slotIndex) {
+                this.matchedPlayers++;
+                this.updateProgressBar();
+                this.drawConnectionLine(playerIndex, slotIndex);
+                
+                if (this.matchedPlayers === 3) {
+                    setTimeout(() => {
+                        this.showVictory();
+                    }, 1000);
+                }
+            }
+
+            finishPlayerTurn(playerIndex) {
+                const faceItem = document.querySelector(`[data-player="${playerIndex}"]`);
+                faceItem.classList.remove('active');
+                
+                if (this.currentPlayer < 2) {
+                    this.currentPlayer++;
+                    setTimeout(() => {
+                        this.tryMatchPlayer(this.currentPlayer);
+                    }, 1500);
+                }
+            }
+
+            updateProgressBar() {
+                const progressBar = document.getElementById('progressBar');
+                const percentage = (this.matchedPlayers / 3) * 100;
+                progressBar.style.width = percentage + '%';
+            }
+
+            drawConnectionLine(playerIndex, slotIndex) {
+                const faceItem = document.querySelector(`[data-player="${playerIndex}"]`);
+                const slot = document.querySelector(`[data-slot="${slotIndex}"]`);
+                
+                const faceRect = faceItem.getBoundingClientRect();
+                const slotRect = slot.getBoundingClientRect();
+                
+                const line = document.createElement('div');
+                line.className = 'connection-line';
+                
+                const startX = faceRect.left + faceRect.width / 2;
+                const startY = faceRect.bottom;
+                const endX = slotRect.left + slotRect.width / 2;
+                const endY = slotRect.top;
+                
+                const length = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
+                const angle = Math.atan2(endY - startY, endX - startX) * 180 / Math.PI;
+                
+                line.style.width = length + 'px';
+                line.style.left = startX + 'px';
+                line.style.top = startY + 'px';
+                line.style.transform = `rotate(${angle}deg)`;
+                line.style.transformOrigin = '0 50%';
+                
+                document.body.appendChild(line);
+                
+                setTimeout(() => {
+                    line.classList.add('show');
+                }, 100);
+                
+                this.connectionLines.push(line);
+            }
+
+            showVictory() {
+                const overlay = document.getElementById('victoryOverlay');
+                overlay.classList.add('show');
+                
+                // Play victory sound
+                this.sounds.victory.currentTime = 0;
+                this.sounds.victory.play();
+                
+                // Create particles
+                this.createParticles();
+            }
+
+            createParticles() {
+                for (let i = 0; i < 50; i++) {
+                    setTimeout(() => {
+                        const particle = document.createElement('div');
+                        particle.className = 'particle';
+                        particle.style.left = Math.random() * 100 + '%';
+                        particle.style.animationDelay = Math.random() * 2 + 's';
+                        particle.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                        
+                        const colors = ['#FFD700', '#FFA500', '#FF6B6B', '#4ECDC4', '#45B7D1'];
+                        particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                        
+                        document.body.appendChild(particle);
+                        
+                        setTimeout(() => {
+                            particle.remove();
+                        }, 5000);
+                    }, i * 100);
+                }
+            }
         }
 
-        function showFinalMessage() {
-            const finalMessage = document.getElementById('finalMessage');
-            finalMessage.classList.add('show');
-        }
-
-        // Start the animation sequence
-        timeline.forEach(({ time, action }) => {
-            setTimeout(action, time);
+        // Initialize the game when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new FootballMatchingGame();
         });
-
-        // Restart animation every 15 seconds
-        setInterval(() => {
-            location.reload();
-        }, 15000);
     </script>
 </body>
 </html>
