@@ -1810,630 +1810,6 @@ body {
         transform: scale(0.95);
     }
 }
-        /* Countdown Overlay Styles */
-.countdown-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.9);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s ease;
-}
-
-.countdown-overlay.show {
-    opacity: 1;
-    visibility: visible;
-}
-
-.countdown-content {
-    text-align: center;
-    color: white;
-    font-family: Arial, sans-serif;
-}
-
-.countdown-content h2 {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-    color: #FFD700;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-}
-
-.countdown-content p {
-    font-size: 1.5rem;
-    margin-bottom: 2rem;
-    color: #fff;
-}
-
-.countdown-number {
-    font-size: 8rem;
-    font-weight: bold;
-    color: #FF6B6B;
-    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.7);
-    transition: all 0.3s ease;
-}
-
-.countdown-number.pulse {
-    transform: scale(1.2);
-    color: #FFD700;
-}
-
-/* Updated Victory Screen Styles */
-.victory-content {
-    text-align: center;
-    color: white;
-    font-family: Arial, sans-serif;
-    max-width: 500px;
-    padding: 2rem;
-}
-
-.victory-content h1 {
-    font-size: 3rem;
-    margin-bottom: 1rem;
-    color: #FFD700;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-    animation: bounce 2s infinite;
-}
-
-.victory-content p {
-    font-size: 1.5rem;
-    margin-bottom: 2rem;
-    color: #fff;
-}
-
-.victory-stats {
-    display: flex;
-    justify-content: space-around;
-    margin: 2rem 0;
-    padding: 1rem;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
-    backdrop-filter: blur(10px);
-}
-
-.stat {
-    text-align: center;
-}
-
-.stat-number {
-    display: block;
-    font-size: 2.5rem;
-    font-weight: bold;
-    color: #4CAF50;
-    margin-bottom: 0.5rem;
-}
-
-.stat-label {
-    font-size: 1rem;
-    color: #ccc;
-}
-
-.subscribe-section {
-    margin: 2rem 0;
-    padding: 1.5rem;
-    background: linear-gradient(135deg, #FF6B6B, #4ECDC4);
-    border-radius: 15px;
-    animation: glow 2s ease-in-out infinite alternate;
-}
-
-.subscribe-text {
-    font-size: 1.3rem;
-    margin-bottom: 1rem;
-    color: white;
-    font-weight: bold;
-}
-
-.subscribe-btn {
-    background: #FF0000;
-    color: white;
-    border: none;
-    padding: 12px 24px;
-    font-size: 1.2rem;
-    font-weight: bold;
-    border-radius: 25px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    margin-bottom: 0.5rem;
-    box-shadow: 0 4px 15px rgba(255, 0, 0, 0.3);
-}
-
-.subscribe-btn:hover {
-    background: #cc0000;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(255, 0, 0, 0.4);
-}
-
-.subscribe-btn.clicked {
-    background: #4CAF50;
-    transform: scale(1.1);
-}
-
-.subscribe-sub {
-    font-size: 0.9rem;
-    color: rgba(255, 255, 255, 0.9);
-    margin-top: 0.5rem;
-}
-
-.play-again-btn {
-    background: #45B7D1;
-    color: white;
-    border: none;
-    padding: 12px 30px;
-    font-size: 1.1rem;
-    font-weight: bold;
-    border-radius: 25px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    margin-top: 1rem;
-}
-
-.play-again-btn:hover {
-    background: #369fb8;
-    transform: translateY(-2px);
-}
-
-@keyframes bounce {
-    0%, 20%, 50%, 80%, 100% {
-        transform: translateY(0);
-    }
-    40% {
-        transform: translateY(-10px);
-    }
-    60% {
-        transform: translateY(-5px);
-    }
-}
-
-@keyframes glow {
-    from {
-        box-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
-    }
-    to {
-        box-shadow: 0 0 30px rgba(78, 205, 196, 0.7);
-    }
-}
-        /* Football Legends Challenge - Modern Form CSS */
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: 'Arial', sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow-x: hidden;
-}
-
-/* Main Container */
-.container {
-    max-width: 500px;
-    width: 90%;
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 20px;
-    padding: 40px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(10px);
-    position: relative;
-    overflow: hidden;
-    transform: translateY(20px);
-    animation: slideIn 0.8s ease-out forwards;
-}
-
-@keyframes slideIn {
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
-}
-
-.container::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-    transform: rotate(45deg);
-    animation: shimmer 3s infinite;
-}
-
-@keyframes shimmer {
-    0% { transform: translateX(-100%) rotate(45deg); }
-    100% { transform: translateX(100%) rotate(45deg); }
-}
-
-/* Header Styles */
-.header {
-    text-align: center;
-    margin-bottom: 30px;
-    position: relative;
-    z-index: 2;
-}
-
-.intro-title {
-    font-size: 2.2rem;
-    font-weight: bold;
-    background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin-bottom: 10px;
-    animation: titleGlow 2s ease-in-out infinite alternate;
-}
-
-@keyframes titleGlow {
-    0% { filter: brightness(1); }
-    100% { filter: brightness(1.2); }
-}
-
-.intro-subtitle {
-    font-size: 1.1rem;
-    color: #666;
-    margin-bottom: 20px;
-    animation: fadeInUp 1s ease-out 0.3s both;
-}
-
-/* Difficulty Tag */
-.intro-difficulty {
-    margin-bottom: 30px;
-    animation: fadeInUp 1s ease-out 0.5s both;
-}
-
-.difficulty-tag {
-    display: inline-block;
-    background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
-    color: white;
-    padding: 8px 20px;
-    border-radius: 25px;
-    font-weight: bold;
-    font-size: 0.9rem;
-    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
-    animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-}
-
-/* Countdown Styles */
-.intro-countdown {
-    font-size: 4rem;
-    font-weight: bold;
-    color: #ff6b6b;
-    margin: 30px 0;
-    animation: countdownPulse 1s ease-in-out infinite;
-}
-
-.intro-countdown.pulse-intro {
-    animation: explosivePulse 0.6s ease-out;
-}
-
-.intro-countdown.go-animation {
-    animation: goExplosion 0.8s ease-out;
-    color: #4ecdc4;
-}
-
-@keyframes countdownPulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-}
-
-@keyframes explosivePulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.5); box-shadow: 0 0 30px rgba(255, 107, 107, 0.5); }
-    100% { transform: scale(1); }
-}
-
-@keyframes goExplosion {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.8); box-shadow: 0 0 50px rgba(78, 205, 196, 0.8); }
-    100% { transform: scale(1.2); }
-}
-
-/* Victory Content */
-.victory-content {
-    text-align: center;
-    position: relative;
-    z-index: 2;
-}
-
-.victory-title {
-    font-size: 2.5rem;
-    font-weight: bold;
-    background: linear-gradient(45deg, #ffd700, #ffb347);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin-bottom: 15px;
-    animation: victoryGlow 1.5s ease-in-out infinite alternate;
-}
-
-@keyframes victoryGlow {
-    0% { filter: brightness(1) drop-shadow(0 0 10px rgba(255, 215, 0, 0.3)); }
-    100% { filter: brightness(1.3) drop-shadow(0 0 20px rgba(255, 215, 0, 0.6)); }
-}
-
-.victory-subtitle {
-    font-size: 1.2rem;
-    color: #666;
-    margin-bottom: 30px;
-    animation: fadeInUp 1s ease-out 0.5s both;
-}
-
-/* Showcase Items */
-.victory-showcase {
-    display: flex;
-    justify-content: space-around;
-    margin: 30px 0;
-    gap: 15px;
-}
-
-.showcase-item {
-    flex: 1;
-    text-align: center;
-    padding: 20px 10px;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.4));
-    border-radius: 15px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    animation: showcaseFloat 3s ease-in-out infinite;
-}
-
-.showcase-item:nth-child(1) { animation-delay: 0s; }
-.showcase-item:nth-child(2) { animation-delay: 0.5s; }
-.showcase-item:nth-child(3) { animation-delay: 1s; }
-
-@keyframes showcaseFloat {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
-}
-
-.showcase-icon {
-    font-size: 2rem;
-    margin-bottom: 10px;
-    animation: iconSpin 2s linear infinite;
-}
-
-@keyframes iconSpin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-.showcase-text {
-    font-size: 0.9rem;
-    font-weight: bold;
-    color: #333;
-}
-
-/* CTA Section */
-.cta-section {
-    margin: 40px 0;
-    padding: 30px;
-    background: linear-gradient(135deg, rgba(70, 183, 209, 0.1), rgba(78, 205, 196, 0.1));
-    border-radius: 15px;
-    border: 2px solid rgba(70, 183, 209, 0.2);
-}
-
-.cta-text {
-    font-size: 1.3rem;
-    font-weight: bold;
-    color: #333;
-    margin-bottom: 25px;
-    animation: fadeInUp 1s ease-out 1s both;
-}
-
-.cta-actions {
-    display: flex;
-    justify-content: space-around;
-    gap: 15px;
-    margin-bottom: 25px;
-}
-
-.cta-action {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 15px;
-    background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
-    color: white;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    transform: translateY(20px);
-    opacity: 0;
-    animation: ctaSlideIn 0.6s ease-out forwards;
-}
-
-.cta-action:nth-child(1) { animation-delay: 1.2s; }
-.cta-action:nth-child(2) { animation-delay: 1.4s; background: linear-gradient(135deg, #4ecdc4, #6ed3c7); }
-.cta-action:nth-child(3) { animation-delay: 1.6s; background: linear-gradient(135deg, #45b7d1, #6bc5d8); }
-
-@keyframes ctaSlideIn {
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
-}
-
-.cta-action:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-}
-
-.cta-action.animate-in {
-    animation: ctaPopIn 0.5s ease-out;
-}
-
-@keyframes ctaPopIn {
-    0% { transform: scale(0.8); opacity: 0; }
-    50% { transform: scale(1.1); }
-    100% { transform: scale(1); opacity: 1; }
-}
-
-.cta-icon {
-    font-size: 1.8rem;
-    margin-bottom: 8px;
-    animation: iconBounce 2s ease-in-out infinite;
-}
-
-@keyframes iconBounce {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-5px); }
-}
-
-.cta-label {
-    font-size: 0.8rem;
-    font-weight: bold;
-    text-align: center;
-}
-
-/* Challenge Teaser */
-.cta-challenge {
-    text-align: center;
-    padding: 20px;
-    background: linear-gradient(135deg, rgba(255, 235, 167, 0.3), rgba(255, 215, 0, 0.1));
-    border-radius: 12px;
-    border: 2px dashed rgba(255, 215, 0, 0.5);
-    animation: challengeGlow 2s ease-in-out infinite alternate;
-}
-
-@keyframes challengeGlow {
-    0% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.2); }
-    100% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.4); }
-}
-
-.challenge-text {
-    font-size: 1.1rem;
-    font-weight: bold;
-    color: #333;
-    margin-bottom: 5px;
-}
-
-.challenge-subtitle {
-    font-size: 0.9rem;
-    color: #666;
-    font-style: italic;
-}
-
-/* Social Proof */
-.social-proof {
-    display: flex;
-    justify-content: space-around;
-    margin: 30px 0;
-    gap: 20px;
-}
-
-.social-item {
-    flex: 1;
-    text-align: center;
-    padding: 20px;
-    background: linear-gradient(135deg, rgba(150, 206, 180, 0.2), rgba(70, 183, 209, 0.1));
-    border-radius: 12px;
-    border: 1px solid rgba(150, 206, 180, 0.3);
-    animation: socialPulse 3s ease-in-out infinite;
-}
-
-.social-item:nth-child(1) { animation-delay: 0s; }
-.social-item:nth-child(2) { animation-delay: 1.5s; }
-
-@keyframes socialPulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.02); }
-}
-
-.social-number {
-    display: block;
-    font-size: 2rem;
-    font-weight: bold;
-    color: #45b7d1;
-    margin-bottom: 5px;
-    animation: numberCount 2s ease-out;
-}
-
-@keyframes numberCount {
-    0% { transform: scale(0); }
-    50% { transform: scale(1.2); }
-    100% { transform: scale(1); }
-}
-
-.social-label {
-    font-size: 0.9rem;
-    color: #666;
-}
-
-/* Utility Animations */
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .container {
-        padding: 30px 20px;
-    }
-    
-    .intro-title {
-        font-size: 1.8rem;
-    }
-    
-    .intro-countdown {
-        font-size: 3rem;
-    }
-    
-    .victory-title {
-        font-size: 2rem;
-    }
-    
-    .victory-showcase {
-        flex-direction: column;
-        gap: 10px;
-    }
-    
-    .cta-actions {
-        flex-direction: column;
-        gap: 10px;
-    }
-    
-    .social-proof {
-        flex-direction: column;
-        gap: 15px;
-    }
-}
-
-@media (max-width: 480px) {
-    .container {
-        padding: 20px 15px;
-    }
-    
-    .intro-title {
-        font-size: 1.5rem;
-    }
-    
-    .intro-countdown {
-        font-size: 2.5rem;
-    }
-}
     </style>
 </head>
 <body>
@@ -2485,10 +1861,6 @@ body {
             </div>
         </div>
     </div>
-    <!-- Add this countdown overlay (will be created dynamically by JS) -->
-<div id="countdownOverlay" class="countdown-overlay">
-    <!-- Content will be added by JavaScript -->
-</div>
 
     <div class="victory-overlay" id="victoryOverlay">
         <div class="victory-content">
@@ -2503,517 +1875,227 @@ body {
 
 
         <script>
-       class FootballMatchingGame {
-    constructor() {
-        this.players = ['Messi', 'Ronaldo', 'Neymar', 'Mbappe', 'Haaland'];
-        this.correctMatches = [0, 1, 2, 3, 4]; // Correct slot for each player
-        this.currentPlayer = 0;
-        this.matchedPlayers = 0;
-        this.connectionLines = [];
-        this.wrongAttempts = [];
-        this.gameStartTime = Date.now();
-        
-        // Enhanced unpredictability settings
-        this.unpredictabilitySettings = {
-            maxWrongAttempts: 3,
-            minWrongAttempts: 1,
-            suspenseDelay: [800, 1200, 1500, 2000],
-            glowDuration: [600, 900, 1200],
-            revealDelay: [400, 700, 1000]
-        };
-        
-        // Initialize sound effects
-        this.sounds = {
-            success: new Audio('success.mp3'),
-            fail: new Audio('fail.mp3'),
-            victory: new Audio('victory.mp3'),
-            countdown: new Audio('countdown.mp3'),
-            tension: new Audio('tension.mp3'),
-            whoosh: new Audio('whoosh.mp3')
-        };
-        
-        this.init();
-    }
-
-    init() {
-        this.showGameIntro();
-    }
-
-    showGameIntro() {
-        const introOverlay = this.createOverlay('introOverlay');
-        const introContent = `
-            <div class="intro-content">
-                <h1 class="intro-title">⚽ FOOTBALL LEGENDS CHALLENGE ⚽</h1>
-                <p class="intro-subtitle">Can you match the faces to the bodies?</p>
-                <div class="intro-difficulty">
-                    <span class="difficulty-tag">🔥 LEGEND MODE</span>
-                </div>
-                <div class="intro-countdown" id="introCountdown">3</div>
-            </div>
-        `;
-        
-        introOverlay.innerHTML = introContent;
-        introOverlay.classList.add('show');
-        
-        this.startIntroCountdown(() => {
-            introOverlay.classList.remove('show');
-            setTimeout(() => {
-                this.startGame();
-            }, 500);
-        });
-    }
-
-    startIntroCountdown(callback) {
-        let count = 3;
-        const countdownElement = document.getElementById('introCountdown');
-        
-        const countdownInterval = setInterval(() => {
-            this.playSound('countdown');
-            countdownElement.textContent = count;
-            countdownElement.classList.add('pulse-intro');
-            
-            setTimeout(() => {
-                countdownElement.classList.remove('pulse-intro');
-            }, 600);
-            
-            count--;
-            
-            if (count < 0) {
-                clearInterval(countdownInterval);
-                countdownElement.textContent = 'GO!';
-                countdownElement.classList.add('go-animation');
+        class FootballMatchingGame {
+            constructor() {
+                this.players = ['Messi', 'Ronaldo', 'Neymar'];
+                this.correctMatches = [0, 1, 2]; // Correct slot for each player
+                this.currentPlayer = 0;
+                this.matchedPlayers = 0;
+                this.connectionLines = [];
                 
-                setTimeout(() => {
-                    callback();
-                }, 800);
+                // Initialize sound effects
+                this.sounds = {
+                    success: new Audio('success.mp3'),
+                    fail: new Audio('fail.mp3'),
+                    victory: new Audio('victory.mp3')
+                };
+                
+                this.init();
             }
-        }, 1000);
-    }
 
-    startGame() {
-        this.showPlayerReveal(this.currentPlayer);
-    }
-
-    showPlayerReveal(playerIndex) {
-        const faceItem = document.querySelector(`[data-player="${playerIndex}"]`);
-        const playerName = this.players[playerIndex];
-        
-        // Create suspenseful reveal
-        this.showSuspensefulReveal(playerName, () => {
-            faceItem.classList.add('active', 'spotlight');
-            this.playSound('whoosh');
-            
-            // Add dramatic pause before attempting matches
-            setTimeout(() => {
-                this.tryMatchPlayer(playerIndex);
-            }, this.getRandomDelay(this.unpredictabilitySettings.suspenseDelay));
-        });
-    }
-
-    showSuspensefulReveal(playerName, callback) {
-        const revealOverlay = this.createOverlay('revealOverlay');
-        const revealContent = `
-            <div class="reveal-content">
-                <div class="reveal-header">
-                    <h2 class="reveal-title">🎯 MYSTERY PLAYER INCOMING</h2>
-                    <div class="reveal-dots">
-                        <span class="dot"></span>
-                        <span class="dot"></span>
-                        <span class="dot"></span>
-                    </div>
-                </div>
-                <div class="reveal-player">
-                    <div class="reveal-name">${playerName}</div>
-                    <div class="reveal-subtitle">Where does he belong?</div>
-                </div>
-                <div class="reveal-progress">
-                    <div class="reveal-bar" id="revealBar"></div>
-                </div>
-            </div>
-        `;
-        
-        revealOverlay.innerHTML = revealContent;
-        revealOverlay.classList.add('show');
-        
-        // Animate progress bar
-        const progressBar = document.getElementById('revealBar');
-        let progress = 0;
-        const progressInterval = setInterval(() => {
-            progress += Math.random() * 15 + 5;
-            progressBar.style.width = Math.min(progress, 100) + '%';
-            
-            if (progress >= 100) {
-                clearInterval(progressInterval);
+            init() {
                 setTimeout(() => {
-                    revealOverlay.classList.remove('show');
-                    setTimeout(callback, 300);
-                }, 500);
+                    this.startGame();
+                }, 1000);
             }
-        }, 100);
-    }
 
-    tryMatchPlayer(playerIndex) {
-        const attempts = this.generateUnpredictableAttempts(playerIndex);
-        this.executeAttempts(playerIndex, attempts, 0);
-    }
+            startGame() {
+                this.tryMatchPlayer(this.currentPlayer);
+            }
 
-    generateUnpredictableAttempts(playerIndex) {
-        const correctSlot = this.correctMatches[playerIndex];
-        const wrongSlots = [0, 1, 2, 3, 4].filter(slot => slot !== correctSlot);
-        
-        // More unpredictable wrong attempts
-        const numWrongAttempts = Math.floor(Math.random() * 
-            (this.unpredictabilitySettings.maxWrongAttempts - this.unpredictabilitySettings.minWrongAttempts + 1)) + 
-            this.unpredictabilitySettings.minWrongAttempts;
-        
-        const wrongAttempts = this.shuffleArray(wrongSlots).slice(0, numWrongAttempts);
-        
-        // Sometimes add fake-out attempts (almost correct but not quite)
-        if (Math.random() < 0.3) {
-            wrongAttempts.push(wrongSlots[Math.floor(Math.random() * wrongSlots.length)]);
-        }
-        
-        return [...wrongAttempts, correctSlot];
-    }
+            tryMatchPlayer(playerIndex) {
+                const faceItem = document.querySelector(`[data-player="${playerIndex}"]`);
+                faceItem.classList.add('active');
 
-    executeAttempts(playerIndex, attempts, attemptIndex) {
-        if (attemptIndex >= attempts.length) {
-            this.finishPlayerTurn(playerIndex);
-            return;
-        }
+                // Generate random attempts (including wrong ones first)
+                const attempts = this.generateAttempts(playerIndex);
+                
+                this.executeAttempts(playerIndex, attempts, 0);
+            }
 
-        const slotIndex = attempts[attemptIndex];
-        const isCorrect = slotIndex === this.correctMatches[playerIndex];
-        const isLastAttempt = attemptIndex === attempts.length - 1;
-        
-        // Add extra suspense for the last attempt
-        const delay = isLastAttempt ? this.getRandomDelay([1500, 2000, 2500]) : 
-                     this.getRandomDelay(this.unpredictabilitySettings.suspenseDelay);
-        
-        setTimeout(() => {
-            this.animateAttempt(playerIndex, slotIndex, isCorrect, () => {
-                if (isCorrect) {
-                    this.handleCorrectMatch(playerIndex, slotIndex);
+            generateAttempts(playerIndex) {
+                const correctSlot = this.correctMatches[playerIndex];
+                const wrongSlots = [0, 1, 2].filter(slot => slot !== correctSlot);
+                
+                // Random wrong attempts first, then correct
+                const wrongAttempts = wrongSlots.sort(() => Math.random() - 0.5).slice(0, Math.floor(Math.random() * 2) + 1);
+                
+                return [...wrongAttempts, correctSlot];
+            }
+
+            executeAttempts(playerIndex, attempts, attemptIndex) {
+                if (attemptIndex >= attempts.length) {
                     this.finishPlayerTurn(playerIndex);
-                } else {
-                    this.wrongAttempts.push(slotIndex);
-                    setTimeout(() => {
-                        this.executeAttempts(playerIndex, attempts, attemptIndex + 1);
-                    }, this.getRandomDelay([800, 1200, 1600]));
-                }
-            });
-        }, delay);
-    }
-
-    animateAttempt(playerIndex, slotIndex, isCorrect, callback) {
-        const slot = document.querySelector(`[data-slot="${slotIndex}"]`);
-        const bodyImage = slot.querySelector('.body-image');
-        const statusIcon = slot.querySelector('.status-icon');
-
-        // Enhanced glow effect with random duration
-        slot.classList.add('glow', 'thinking');
-        this.playSound('tension');
-        
-        const glowDuration = this.getRandomDelay(this.unpredictabilitySettings.glowDuration);
-        
-        setTimeout(() => {
-            slot.classList.remove('glow', 'thinking');
-            
-            // Dramatic reveal
-            bodyImage.classList.add('show', 'reveal-animation');
-            
-            setTimeout(() => {
-                if (isCorrect) {
-                    slot.classList.add('correct', 'success-pulse');
-                    statusIcon.innerHTML = '✅';
-                    statusIcon.classList.add('correct', 'show', 'bounce-in');
-                    
-                    this.playSound('success');
-                    this.createSuccessParticles(slot);
-                } else {
-                    slot.classList.add('wrong', 'shake');
-                    statusIcon.innerHTML = '❌';
-                    statusIcon.classList.add('wrong', 'show', 'shake');
-                    
-                    this.playSound('fail');
-                    
-                    // Enhanced wrong attempt cleanup
-                    setTimeout(() => {
-                        bodyImage.classList.remove('show', 'reveal-animation');
-                        statusIcon.classList.remove('show');
-                        slot.classList.remove('wrong', 'shake');
-                        
-                        setTimeout(() => {
-                            statusIcon.classList.remove('wrong', 'shake');
-                            callback();
-                        }, 400);
-                    }, 1200);
                     return;
                 }
-                
-                callback();
-            }, this.getRandomDelay(this.unpredictabilitySettings.revealDelay));
-        }, glowDuration);
-    }
 
-    handleCorrectMatch(playerIndex, slotIndex) {
-        this.matchedPlayers++;
-        this.drawEnhancedConnectionLine(playerIndex, slotIndex);
-        
-        if (this.matchedPlayers === 5) {
-            setTimeout(() => {
-                this.showEnhancedVictory();
-            }, 1200);
-        }
-    }
-
-    finishPlayerTurn(playerIndex) {
-        const faceItem = document.querySelector(`[data-player="${playerIndex}"]`);
-        faceItem.classList.remove('active', 'spotlight');
-        faceItem.classList.add('completed');
-        
-        if (this.currentPlayer < 4) {
-            this.currentPlayer++;
-            setTimeout(() => {
-                this.showPlayerReveal(this.currentPlayer);
-            }, this.getRandomDelay([1000, 1500, 2000]));
-        }
-    }
-
-    drawEnhancedConnectionLine(playerIndex, slotIndex) {
-        const faceItem = document.querySelector(`[data-player="${playerIndex}"]`);
-        const slot = document.querySelector(`[data-slot="${slotIndex}"]`);
-        
-        const faceRect = faceItem.getBoundingClientRect();
-        const slotRect = slot.getBoundingClientRect();
-        
-        const line = document.createElement('div');
-        line.className = 'connection-line enhanced-line';
-        
-        const startX = faceRect.left + faceRect.width / 2;
-        const startY = faceRect.bottom;
-        const endX = slotRect.left + slotRect.width / 2;
-        const endY = slotRect.top;
-        
-        const length = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
-        const angle = Math.atan2(endY - startY, endX - startX) * 180 / Math.PI;
-        
-        line.style.width = length + 'px';
-        line.style.left = startX + 'px';
-        line.style.top = startY + 'px';
-        line.style.transform = `rotate(${angle}deg)`;
-        line.style.transformOrigin = '0 50%';
-        
-        // Add player-specific color
-        const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7'];
-        line.style.background = `linear-gradient(90deg, ${colors[playerIndex]}, ${colors[playerIndex]}aa)`;
-        
-        document.body.appendChild(line);
-        
-        setTimeout(() => {
-            line.classList.add('show', 'animate-draw');
-        }, 100);
-        
-        this.connectionLines.push(line);
-    }
-
-    showEnhancedVictory() {
-        const overlay = this.createOverlay('victoryOverlay');
-        const gameTime = Math.floor((Date.now() - this.gameStartTime) / 1000);
-        
-        const victoryContent = `
-            <div class="victory-content enhanced-victory">
-                <div class="victory-header">
-                    <h1 class="victory-title">🏆 LEGENDARY PERFORMANCE! 🏆</h1>
-                    <div class="victory-subtitle">All 5 football legends matched perfectly!</div>
-                </div>
+                const slotIndex = attempts[attemptIndex];
+                const isCorrect = slotIndex === this.correctMatches[playerIndex];
                 
-                <div class="victory-showcase">
-                    <div class="showcase-item">
-                        <div class="showcase-icon">⚡</div>
-                        <div class="showcase-text">FLAWLESS EXECUTION</div>
-                    </div>
-                    <div class="showcase-item">
-                        <div class="showcase-icon">🎯</div>
-                        <div class="showcase-text">PRECISION MATCHING</div>
-                    </div>
-                    <div class="showcase-item">
-                        <div class="showcase-icon">🔥</div>
-                        <div class="showcase-text">PURE SKILL</div>
-                    </div>
-                </div>
+                this.animateAttempt(playerIndex, slotIndex, isCorrect, () => {
+                    if (isCorrect) {
+                        this.handleCorrectMatch(playerIndex, slotIndex);
+                        this.finishPlayerTurn(playerIndex);
+                    } else {
+                        setTimeout(() => {
+                            this.executeAttempts(playerIndex, attempts, attemptIndex + 1);
+                        }, 1000);
+                    }
+                });
+            }
+
+            animateAttempt(playerIndex, slotIndex, isCorrect, callback) {
+                const slot = document.querySelector(`[data-slot="${slotIndex}"]`);
+                const bodyImage = slot.querySelector('.body-image');
+                const statusIcon = slot.querySelector('.status-icon');
+
+                // Glow effect
+                slot.classList.add('glow');
                 
-                <div class="cta-section">
-                    <div class="cta-main">
-                        <div class="cta-text">Think you can beat this challenge?</div>
-                        <div class="cta-actions">
-                            <div class="cta-action">
-                                <span class="cta-icon">👍</span>
-                                <span class="cta-label">SMASH THAT LIKE</span>
-                            </div>
-                            <div class="cta-action">
-                                <span class="cta-icon">🔔</span>
-                                <span class="cta-label">SUBSCRIBE FOR MORE</span>
-                            </div>
-                            <div class="cta-action">
-                                <span class="cta-icon">💬</span>
-                                <span class="cta-label">COMMENT YOUR TIME</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="cta-challenge">
-                        <div class="challenge-text">🎮 NEXT CHALLENGE: PREMIER LEAGUE EDITION</div>
-                        <div class="challenge-subtitle">Can you handle 10 players? 🤔</div>
-                    </div>
-                </div>
-                
-                <div class="social-proof">
-                    <div class="social-item">
-                        <span class="social-number">96%</span>
-                        <span class="social-label">can't get all 5 right</span>
-                    </div>
-                    <div class="social-item">
-                        <span class="social-number">2M+</span>
-                        <span class="social-label">attempts worldwide</span>
-                    </div>
-                </div>
-            </div>
-        `;
-        
-        overlay.innerHTML = victoryContent;
-        overlay.classList.add('show');
-        
-        this.playSound('victory');
-        this.createEnhancedParticles();
-        
-        // Animate CTA actions
-        setTimeout(() => {
-            document.querySelectorAll('.cta-action').forEach((action, index) => {
                 setTimeout(() => {
-                    action.classList.add('animate-in');
-                }, index * 200);
-            });
-        }, 1000);
-    }
+                    slot.classList.remove('glow');
+                    
+                    // Show body image
+                    bodyImage.classList.add('show');
+                    
+                    setTimeout(() => {
+                        if (isCorrect) {
+                            slot.classList.add('correct');
+                            statusIcon.innerHTML = '✅';
+                            statusIcon.classList.add('correct', 'show');
+                            
+                            // Play success sound
+                            this.sounds.success.currentTime = 0;
+                            this.sounds.success.play();
+                        } else {
+                            slot.classList.add('wrong');
+                            statusIcon.innerHTML = '❌';
+                            statusIcon.classList.add('wrong', 'show');
+                            
+                            // Play fail sound
+                            this.sounds.fail.currentTime = 0;
+                            this.sounds.fail.play();
+                            
+                            // Remove wrong attempt after delay
+                            setTimeout(() => {
+                                bodyImage.classList.remove('show');
+                                statusIcon.classList.remove('show');
+                                slot.classList.remove('wrong');
+                                
+                                setTimeout(() => {
+                                    statusIcon.classList.remove('wrong');
+                                    callback();
+                                }, 300);
+                            }, 1000);
+                            return;
+                        }
+                        
+                        callback();
+                    }, 500);
+                }, 500);
+            }
 
-    createEnhancedParticles() {
-        const particleTypes = ['⚽', '🏆', '⭐', '🔥', '💫'];
-        const colors = ['#FFD700', '#FFA500', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4'];
-        
-        for (let i = 0; i < 80; i++) {
-            setTimeout(() => {
-                const particle = document.createElement('div');
-                particle.className = 'particle enhanced-particle';
+            handleCorrectMatch(playerIndex, slotIndex) {
+                this.matchedPlayers++;
+                this.updateProgressBar();
+                this.drawConnectionLine(playerIndex, slotIndex);
                 
-                if (Math.random() < 0.3) {
-                    particle.textContent = particleTypes[Math.floor(Math.random() * particleTypes.length)];
-                    particle.style.fontSize = '20px';
-                } else {
-                    particle.style.background = colors[Math.floor(Math.random() * colors.length)];
-                    particle.style.width = (Math.random() * 8 + 4) + 'px';
-                    particle.style.height = particle.style.width;
-                    particle.style.borderRadius = '50%';
+                if (this.matchedPlayers === 3) {
+                    setTimeout(() => {
+                        this.showVictory();
+                    }, 1000);
                 }
+            }
+
+            finishPlayerTurn(playerIndex) {
+                const faceItem = document.querySelector(`[data-player="${playerIndex}"]`);
+                faceItem.classList.remove('active');
                 
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.animationDelay = Math.random() * 2 + 's';
-                particle.style.animationDuration = (Math.random() * 4 + 3) + 's';
+                if (this.currentPlayer < 2) {
+                    this.currentPlayer++;
+                    setTimeout(() => {
+                        this.tryMatchPlayer(this.currentPlayer);
+                    }, 1500);
+                }
+            }
+
+            updateProgressBar() {
+                const progressBar = document.getElementById('progressBar');
+                const percentage = (this.matchedPlayers / 3) * 100;
+                progressBar.style.width = percentage + '%';
+            }
+
+            drawConnectionLine(playerIndex, slotIndex) {
+                const faceItem = document.querySelector(`[data-player="${playerIndex}"]`);
+                const slot = document.querySelector(`[data-slot="${slotIndex}"]`);
                 
-                document.body.appendChild(particle);
+                const faceRect = faceItem.getBoundingClientRect();
+                const slotRect = slot.getBoundingClientRect();
+                
+                const line = document.createElement('div');
+                line.className = 'connection-line';
+                
+                const startX = faceRect.left + faceRect.width / 2;
+                const startY = faceRect.bottom;
+                const endX = slotRect.left + slotRect.width / 2;
+                const endY = slotRect.top;
+                
+                const length = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
+                const angle = Math.atan2(endY - startY, endX - startX) * 180 / Math.PI;
+                
+                line.style.width = length + 'px';
+                line.style.left = startX + 'px';
+                line.style.top = startY + 'px';
+                line.style.transform = `rotate(${angle}deg)`;
+                line.style.transformOrigin = '0 50%';
+                
+                document.body.appendChild(line);
                 
                 setTimeout(() => {
-                    particle.remove();
-                }, 7000);
-            }, i * 80);
-        }
-    }
-
-    createSuccessParticles(element) {
-        const rect = element.getBoundingClientRect();
-        const colors = ['#4CAF50', '#81C784', '#A5D6A7'];
-        
-        for (let i = 0; i < 15; i++) {
-            setTimeout(() => {
-                const particle = document.createElement('div');
-                particle.className = 'mini-particle';
-                particle.style.position = 'fixed';
-                particle.style.left = (rect.left + rect.width / 2) + 'px';
-                particle.style.top = (rect.top + rect.height / 2) + 'px';
-                particle.style.width = '4px';
-                particle.style.height = '4px';
-                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
-                particle.style.borderRadius = '50%';
-                particle.style.pointerEvents = 'none';
-                particle.style.zIndex = '10000';
+                    line.classList.add('show');
+                }, 100);
                 
-                const angle = (Math.PI * 2 * i) / 15;
-                const distance = 50 + Math.random() * 30;
-                const endX = rect.left + rect.width / 2 + Math.cos(angle) * distance;
-                const endY = rect.top + rect.height / 2 + Math.sin(angle) * distance;
+                this.connectionLines.push(line);
+            }
+
+            showVictory() {
+                const overlay = document.getElementById('victoryOverlay');
+                overlay.classList.add('show');
                 
-                particle.animate([
-                    { transform: 'scale(0)', opacity: 1 },
-                    { transform: 'scale(1)', opacity: 1, offset: 0.5 },
-                    { transform: 'scale(0)', opacity: 0 }
-                ], {
-                    duration: 800,
-                    easing: 'ease-out'
-                });
+                // Play victory sound
+                this.sounds.victory.currentTime = 0;
+                this.sounds.victory.play();
                 
-                particle.animate([
-                    { left: (rect.left + rect.width / 2) + 'px', top: (rect.top + rect.height / 2) + 'px' },
-                    { left: endX + 'px', top: endY + 'px' }
-                ], {
-                    duration: 800,
-                    easing: 'ease-out'
-                });
-                
-                document.body.appendChild(particle);
-                
-                setTimeout(() => {
-                    particle.remove();
-                }, 800);
-            }, i * 50);
+                // Create particles
+                this.createParticles();
+            }
+
+            createParticles() {
+                for (let i = 0; i < 50; i++) {
+                    setTimeout(() => {
+                        const particle = document.createElement('div');
+                        particle.className = 'particle';
+                        particle.style.left = Math.random() * 100 + '%';
+                        particle.style.animationDelay = Math.random() * 2 + 's';
+                        particle.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                        
+                        const colors = ['#FFD700', '#FFA500', '#FF6B6B', '#4ECDC4', '#45B7D1'];
+                        particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                        
+                        document.body.appendChild(particle);
+                        
+                        setTimeout(() => {
+                            particle.remove();
+                        }, 5000);
+                    }, i * 100);
+                }
+            }
         }
-    }
 
-    // Utility functions
-    createOverlay(id) {
-        let overlay = document.getElementById(id);
-        if (!overlay) {
-            overlay = document.createElement('div');
-            overlay.id = id;
-            overlay.className = 'game-overlay';
-            document.body.appendChild(overlay);
-        }
-        return overlay;
-    }
-
-    getRandomDelay(delays) {
-        return delays[Math.floor(Math.random() * delays.length)];
-    }
-
-    shuffleArray(array) {
-        const shuffled = [...array];
-        for (let i = shuffled.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-        }
-        return shuffled;
-    }
-
-    playSound(soundName) {
-        if (this.sounds[soundName]) {
-            this.sounds[soundName].currentTime = 0;
-            this.sounds[soundName].play().catch(() => {});
-        }
-    }
-}
-
-// Initialize the game when the page loads
-document.addEventListener('DOMContentLoaded', () => {
-    new FootballMatchingGame();
-});
+        // Initialize the game when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new FootballMatchingGame();
+        });
     </script>
 </body>
 </html>
