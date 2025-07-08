@@ -2067,111 +2067,175 @@ body {
 
 
         <script>
-        class FootballMatchingGame {
+       class FootballMatchingGame {
     constructor() {
-        this.players = ['Messi', 'Ronaldo', 'Neymar'];
-        this.correctMatches = [0, 1, 2]; // Correct slot for each player
+        this.players = ['Messi', 'Ronaldo', 'Neymar', 'Mbappe', 'Haaland'];
+        this.correctMatches = [0, 1, 2, 3, 4]; // Correct slot for each player
         this.currentPlayer = 0;
         this.matchedPlayers = 0;
         this.connectionLines = [];
+        this.wrongAttempts = [];
+        this.gameStartTime = Date.now();
+        
+        // Enhanced unpredictability settings
+        this.unpredictabilitySettings = {
+            maxWrongAttempts: 3,
+            minWrongAttempts: 1,
+            suspenseDelay: [800, 1200, 1500, 2000],
+            glowDuration: [600, 900, 1200],
+            revealDelay: [400, 700, 1000]
+        };
         
         // Initialize sound effects
         this.sounds = {
             success: new Audio('success.mp3'),
             fail: new Audio('fail.mp3'),
             victory: new Audio('victory.mp3'),
-            countdown: new Audio('countdown.mp3') // Optional countdown sound
+            countdown: new Audio('countdown.mp3'),
+            tension: new Audio('tension.mp3'),
+            whoosh: new Audio('whoosh.mp3')
         };
         
         this.init();
     }
 
     init() {
-        setTimeout(() => {
-            this.startGame();
-        }, 1000);
+        this.showGameIntro();
     }
 
-    startGame() {
-        this.showCountdownAndReveal(this.currentPlayer);
-    }
-
-    showCountdownAndReveal(playerIndex) {
-        const faceItem = document.querySelector(`[data-player="${playerIndex}"]`);
-        const playerName = this.players[playerIndex];
-        
-        // Create countdown overlay
-        this.showCountdown(playerName, () => {
-            faceItem.classList.add('active');
-            this.tryMatchPlayer(playerIndex);
-        });
-    }
-
-    showCountdown(playerName, callback) {
-        // Create countdown overlay if it doesn't exist
-        let countdownOverlay = document.getElementById('countdownOverlay');
-        if (!countdownOverlay) {
-            countdownOverlay = document.createElement('div');
-            countdownOverlay.id = 'countdownOverlay';
-            countdownOverlay.className = 'countdown-overlay';
-            document.body.appendChild(countdownOverlay);
-        }
-
-        const countdownContent = `
-            <div class="countdown-content">
-                <h2>Next Player Reveal!</h2>
-                <p>Get ready for ${playerName}...</p>
-                <div class="countdown-number" id="countdownNumber">3</div>
+    showGameIntro() {
+        const introOverlay = this.createOverlay('introOverlay');
+        const introContent = `
+            <div class="intro-content">
+                <h1 class="intro-title">⚽ FOOTBALL LEGENDS CHALLENGE ⚽</h1>
+                <p class="intro-subtitle">Can you match the faces to the bodies?</p>
+                <div class="intro-difficulty">
+                    <span class="difficulty-tag">🔥 LEGEND MODE</span>
+                </div>
+                <div class="intro-countdown" id="introCountdown">3</div>
             </div>
         `;
         
-        countdownOverlay.innerHTML = countdownContent;
-        countdownOverlay.classList.add('show');
+        introOverlay.innerHTML = introContent;
+        introOverlay.classList.add('show');
         
-        // Start countdown
+        this.startIntroCountdown(() => {
+            introOverlay.classList.remove('show');
+            setTimeout(() => {
+                this.startGame();
+            }, 500);
+        });
+    }
+
+    startIntroCountdown(callback) {
         let count = 3;
-        const countdownElement = document.getElementById('countdownNumber');
+        const countdownElement = document.getElementById('introCountdown');
         
         const countdownInterval = setInterval(() => {
-            // Play countdown sound if available
-            if (this.sounds.countdown) {
-                this.sounds.countdown.currentTime = 0;
-                this.sounds.countdown.play().catch(() => {}); // Ignore audio errors
-            }
-            
+            this.playSound('countdown');
             countdownElement.textContent = count;
-            countdownElement.classList.add('pulse');
+            countdownElement.classList.add('pulse-intro');
             
             setTimeout(() => {
-                countdownElement.classList.remove('pulse');
-            }, 500);
+                countdownElement.classList.remove('pulse-intro');
+            }, 600);
             
             count--;
             
             if (count < 0) {
                 clearInterval(countdownInterval);
-                countdownOverlay.classList.remove('show');
+                countdownElement.textContent = 'GO!';
+                countdownElement.classList.add('go-animation');
                 
                 setTimeout(() => {
                     callback();
-                }, 300);
+                }, 800);
             }
         }, 1000);
     }
 
-    tryMatchPlayer(playerIndex) {
-        // Generate random attempts (including wrong ones first)
-        const attempts = this.generateAttempts(playerIndex);
+    startGame() {
+        this.showPlayerReveal(this.currentPlayer);
+    }
+
+    showPlayerReveal(playerIndex) {
+        const faceItem = document.querySelector(`[data-player="${playerIndex}"]`);
+        const playerName = this.players[playerIndex];
         
+        // Create suspenseful reveal
+        this.showSuspensefulReveal(playerName, () => {
+            faceItem.classList.add('active', 'spotlight');
+            this.playSound('whoosh');
+            
+            // Add dramatic pause before attempting matches
+            setTimeout(() => {
+                this.tryMatchPlayer(playerIndex);
+            }, this.getRandomDelay(this.unpredictabilitySettings.suspenseDelay));
+        });
+    }
+
+    showSuspensefulReveal(playerName, callback) {
+        const revealOverlay = this.createOverlay('revealOverlay');
+        const revealContent = `
+            <div class="reveal-content">
+                <div class="reveal-header">
+                    <h2 class="reveal-title">🎯 MYSTERY PLAYER INCOMING</h2>
+                    <div class="reveal-dots">
+                        <span class="dot"></span>
+                        <span class="dot"></span>
+                        <span class="dot"></span>
+                    </div>
+                </div>
+                <div class="reveal-player">
+                    <div class="reveal-name">${playerName}</div>
+                    <div class="reveal-subtitle">Where does he belong?</div>
+                </div>
+                <div class="reveal-progress">
+                    <div class="reveal-bar" id="revealBar"></div>
+                </div>
+            </div>
+        `;
+        
+        revealOverlay.innerHTML = revealContent;
+        revealOverlay.classList.add('show');
+        
+        // Animate progress bar
+        const progressBar = document.getElementById('revealBar');
+        let progress = 0;
+        const progressInterval = setInterval(() => {
+            progress += Math.random() * 15 + 5;
+            progressBar.style.width = Math.min(progress, 100) + '%';
+            
+            if (progress >= 100) {
+                clearInterval(progressInterval);
+                setTimeout(() => {
+                    revealOverlay.classList.remove('show');
+                    setTimeout(callback, 300);
+                }, 500);
+            }
+        }, 100);
+    }
+
+    tryMatchPlayer(playerIndex) {
+        const attempts = this.generateUnpredictableAttempts(playerIndex);
         this.executeAttempts(playerIndex, attempts, 0);
     }
 
-    generateAttempts(playerIndex) {
+    generateUnpredictableAttempts(playerIndex) {
         const correctSlot = this.correctMatches[playerIndex];
-        const wrongSlots = [0, 1, 2].filter(slot => slot !== correctSlot);
+        const wrongSlots = [0, 1, 2, 3, 4].filter(slot => slot !== correctSlot);
         
-        // Random wrong attempts first, then correct
-        const wrongAttempts = wrongSlots.sort(() => Math.random() - 0.5).slice(0, Math.floor(Math.random() * 2) + 1);
+        // More unpredictable wrong attempts
+        const numWrongAttempts = Math.floor(Math.random() * 
+            (this.unpredictabilitySettings.maxWrongAttempts - this.unpredictabilitySettings.minWrongAttempts + 1)) + 
+            this.unpredictabilitySettings.minWrongAttempts;
+        
+        const wrongAttempts = this.shuffleArray(wrongSlots).slice(0, numWrongAttempts);
+        
+        // Sometimes add fake-out attempts (almost correct but not quite)
+        if (Math.random() < 0.3) {
+            wrongAttempts.push(wrongSlots[Math.floor(Math.random() * wrongSlots.length)]);
+        }
         
         return [...wrongAttempts, correctSlot];
     }
@@ -2184,17 +2248,25 @@ body {
 
         const slotIndex = attempts[attemptIndex];
         const isCorrect = slotIndex === this.correctMatches[playerIndex];
+        const isLastAttempt = attemptIndex === attempts.length - 1;
         
-        this.animateAttempt(playerIndex, slotIndex, isCorrect, () => {
-            if (isCorrect) {
-                this.handleCorrectMatch(playerIndex, slotIndex);
-                this.finishPlayerTurn(playerIndex);
-            } else {
-                setTimeout(() => {
-                    this.executeAttempts(playerIndex, attempts, attemptIndex + 1);
-                }, 1000);
-            }
-        });
+        // Add extra suspense for the last attempt
+        const delay = isLastAttempt ? this.getRandomDelay([1500, 2000, 2500]) : 
+                     this.getRandomDelay(this.unpredictabilitySettings.suspenseDelay);
+        
+        setTimeout(() => {
+            this.animateAttempt(playerIndex, slotIndex, isCorrect, () => {
+                if (isCorrect) {
+                    this.handleCorrectMatch(playerIndex, slotIndex);
+                    this.finishPlayerTurn(playerIndex);
+                } else {
+                    this.wrongAttempts.push(slotIndex);
+                    setTimeout(() => {
+                        this.executeAttempts(playerIndex, attempts, attemptIndex + 1);
+                    }, this.getRandomDelay([800, 1200, 1600]));
+                }
+            });
+        }, delay);
     }
 
     animateAttempt(playerIndex, slotIndex, isCorrect, callback) {
@@ -2202,83 +2274,77 @@ body {
         const bodyImage = slot.querySelector('.body-image');
         const statusIcon = slot.querySelector('.status-icon');
 
-        // Glow effect
-        slot.classList.add('glow');
+        // Enhanced glow effect with random duration
+        slot.classList.add('glow', 'thinking');
+        this.playSound('tension');
+        
+        const glowDuration = this.getRandomDelay(this.unpredictabilitySettings.glowDuration);
         
         setTimeout(() => {
-            slot.classList.remove('glow');
+            slot.classList.remove('glow', 'thinking');
             
-            // Show body image
-            bodyImage.classList.add('show');
+            // Dramatic reveal
+            bodyImage.classList.add('show', 'reveal-animation');
             
             setTimeout(() => {
                 if (isCorrect) {
-                    slot.classList.add('correct');
+                    slot.classList.add('correct', 'success-pulse');
                     statusIcon.innerHTML = '✅';
-                    statusIcon.classList.add('correct', 'show');
+                    statusIcon.classList.add('correct', 'show', 'bounce-in');
                     
-                    // Play success sound
-                    this.sounds.success.currentTime = 0;
-                    this.sounds.success.play().catch(() => {});
+                    this.playSound('success');
+                    this.createSuccessParticles(slot);
                 } else {
-                    slot.classList.add('wrong');
+                    slot.classList.add('wrong', 'shake');
                     statusIcon.innerHTML = '❌';
-                    statusIcon.classList.add('wrong', 'show');
+                    statusIcon.classList.add('wrong', 'show', 'shake');
                     
-                    // Play fail sound
-                    this.sounds.fail.currentTime = 0;
-                    this.sounds.fail.play().catch(() => {});
+                    this.playSound('fail');
                     
-                    // Remove wrong attempt after delay
+                    // Enhanced wrong attempt cleanup
                     setTimeout(() => {
-                        bodyImage.classList.remove('show');
+                        bodyImage.classList.remove('show', 'reveal-animation');
                         statusIcon.classList.remove('show');
-                        slot.classList.remove('wrong');
+                        slot.classList.remove('wrong', 'shake');
                         
                         setTimeout(() => {
-                            statusIcon.classList.remove('wrong');
+                            statusIcon.classList.remove('wrong', 'shake');
                             callback();
-                        }, 300);
-                    }, 1000);
+                        }, 400);
+                    }, 1200);
                     return;
                 }
                 
                 callback();
-            }, 500);
-        }, 500);
+            }, this.getRandomDelay(this.unpredictabilitySettings.revealDelay));
+        }, glowDuration);
     }
 
     handleCorrectMatch(playerIndex, slotIndex) {
         this.matchedPlayers++;
-        this.updateProgressBar();
-        this.drawConnectionLine(playerIndex, slotIndex);
+        this.drawEnhancedConnectionLine(playerIndex, slotIndex);
         
-        if (this.matchedPlayers === 3) {
+        if (this.matchedPlayers === 5) {
             setTimeout(() => {
-                this.showVictory();
-            }, 1000);
+                this.showEnhancedVictory();
+            }, 1200);
         }
     }
 
     finishPlayerTurn(playerIndex) {
         const faceItem = document.querySelector(`[data-player="${playerIndex}"]`);
-        faceItem.classList.remove('active');
+        faceItem.classList.remove('active', 'spotlight');
+        faceItem.classList.add('completed');
         
-        if (this.currentPlayer < 2) {
+        if (this.currentPlayer < 4) {
             this.currentPlayer++;
             setTimeout(() => {
-                this.showCountdownAndReveal(this.currentPlayer);
-            }, 1500);
+                this.showPlayerReveal(this.currentPlayer);
+            }, this.getRandomDelay([1000, 1500, 2000]));
         }
     }
 
-    updateProgressBar() {
-        const progressBar = document.getElementById('progressBar');
-        const percentage = (this.matchedPlayers / 3) * 100;
-        progressBar.style.width = percentage + '%';
-    }
-
-    drawConnectionLine(playerIndex, slotIndex) {
+    drawEnhancedConnectionLine(playerIndex, slotIndex) {
         const faceItem = document.querySelector(`[data-player="${playerIndex}"]`);
         const slot = document.querySelector(`[data-slot="${slotIndex}"]`);
         
@@ -2286,7 +2352,7 @@ body {
         const slotRect = slot.getBoundingClientRect();
         
         const line = document.createElement('div');
-        line.className = 'connection-line';
+        line.className = 'connection-line enhanced-line';
         
         const startX = faceRect.left + faceRect.width / 2;
         const startY = faceRect.bottom;
@@ -2302,79 +2368,208 @@ body {
         line.style.transform = `rotate(${angle}deg)`;
         line.style.transformOrigin = '0 50%';
         
+        // Add player-specific color
+        const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7'];
+        line.style.background = `linear-gradient(90deg, ${colors[playerIndex]}, ${colors[playerIndex]}aa)`;
+        
         document.body.appendChild(line);
         
         setTimeout(() => {
-            line.classList.add('show');
+            line.classList.add('show', 'animate-draw');
         }, 100);
         
         this.connectionLines.push(line);
     }
 
-    showVictory() {
-        const overlay = document.getElementById('victoryOverlay');
+    showEnhancedVictory() {
+        const overlay = this.createOverlay('victoryOverlay');
+        const gameTime = Math.floor((Date.now() - this.gameStartTime) / 1000);
         
-        // Update victory content with subscription message
         const victoryContent = `
-            <div class="victory-content">
-                <h1>🎉 PERFECT MATCH! 🎉</h1>
-                <p>You matched all players correctly!</p>
-                <div class="victory-stats">
-                    <div class="stat">
-                        <span class="stat-number">3/3</span>
-                        <span class="stat-label">Perfect Matches</span>
+            <div class="victory-content enhanced-victory">
+                <div class="victory-header">
+                    <h1 class="victory-title">🏆 LEGENDARY PERFORMANCE! 🏆</h1>
+                    <div class="victory-subtitle">All 5 football legends matched perfectly!</div>
+                </div>
+                
+                <div class="victory-showcase">
+                    <div class="showcase-item">
+                        <div class="showcase-icon">⚡</div>
+                        <div class="showcase-text">FLAWLESS EXECUTION</div>
                     </div>
-                    <div class="stat">
-                        <span class="stat-number">100%</span>
-                        <span class="stat-label">Accuracy</span>
+                    <div class="showcase-item">
+                        <div class="showcase-icon">🎯</div>
+                        <div class="showcase-text">PRECISION MATCHING</div>
+                    </div>
+                    <div class="showcase-item">
+                        <div class="showcase-icon">🔥</div>
+                        <div class="showcase-text">PURE SKILL</div>
                     </div>
                 </div>
-                <div class="subscribe-section">
-                    <p class="subscribe-text">Enjoyed the game? 🔥</p>
-                    <button class="subscribe-btn">👍 LIKE & SUBSCRIBE</button>
-                    <p class="subscribe-sub">For more football matching games!</p>
+                
+                <div class="cta-section">
+                    <div class="cta-main">
+                        <div class="cta-text">Think you can beat this challenge?</div>
+                        <div class="cta-actions">
+                            <div class="cta-action">
+                                <span class="cta-icon">👍</span>
+                                <span class="cta-label">SMASH THAT LIKE</span>
+                            </div>
+                            <div class="cta-action">
+                                <span class="cta-icon">🔔</span>
+                                <span class="cta-label">SUBSCRIBE FOR MORE</span>
+                            </div>
+                            <div class="cta-action">
+                                <span class="cta-icon">💬</span>
+                                <span class="cta-label">COMMENT YOUR TIME</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="cta-challenge">
+                        <div class="challenge-text">🎮 NEXT CHALLENGE: PREMIER LEAGUE EDITION</div>
+                        <div class="challenge-subtitle">Can you handle 10 players? 🤔</div>
+                    </div>
                 </div>
-                <button class="play-again-btn" onclick="location.reload()">Play Again</button>
+                
+                <div class="social-proof">
+                    <div class="social-item">
+                        <span class="social-number">96%</span>
+                        <span class="social-label">can't get all 5 right</span>
+                    </div>
+                    <div class="social-item">
+                        <span class="social-number">2M+</span>
+                        <span class="social-label">attempts worldwide</span>
+                    </div>
+                </div>
             </div>
         `;
         
         overlay.innerHTML = victoryContent;
         overlay.classList.add('show');
         
-        // Play victory sound
-        this.sounds.victory.currentTime = 0;
-        this.sounds.victory.play().catch(() => {});
+        this.playSound('victory');
+        this.createEnhancedParticles();
         
-        // Create particles
-        this.createParticles();
-        
-        // Add subscribe button functionality
-        const subscribeBtn = overlay.querySelector('.subscribe-btn');
-        subscribeBtn.addEventListener('click', () => {
-            subscribeBtn.classList.add('clicked');
-            subscribeBtn.innerHTML = '✅ SUBSCRIBED!';
-            subscribeBtn.style.background = '#4CAF50';
-        });
+        // Animate CTA actions
+        setTimeout(() => {
+            document.querySelectorAll('.cta-action').forEach((action, index) => {
+                setTimeout(() => {
+                    action.classList.add('animate-in');
+                }, index * 200);
+            });
+        }, 1000);
     }
 
-    createParticles() {
-        for (let i = 0; i < 50; i++) {
+    createEnhancedParticles() {
+        const particleTypes = ['⚽', '🏆', '⭐', '🔥', '💫'];
+        const colors = ['#FFD700', '#FFA500', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4'];
+        
+        for (let i = 0; i < 80; i++) {
             setTimeout(() => {
                 const particle = document.createElement('div');
-                particle.className = 'particle';
+                particle.className = 'particle enhanced-particle';
+                
+                if (Math.random() < 0.3) {
+                    particle.textContent = particleTypes[Math.floor(Math.random() * particleTypes.length)];
+                    particle.style.fontSize = '20px';
+                } else {
+                    particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    particle.style.width = (Math.random() * 8 + 4) + 'px';
+                    particle.style.height = particle.style.width;
+                    particle.style.borderRadius = '50%';
+                }
+                
                 particle.style.left = Math.random() * 100 + '%';
                 particle.style.animationDelay = Math.random() * 2 + 's';
-                particle.style.animationDuration = (Math.random() * 3 + 2) + 's';
-                
-                const colors = ['#FFD700', '#FFA500', '#FF6B6B', '#4ECDC4', '#45B7D1'];
-                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.animationDuration = (Math.random() * 4 + 3) + 's';
                 
                 document.body.appendChild(particle);
                 
                 setTimeout(() => {
                     particle.remove();
-                }, 5000);
-            }, i * 100);
+                }, 7000);
+            }, i * 80);
+        }
+    }
+
+    createSuccessParticles(element) {
+        const rect = element.getBoundingClientRect();
+        const colors = ['#4CAF50', '#81C784', '#A5D6A7'];
+        
+        for (let i = 0; i < 15; i++) {
+            setTimeout(() => {
+                const particle = document.createElement('div');
+                particle.className = 'mini-particle';
+                particle.style.position = 'fixed';
+                particle.style.left = (rect.left + rect.width / 2) + 'px';
+                particle.style.top = (rect.top + rect.height / 2) + 'px';
+                particle.style.width = '4px';
+                particle.style.height = '4px';
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.borderRadius = '50%';
+                particle.style.pointerEvents = 'none';
+                particle.style.zIndex = '10000';
+                
+                const angle = (Math.PI * 2 * i) / 15;
+                const distance = 50 + Math.random() * 30;
+                const endX = rect.left + rect.width / 2 + Math.cos(angle) * distance;
+                const endY = rect.top + rect.height / 2 + Math.sin(angle) * distance;
+                
+                particle.animate([
+                    { transform: 'scale(0)', opacity: 1 },
+                    { transform: 'scale(1)', opacity: 1, offset: 0.5 },
+                    { transform: 'scale(0)', opacity: 0 }
+                ], {
+                    duration: 800,
+                    easing: 'ease-out'
+                });
+                
+                particle.animate([
+                    { left: (rect.left + rect.width / 2) + 'px', top: (rect.top + rect.height / 2) + 'px' },
+                    { left: endX + 'px', top: endY + 'px' }
+                ], {
+                    duration: 800,
+                    easing: 'ease-out'
+                });
+                
+                document.body.appendChild(particle);
+                
+                setTimeout(() => {
+                    particle.remove();
+                }, 800);
+            }, i * 50);
+        }
+    }
+
+    // Utility functions
+    createOverlay(id) {
+        let overlay = document.getElementById(id);
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.id = id;
+            overlay.className = 'game-overlay';
+            document.body.appendChild(overlay);
+        }
+        return overlay;
+    }
+
+    getRandomDelay(delays) {
+        return delays[Math.floor(Math.random() * delays.length)];
+    }
+
+    shuffleArray(array) {
+        const shuffled = [...array];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        return shuffled;
+    }
+
+    playSound(soundName) {
+        if (this.sounds[soundName]) {
+            this.sounds[soundName].currentTime = 0;
+            this.sounds[soundName].play().catch(() => {});
         }
     }
 }
